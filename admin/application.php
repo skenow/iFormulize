@@ -46,17 +46,22 @@ foreach($formObjects as $thisForm) {
   $i++;
 }
 
-$adminPage['aid'] = $aid;
+$common['aid'] = $aid;
 
+// adminPage tabs sections must contain a name, template and content key
+// content is the data the is available in the tab as $content.foo
+// any declared sub key of $content, such as 'forms' will be assigned to accordions
+// accordion content is available as $sectionContent.foo
 $adminPage['tabs'][1]['name'] = "Forms";
 $adminPage['tabs'][1]['template'] = "db:admin/application_forms.html";
+$adminPage['tabs'][1]['content'] = $common;
 $adminPage['tabs'][1]['content']['forms'] = $forms; 
 
 $adminPage['tabs'][2]['name'] = "Settings";
 $adminPage['tabs'][2]['template'] = "db:admin/application_settings.html";
+$adminPage['tabs'][2]['content'] = $common;
 
 $breadcrumbtrail[1]['url'] = "page=home";
 $breadcrumbtrail[1]['text'] = "Home";
-$breadcrumbtrail[2]['url'] = "page=application&aid=$aid";
 $breadcrumbtrail[2]['text'] = $appName;
 
