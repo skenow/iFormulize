@@ -32,9 +32,9 @@ include_once("admin_header.php");
 xoops_cp_header();
 
 // setup a smarty object that we can use for templating our own pages
-require_once ICMS_ROOT_PATH.'/class/template.php';
-require_once ICMS_ROOT_PATH.'/class/theme.php';
-require_once ICMS_ROOT_PATH.'/class/theme_blocks.php';
+require_once XOOPS_ROOT_PATH.'/class/template.php';
+require_once XOOPS_ROOT_PATH.'/class/theme.php';
+require_once XOOPS_ROOT_PATH.'/class/theme_blocks.php';
 $xoopsThemeFactory =& new xos_opal_ThemeFactory();
 $xoTheme =& $xoopsThemeFactory->createInstance();
 $xoopsTpl =& $xoTheme->template;
@@ -55,6 +55,15 @@ switch($_GET['page']) {
   case "form":
     include "form.php";
     break;
+	case "screen":
+		include "screen.php";
+		break;
+	case "relationship":
+		include "relationship.php";
+		break;
+	case "element":
+		include "element.php";
+		break;
 }
 
 // assign the default selected tab, if any:
