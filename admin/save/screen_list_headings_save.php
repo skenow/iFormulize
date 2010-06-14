@@ -27,7 +27,7 @@
 ##  Project: Formulize                                                       ##
 ###############################################################################
 
-// this file handles saving of submissions from the screen_headings_view page of the new admin UI
+// this file handles saving of submissions from the screen_list_headings_view page of the new admin UI
 
 // if we aren't coming from what appears to be save.php, then return nothing
 if(!isset($processedValues)) {
@@ -40,19 +40,21 @@ $sid = $_POST['formulize_admin_key'];
 
 $screens = $processedValues['screens'];
 
-print_r($screens);
 
 $screen_handler = xoops_getmodulehandler('listOfEntriesScreen', 'formulize');
 $screen = $screen_handler->get($sid);
 
-
-$screen->setVar('defaultview',$screens['defaultview']);
-$screen->setVar('usecurrentviewlist',$screens['usecurrentviewlist']);
-$screen->setVar('limitviews',serialize($screens['limitviews']));
-$screen->setVar('useworkingmsg',(array_key_exists('useworkingmsg',$screens))?$screens['useworkingmsg']:0);
-$screen->setVar('usescrollbox',(array_key_exists('usescrollbox',$screens))?$screens['usescrollbox']:0);
-$screen->setVar('entriesperpage',$screens['entriesperpage']);
-$screen->setVar('viewentryscreen',$screens['viewentryscreen']);
+$screen->setVar('useheadings',(array_key_exists('useheadings',$screens))?$screens['useheadings']:0);
+$screen->setVar('repeatheaders',$screens['repeatheaders']);
+$screen->setVar('usesearchcalcmsgs',$screens['usesearchcalcmsgs']);
+$screen->setVar('usesearch',(array_key_exists('usesearch',$screens))?$screens['usesearch']:0);
+$screen->setVar('columnwidth',$screens['columnwidth']);
+$screen->setVar('textwidth',$screens['textwidth']);
+$screen->setVar('usecheckboxes',$screens['usecheckboxes']);
+$screen->setVar('useviewentrylinks',(array_key_exists('useviewentrylinks',$screens))?$screens['useviewentrylinks']:0);
+$screen->setVar('hiddencolumns',serialize($screens['hiddencolumns']));
+$screen->setVar('decolumns',serialize($screens['decolumns']));
+$screen->setVar('desavetext',$screens['desavetext']);
 
 
 if(!$screen_handler->insert($screen)) {
