@@ -32,8 +32,8 @@
 include_once "../../../mainfile.php";
 ob_end_clean();
 global $xoopsUser;
-if(!$xoopsUser OR $GLOBALS['xoopsSecurity']->check()) {
-  print "Error: you do not have permission to save this data";
+if(!$xoopsUser) {
+  print "Error: you are not logged in";
   return;
 }
 $gperm_handler = xoops_gethandler('groupperm');
@@ -53,6 +53,9 @@ $processedValues = array();
 foreach($_POST as $k=>$v) {
   if(!strstr($k, "-")) { continue; } // ignore fields with no hyphen
   list($class, $property) = explode("-", $k);
+  if(is_array($v)) {
+    $v = serialize($v);
+  }
   $processedValues[$class][$property] = $v;
 }
 
