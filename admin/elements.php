@@ -483,8 +483,8 @@ switch($op){
 		$form->addElement($ele_order);
 		$form->addElement($ele_order_changed);
 		
-		$submit = new XoopsFormButton('', 'submit', _AM_SAVE, 'submit');
-		$cancel = new XoopsFormButton('', 'cancel', _CANCEL, 'button');
+		$submit = new icms_form_elements_Button('', 'submit', _AM_SAVE, 'submit');
+		$cancel = new icms_form_elements_Button('', 'cancel', _CANCEL, 'button');
 		// behaviour of cancel button changed to actually physically go back to the editing elements page -- jwe 01/05/05
 		//$cancel->setExtra('onclick="javascript:history.go(-1);"');
 		$cancelExtra = "onclick='javascript:location.href=\"../admin/index.php?title=$title\"'";
@@ -571,7 +571,7 @@ function addOption($id1, $id2, $text, $type='check', $checked=null){
 function addOptionsTray(){
 	$t = new icms_form_elements_Text('', 'addopt', 3, 2);
 	$l = new icms_form_elements_Label('', sprintf(_AM_ELE_ADD_OPT, $t->render()));
-	$b = new XoopsFormButton('', 'submit', _AM_ELE_ADD_OPT_SUBMIT, 'submit');
+	$b = new icms_form_elements_Button('', 'submit', _AM_ELE_ADD_OPT_SUBMIT, 'submit');
 	$r = new icms_form_elements_Tray('');
 	$r->addElement($l);
 	$r->addElement($b);

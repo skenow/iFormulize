@@ -76,7 +76,7 @@ if(isset($_POST['oneditscreen'])) {
 
 // display the form with the contents of a particular screen if one has been requested
 $form = $screen_handler->editForm($screen, $fid);
-$form->addElement(new xoopsFormButton('', 'savescreen', _AM_FORMULIZE_SCREEN_SAVE, 'submit'));
+$form->addElement(new icms_form_elements_Button('', 'savescreen', _AM_FORMULIZE_SCREEN_SAVE, 'submit'));
 print $form->render();
 
 icms_cp_footer();

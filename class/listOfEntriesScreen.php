@@ -436,7 +436,7 @@ class formulizeListOfEntriesScreenHandler extends formulizeScreenHandler {
 		$form->insertBreak($buttonTable, "head");
 
 		$customButtonTable = "<table class=\"outer\" width=100% cellspacing=1 style=\"background: white;\">\n<tr><th colspan=2>" . _AM_FORMULIZE_SCREEN_LOE_CUSTOMBUTTONINTRO . "</th></tr>\n";
-		$newButtonButton = new xoopsFormButton('', 'addCustomButton', _AM_FORMULIZE_SCREEN_LOE_ADDCUSTOMBUTTON, 'submit');
+		$newButtonButton = new icms_form_elements_Button('', 'addCustomButton', _AM_FORMULIZE_SCREEN_LOE_ADDCUSTOMBUTTON, 'submit');
 		$customButtonTable .= "<tr><td class=\"head\" colspan=2><p><b>" . _AM_FORMULIZE_SCREEN_LOE_CUSTOMBUTTONINTRO2 . "</b></p>\n<p>" . $newButtonButton->render() . "</p></td></tr>\n";
 
 		$caid = 0;
@@ -625,7 +625,7 @@ function addCustomButton($caid, $thisCustomAction, $allFids, $allFidObjs, $eleme
 
 	// set defaults to the current action, if there is one, or the empty defaults if this is a new action
 	$headerText = $thisCustomAction ? _AM_FORMULIZE_SCREEN_LOE_CUSTOMBUTTON . " &mdash; " . $thisCustomAction['handle'] : _AM_FORMULIZE_SCREEN_LOE_CUSTOMBUTTON_NEW;
-	$deleteButtonButton = new xoopsFormButton('', 'deleteButton' . $caid, _AM_FORMULIZE_SCREEN_LOE_CUSTOMBUTTON_DELETE, 'submit');
+	$deleteButtonButton = new icms_form_elements_Button('', 'deleteButton' . $caid, _AM_FORMULIZE_SCREEN_LOE_CUSTOMBUTTON_DELETE, 'submit');
 	$headerText .= "&nbsp;&nbsp&nbsp;" . $deleteButtonButton->render();
 	$handleDefault = $thisCustomAction ? $thisCustomAction['handle'] : "";
 	$textDefault = $thisCustomAction ? $thisCustomAction['buttontext'] : "";
@@ -665,7 +665,7 @@ function addCustomButton($caid, $thisCustomAction, $allFids, $allFidObjs, $eleme
 	$applyToOptions['custom_html'] = _AM_FORMULIZE_SCREEN_LOE_CUSTOMBUTTON_APPLYTO_CUSTOM_HTML;
 	$caApplyTo->addOptionArray($applyToOptions);
 	$caTable = addElementLOE($caApplyTo, $caTable);
-	$caNewEffectButton = new xoopsFormButton('', 'addCustomButtonEffect' . $caid, _AM_FORMULIZE_SCREEN_LOE_ADDCUSTOMBUTTON_EFFECT, 'submit'); // note, no _ in name so we don't roll this up into the array stored in the DB
+	$caNewEffectButton = new icms_form_elements_Button('', 'addCustomButtonEffect' . $caid, _AM_FORMULIZE_SCREEN_LOE_ADDCUSTOMBUTTON_EFFECT, 'submit'); // note, no _ in name so we don't roll this up into the array stored in the DB
 	$caTable .= "<tr><td class=\"head\">&nbsp;</td><td class=\"even\">" . $caNewEffectButton->render() . "</td></tr>\n";
 	$effectid = 0;
 	$effectTable = "";
@@ -702,7 +702,7 @@ function addCustomButtonEffect($caid, $effectid, $thisCustomAction, $allFids, $e
 	} else {
 		$headerText .= _AM_FORMULIZE_SCREEN_LOE_CUSTOMBUTTON_EFFECT_DESC;
 	}
-	$deleteEffectButton = new xoopsFormButton('', 'deleteButton' . $caid . 'Effect' . $effectid, _AM_FORMULIZE_SCREEN_LOE_CUSTOMBUTTON_EFFECT_DELETE, 'submit');
+	$deleteEffectButton = new icms_form_elements_Button('', 'deleteButton' . $caid . 'Effect' . $effectid, _AM_FORMULIZE_SCREEN_LOE_CUSTOMBUTTON_EFFECT_DELETE, 'submit');
 	$headerText .= "<br /><br />" . $deleteEffectButton->render();
 	$elementDefault = $thisCustomAction ? $thisCustomAction[$effectid]['element'] : "";
 	$actionDefault = $thisCustomAction ? $thisCustomAction[$effectid]['action'] : "";

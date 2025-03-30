@@ -266,14 +266,14 @@ $term = new icms_form_elements_Text('', 'term', 20, 255);
 $opterm->addElement($op);
 $opterm->addElement($term);
 
-$addButton = new xoopsFormButton('', 'addq', _formulize_DE_AS_ADD, 'submit');
+$addButton = new icms_form_elements_Button('', 'addq', _formulize_DE_AS_ADD, 'submit');
 
 $addOtherTray = new icms_form_elements_Tray(_formulize_DE_AS_ADDOTHER, "&nbsp;&nbsp;");
-$openBracketButton = new xoopsFormButton('', 'openb', "(", 'submit');
-$closeBracketButton = new xoopsFormButton('', 'closeb', ")", 'submit');
-$andButton = new xoopsFormButton('', 'and', "AND", 'submit');
-$orButton = new xoopsFormButton('', 'or', "OR", 'submit');
-$notButton = new xoopsFormButton('', 'not', "NOT", 'submit');
+$openBracketButton = new icms_form_elements_Button('', 'openb', "(", 'submit');
+$closeBracketButton = new icms_form_elements_Button('', 'closeb', ")", 'submit');
+$andButton = new icms_form_elements_Button('', 'and', "AND", 'submit');
+$orButton = new icms_form_elements_Button('', 'or', "OR", 'submit');
+$notButton = new icms_form_elements_Button('', 'not', "NOT", 'submit');
 $addOtherTray->addElement($andButton);
 $addOtherTray->addElement($orButton);
 $addOtherTray->addElement($notButton);
@@ -293,8 +293,8 @@ $advsearch->addElement($addButton);
 $advsearch->addElement($addOtherTray);
 
 if($items['as_0']) {
-	$removeButton = new xoopsFormButton('', 'remove', _formulize_DE_AS_REMOVE, 'submit');
-	$doneButton = new xoopsFormButton('', 'done', _formulize_DE_SEARCHGO, 'button');
+	$removeButton = new icms_form_elements_Button('', 'remove', _formulize_DE_AS_REMOVE, 'submit');
+	$doneButton = new icms_form_elements_Button('', 'done', _formulize_DE_SEARCHGO, 'button');
 	$doneButton->setExtra("onclick=\"javascript:sendSearch(this.form);return false;\"");
 	$advsearch->insertBreak("</td></tr></table><table class=outer><tr><th colspan=2>" . _formulize_DE_AS_QUERYSOFAR . "</th></tr><tr><td class=even colspan=2><center>" . $doneButton->render() . "</center>", "");
 	$qstring = writableQuery($items, 1); // 1 flag indicates to not translate special terms

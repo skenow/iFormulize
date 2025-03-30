@@ -73,7 +73,7 @@ $options->addOption('_NO', _NO);
 $form->addElement($options);
 
 // next four lines added to provide the clearing-defaults UI 
-$clearDefault = new XoopsFormButton('', 'cleardef', _AM_CLEAR_DEFAULT, 'button');
+$clearDefault = new icms_form_elements_Button('', 'cleardef', _AM_CLEAR_DEFAULT, 'button');
 $clearDefaultExtra = "onclick='clearDefaults()'";
 $clearDefault->setExtra($clearDefaultExtra);
 $form->addElement($clearDefault);

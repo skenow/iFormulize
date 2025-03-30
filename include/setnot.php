@@ -325,7 +325,7 @@ $opterm->addElement($element);
 $opterm->addElement($op);
 $opterm->addElement($term);
 
-$addcon = new xoopsFormButton('', 'addcon', _formulize_DE_SETNOT_ADDCON, 'submit');
+$addcon = new icms_form_elements_Button('', 'addcon', _formulize_DE_SETNOT_ADDCON, 'submit');
 $addcon->setExtra("onfocus=\"javascript:window.document.setnot.setfor[1].checked=true\"");
 
 $conditionui = "<br />$conditionlist" . $opterm->render() . "<br />" . $addcon->render();
@@ -343,7 +343,7 @@ if($canSetNots) {
 	$setnot->addElement(new icms_form_elements_Text(_formulize_DE_SETNOT_SUBJ, 'subject', 50, 255, $_POST['subject']));
 }
 
-$setnot->addElement(new xoopsFormButton('', 'save', _formulize_DE_SETNOT_SAVE, 'submit'));
+$setnot->addElement(new icms_form_elements_Button('', 'save', _formulize_DE_SETNOT_SAVE, 'submit'));
 
 print $setnot->render();
 
@@ -421,7 +421,7 @@ if(!$noNots) {
 			$text .= "<br />" . _formulize_DE_NOT_SUBJTEXT . "'" . $thisnot['not_cons_subject'] . "'.";
 		}
 		
-		$delbutton = new xoopsFormButton('', 'delete_'.$thisnot['not_cons_id'], _formulize_DELETE, 'submit');
+		$delbutton = new icms_form_elements_Button('', 'delete_'.$thisnot['not_cons_id'], _formulize_DELETE, 'submit');
 		$anot = new icms_form_elements_Label($delbutton->render(), $text);
 		$notlist->addElement($anot);
 		unset($anot);

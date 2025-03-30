@@ -172,7 +172,7 @@ $size = ($gcount<10) ? $gcount : 10 ;
 $grouplist = new icms_form_elements_Select(_formulize_DE_AVAILGROUPS, 'newscope', $curgroups, $size, true);
 $grouplist->addOptionArray($availgroups);
 
-$doneButton = new xoopsFormButton('', 'done', _formulize_DE_USETHISSCOPE, 'button');
+$doneButton = new icms_form_elements_Button('', 'done', _formulize_DE_USETHISSCOPE, 'button');
 $doneButton->setExtra("onclick=\"javascript:updateScope(this.form);return false;\"");
 
 $advscope->addElement($grouplist);

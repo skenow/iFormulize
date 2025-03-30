@@ -179,7 +179,7 @@ function multiPageScreen_addToOptionsList($fid, $options) {
 function drawPageUI($pageNumber, $pageTitle, $elements, $conditions, $form, $options, $ops) {
 
 	// insert page here button
-	$form->addElement(new xoopsFormButton('', 'insertpage' . $pageNumber, _AM_FORMULIZE_SCREEN_INSERTPAGE, 'submit'));
+	$form->addElement(new icms_form_elements_Button('', 'insertpage' . $pageNumber, _AM_FORMULIZE_SCREEN_INSERTPAGE, 'submit'));
 
 	// pageNumbers start at 0, since that's how the arrays are indexed, they start from zero
 	// but whatever we show users must start at 1 (there is no page 0 as far as they are concerned), so we add one to make the visiblePageNumber
@@ -225,7 +225,7 @@ function drawPageUI($pageNumber, $pageTitle, $elements, $conditions, $form, $opt
 	$opterm->addElement($element);
 	$opterm->addElement($op);
 	$opterm->addElement($term);
-	$addcon = new xoopsFormButton('', 'addcon', _AM_FORMULIZE_SCREEN_CONS_ADDCON, 'submit');
+	$addcon = new icms_form_elements_Button('', 'addcon', _AM_FORMULIZE_SCREEN_CONS_ADDCON, 'submit');
 	$addcon->setExtra("onfocus=\"javascript:window.document.editscreenform.pagecons" . $pageNumber . "[1].checked=true\"");
 
 	$conditionui = "<br />$conditionlist<nobr>" . $opterm->render() . "</nobr><br />" . $addcon->render();

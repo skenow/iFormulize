@@ -92,7 +92,7 @@ if($caughtfirst) {
 	
 	$elelisttray = new icms_form_elements_Tray(_AM_ELE_SUBFORM_ELEMENTS, "<br />");
 	$elelisttray->setDescription(_AM_ELE_SUBFORM_ELEMENTS_DESC);
-	$elerefresh = new xoopsFormButton('', 'subformrefresh', _AM_ELE_SUBFORM_REFRESH, 'submit');
+	$elerefresh = new icms_form_elements_Button('', 'subformrefresh', _AM_ELE_SUBFORM_REFRESH, 'submit');
 	$elelisttray->addElement($elementlist);
 	$elelisttray->addElement($elerefresh);
 	$form->addElement($elelisttray);

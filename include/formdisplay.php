@@ -1071,14 +1071,14 @@ function addSubmitButton($form, $subButtonText, $go_back="", $currentURL, $butto
 	// need to grab the $nosubforms variable created by the multiple page function, so we know to put the printable view button (and nothing else) on the screen for multipage forms
 	global $nosubforms;
 	if(!$profileForm AND ($save_text_temp != "{NOBUTTON}" OR $nosubforms)) { // do not use printable button for profile forms, or forms where there is no Save button (ie: a non-standard saving process is in use and access to the normal printable option may be prohibited)
-		$printbutton = new XoopsFormButton('', 'printbutton', _formulize_PRINTVIEW, 'button');
+		$printbutton = new icms_form_elements_Button('', 'printbutton', _formulize_PRINTVIEW, 'button');
 		if(is_array($elements_allowed)) {
 			$ele_allowed = implode(",",$elements_allowed);
 		}
 		$printbutton->setExtra("onclick='javascript:PrintPop(\"$ele_allowed\");'");
 		$rendered_buttons = $printbutton->render(); // nmc 2007.03.24 - added
 		if ($printall) {																					// nmc 2007.03.24 - added
-			$printallbutton = new XoopsFormButton('', 'printallbutton', _formulize_PRINTALLVIEW, 'button');	// nmc 2007.03.24 - added
+			$printallbutton = new icms_form_elements_Button('', 'printallbutton', _formulize_PRINTALLVIEW, 'button');	// nmc 2007.03.24 - added
 			$printallbutton->setExtra("onclick='javascript:PrintAllPop();'");								// nmc 2007.03.24 - added
 			$rendered_buttons .= "&nbsp;&nbsp;&nbsp;" . $printallbutton->render();							// nmc 2007.03.24 - added
 			}
@@ -1089,7 +1089,7 @@ function addSubmitButton($form, $subButtonText, $go_back="", $currentURL, $butto
 	if($subButtonText == _formulize_SAVE) { // _formulize_SAVE is passed only when the save button is allowed to be drawn
 		if($save_text_temp) { $subButtonText = $save_text_temp; }
 		if($subButtonText != "{NOBUTTON}") {
-			$saveButton = new XoopsFormButton('', 'submitx', trans($subButtonText), 'button'); // doesn't use name submit since that conflicts with the submit javascript function
+			$saveButton = new icms_form_elements_Button('', 'submitx', trans($subButtonText), 'button'); // doesn't use name submit since that conflicts with the submit javascript function
 			$saveButton->setExtra("onclick=javascript:validateAndSubmit();");
 			$buttontray->addElement($saveButton);
 		}
@@ -1097,7 +1097,7 @@ function addSubmitButton($form, $subButtonText, $go_back="", $currentURL, $butto
 	
 	if((($button_text != "{NOBUTTON}" AND !$done_text_temp) OR (isset($done_text_temp) AND $done_text_temp != "{NOBUTTON}")) AND !$allDoneOverride) {
 		if($done_text_temp) { $button_text = $done_text_temp; }
-		$donebutton = new XoopsFormButton('', 'donebutton', trans($button_text), 'button');
+		$donebutton = new icms_form_elements_Button('', 'donebutton', trans($button_text), 'button');
 		$donebutton->setExtra("onclick=javascript:verifyDone();");
 		$buttontray->addElement($donebutton);
 	}

@@ -218,7 +218,7 @@ $opterm->addElement($new_element);
 $opterm->addElement($op);
 $opterm->addElement($term);
 
-$addcon = new xoopsFormButton('', 'addcon', _AM_ELE_FORMLINK_SCOPEFILTER_ADDCON, 'submit');
+$addcon = new icms_form_elements_Button('', 'addcon', _AM_ELE_FORMLINK_SCOPEFILTER_ADDCON, 'submit');
 $addcon->setExtra("onfocus=\"javascript:window.document.form_ele.setfor[1].checked=true\"");
 
 $conditionui = "<br />$conditionlist" . $opterm->render() . "<br />" . $addcon->render() . "<br /><br />" . _AM_ELE_FORMLINK_SCOPEFILTER_REFRESHHINT;

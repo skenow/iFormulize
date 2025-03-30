@@ -4163,7 +4163,7 @@ function formulize_createFilterUI($filterSettings, $filterName, $formWithSourceE
  $conditionui .= formulize_createFilterUIMatch($newElementNameOOM,$formName,$filterName,$options,$newOpNameOOM,$newTermNameOOM,$conditionlistOOM);
  $conditionui .= "<br />";
  // build add another condition button
- $addcon = new xoopsFormButton('', 'addcon', $filterButtonText, 'button');
+ $addcon = new icms_form_elements_Button('', 'addcon', $filterButtonText, 'button');
   
  return $conditionui . $addcon->render();
 

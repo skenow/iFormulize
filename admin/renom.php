@@ -87,7 +87,7 @@ if ($op != 1) {
 	      <td class="odd" align="center">
 	      <input maxlength="255" size="50" id="title2" name="title2" type="text" value="'.$desc_form.'"></a></td></tr>';
 
-	$submit = new XoopsFormButton('', 'submit', _SUBMIT, 'submit');
+	$submit = new icms_form_elements_Button('', 'submit', _SUBMIT, 'submit');
 	echo '  <tr>
 		<td class="foot" colspan="7">'.$submit->render().'
 		</tr>

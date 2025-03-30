@@ -153,13 +153,13 @@ if( $op != 'addform' && $op != 'modform' && $op != 'renform' && $op != 'delform'
 
 	<th colspan=2><center>'._FORM_ACT.'</center></th>';
 
-	$renom = new XoopsFormButton('', 'renom', _FORM_RENOM_IMG, 'submit');
+	$renom = new icms_form_elements_Button('', 'renom', _FORM_RENOM_IMG, 'submit');
 	$hidden_renom = new icms_form_elements_Hidden('op', 'renform');
-	$sup = new XoopsFormButton('', 'sup', _FORM_SUP, 'submit');
+	$sup = new icms_form_elements_Button('', 'sup', _FORM_SUP, 'submit');
 	$hidden_sup = new icms_form_elements_Hidden('op', 'delform');
-	$mod = new XoopsFormButton('', 'modif', _FORM_MODIF, 'submit');
+	$mod = new icms_form_elements_Button('', 'modif', _FORM_MODIF, 'submit');
 	$hidden_mod = new icms_form_elements_Hidden('op', 'modform');
-	$show = new XoopsFormButton('', 'show', _FORM_SHOW, 'submit');
+	$show = new icms_form_elements_Button('', 'show', _FORM_SHOW, 'submit');
 	$hidden_show = new icms_form_elements_Hidden('op', 'showform');
 	
 	echo '<tr><td class="head" ALIGN=center>'._FORM_CREAT.'</td>
@@ -757,10 +757,10 @@ $form->addElement($fs_select_lists);
 
 $fs_button_group = new icms_form_elements_Tray("");
 
-$fs_button_save_list = new XoopsFormButton("", "save_list", _AM_MULTI_SAVE_LIST, "submit");
+$fs_button_save_list = new icms_form_elements_Button("", "save_list", _AM_MULTI_SAVE_LIST, "submit");
 $fs_button_group->addElement($fs_button_save_list);
 
-$fs_button_delete_list = new XoopsFormButton("", "delete_list", _AM_MULTI_DELETE_LIST, "submit");
+$fs_button_delete_list = new icms_form_elements_Button("", "delete_list", _AM_MULTI_DELETE_LIST, "submit");
 $fs_button_group->addElement($fs_button_delete_list);
 
 $form->addElement($fs_button_group);
@@ -790,7 +790,7 @@ $form->addElement($list_id_hidden);
 $sameForAllGroups = new icms_form_elements_Radioyn(_formulize_SAME_PERMS, 'sameperms', 0);
 $form->addElement($sameForAllGroups);
 
-$submit_button = new XoopsFormButton("", "groupsubmit", _formulize_SHOW_PERMS, "submit");
+$submit_button = new icms_form_elements_Button("", "groupsubmit", _formulize_SHOW_PERMS, "submit");
 $form->addElement($submit_button);
 $form->display();
 

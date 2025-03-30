@@ -367,7 +367,7 @@ $viewselection = new icms_form_elements_Hidden("viewselection", "");
 $saveform->addElement($viewselection);
 
 
-$subButton = new xoopsFormButton('', 'submitx', _formulize_DE_SAVE_BUTTON, 'button');
+$subButton = new icms_form_elements_Button('', 'submitx', _formulize_DE_SAVE_BUTTON, 'button');
 $subButton->setExtra("onclick=\"javascript:saveSettings(this.form);\"");
 $saveform->addElement($subButton);
 

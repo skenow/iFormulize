@@ -118,7 +118,7 @@ $form2Choice->addOptionArray($form2Elements);
 $chooseElementsForm->addElement($form1Choice);
 $chooseElementsForm->addElement($form2Choice);
 
-$subButton = new xoopsFormButton('', 'submitx', _SUBMIT, 'button');
+$subButton = new icms_form_elements_Button('', 'submitx', _SUBMIT, 'button');
 $subButton->setExtra("onclick=\"javascript:saveElements(this.form.elements[0], this.form.elements[1], $lid);\"");
 $chooseElementsForm->addElement($subButton);
 $chooseElementsForm->insertBreak("<p>" . _AM_FRAME_COMMON_WARNING . "</p>", "head");

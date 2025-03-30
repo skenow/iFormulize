@@ -261,7 +261,7 @@ if( $_POST['op'] != 'save' ){
 		echo '</tr>';
 	}
 	
-	$submit = new XoopsFormButton('', 'submit', _AM_SAVE_CHANGES, 'submit');
+	$submit = new icms_form_elements_Button('', 'submit', _AM_SAVE_CHANGES, 'submit');
 	echo '
 		<tr>
 			<td class="foot" colspan="4"></td>

@@ -384,7 +384,7 @@ $calcs['per'] = _formulize_DE_CALC_PER;
 $calculations = new icms_form_elements_Select(_formulize_DE_CALC_CALCS, 'calculations', '', count($calcs), true);
 $calculations->addOptionArray($calcs);
 
-$subButton = new xoopsFormButton('', 'submitx', _formulize_DE_CALCSUB, 'submit');
+$subButton = new icms_form_elements_Button('', 'submitx', _formulize_DE_CALCSUB, 'submit');
 
 $pickcalc->addElement($columns);
 $pickcalc->addElement($calculations);
@@ -394,7 +394,7 @@ $pickcalc->addElement($subButton);
 //$pickcalc->addElement(new icms_form_elements_Hidden("fid", $fid));
 
 //$doneTray = new icms_form_elements_Tray(_formulize_DE_REQDCALCS, "<br>");
-$doneButton = new xoopsFormButton('', 'done', _formulize_DE_CALCGO, 'button');
+$doneButton = new icms_form_elements_Button('', 'done', _formulize_DE_CALCGO, 'button');
 $doneButton->setExtra("onclick=\"javascript:sendCalcs(this.form);return false;\"");
 //$nolistdisplay = new icms_form_elements_Checkbox('', 'nolistdisplay', $_POST['nolistdisplay']);
 //$nolistdisplay->addOption("1", _formulize_DE_CALC_LISTDISPLAY);
@@ -428,7 +428,7 @@ foreach($returned['rc'] as $hidden) {
 			$temp_cap = q("SELECT ele_caption FROM " . $xoopsDB->prefix("formulize") . " WHERE ele_id = '" . $hidden['column'] . "'");
 			$colname = trans($temp_cap[0]['ele_caption']);
 	}
-	$pickcalc->addElement(new xoopsFormButton($colname, "delete_" . $hidden['column'], _formulize_DE_REMOVECALC, 'submit'));
+	$pickcalc->addElement(new icms_form_elements_Button($colname, "delete_" . $hidden['column'], _formulize_DE_REMOVECALC, 'submit'));
 	$calcs = explode(",", $hidden['calcs']);
 	foreach($calcs as $calc) {
 		$tempname = $calc . $hidden['column'];
