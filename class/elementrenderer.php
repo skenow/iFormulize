@@ -981,7 +981,7 @@ class formulizeElementRenderer{
 				if($ele_value[0] == "") // if there's no value (ie: it's blank) ... OR it's the default value because someone submitted a date field without actually specifying a date, that last part added by jwe 10/23/04
 				{
 					//print "Bad date";
-				$form_ele = new XoopsFormColorPicker (
+				$form_ele = new icms_form_elements_Colorpicker (
 					$ele_caption,
 					$form_ele_id,
 					""
@@ -991,7 +991,7 @@ class formulizeElementRenderer{
 				else
 				{
 					//print "good date";
-				$form_ele = new XoopsFormColorPicker (
+				$form_ele = new icms_form_elements_Colorpicker (
 					$ele_caption,
 					$form_ele_id,
 					$ele_value[0]
