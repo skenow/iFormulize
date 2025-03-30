@@ -955,11 +955,6 @@ class formulizeAdvancedCalculationHandler {
 	 * can initialize this form element with the user's previous selection.
 	 */
 	function getFilter($acid, $filterHandle, $boxesAsHidden = false) {
-		include_once XOOPS_ROOT_PATH . '/class/xoopsform/formelement.php'; // dependency
-		include_once XOOPS_ROOT_PATH . '/class/xoopsform/formtext.php'; // dependency
-		include_once XOOPS_ROOT_PATH . '/class/xoopsform/formhidden.php'; // dependency
-		include_once XOOPS_ROOT_PATH . '/class/xoopsform/formtextdateselect.php';
-		include_once XOOPS_ROOT_PATH . '/class/xoopsform/formselect.php';
 
 		$hideLabel = false;
 

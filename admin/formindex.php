@@ -67,7 +67,6 @@ if($op == "clonedata") { cloneFormulize($title, 1); }
 
 
 include_once XOOPS_ROOT_PATH . "/modules/formulize/class/forms.php"; // form class
-include_once XOOPS_ROOT_PATH.'/class/xoopsform/grouppermform.php'; // Classe permissions
 $module_id = $xoopsModule->getVar('mid'); // recupere le numero id du module
 
 $n = 0;
