@@ -965,7 +965,7 @@ class formulizeElementRenderer{
 				);
 			break;
 			case 'upload':
-				$form_ele = new XoopsFormFile (
+				$form_ele = new icms_form_elements_File (
 					$ele_caption,
 					$form_ele_id,
 					$ele_value[1]

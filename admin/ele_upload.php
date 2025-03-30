@@ -56,7 +56,7 @@ $mime->addOption('mpeg',' mpeg ');
 $mime->addOption('jpg',' jpg ');
 $form->addElement($mime);
 
-$fichier = new XoopsFormFile (_AM_ELE_FICH, $ele_value[0], $ele_value[1]);
+$fichier = new icms_form_elements_File (_AM_ELE_FICH, $ele_value[0], $ele_value[1]);
 $form->addElement ($fichier);
 
 
