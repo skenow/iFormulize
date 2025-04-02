@@ -1008,7 +1008,7 @@ function addProfileFields($form, $profileForm) {
       	$form->addElement($notify_mode_select);
       	$sig_tray = new icms_form_elements_Tray(_US_SIGNATURE, '<br />');
       	include_once XOOPS_ROOT_PATH . '/include/xoopscodes.php';
-      	$sig_tarea = new XoopsFormDhtmlTextArea('', 'userprofile_user_sig', $thisUser_user_sig);
+      	$sig_tarea = new icms_form_elements_Dhtmltextarea('', 'userprofile_user_sig', $thisUser_user_sig);
       	$sig_tray->addElement($sig_tarea);
       	$sig_cbox_value = $thisUser_attachsig ? 1 : 0;
       	$sig_cbox = new icms_form_elements_Checkbox('', 'userprofile_attachsig', $sig_cbox_value);
