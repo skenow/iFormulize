@@ -980,8 +980,8 @@ function addProfileFields($form, $profileForm) {
 	$passlabel = $profileForm == "new" ? _formulize_TYPEPASSTWICE_NEW : _formulize_TYPEPASSTWICE_CHANGE;
 	$passlabel .= $xoopsConfigUser['minpass'] . _formulize_PASSWORD_HELP1;
 	$pwd_tray = new icms_form_elements_Tray(_US_PASSWORD.'<br />'.$passlabel);
-	$pwd_text = new XoopsFormPassword('', 'userprofile_password', 10, 32);
-	$pwd_text2 = new XoopsFormPassword('', 'userprofile_vpass', 10, 32);
+	$pwd_text = new icms_form_elements_Password('', 'userprofile_password', 10, 32);
+	$pwd_text2 = new icms_form_elements_Password('', 'userprofile_vpass', 10, 32);
 	$pass_required = $profileForm == "new" ? 1 : 0;
 	$pwd_tray->addElement($pwd_text, $pass_required);
 	$pwd_tray->addElement($pwd_text2, $pass_required);
