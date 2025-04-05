@@ -2584,7 +2584,7 @@ function sendNotifications($fid, $event, $entries, $mid="", $groups=array()) {
 	// get groups with view_form,
 	$groups_view = $gperm_handler->getGroupIds("view_form", $fid, $mid);
 	
-	$notification_handler =& xoops_gethandler('notification');
+	$notification_handler = icms::handler('icms_data_notification');
 
 	// start main loop
 	foreach($entries as $entry) {

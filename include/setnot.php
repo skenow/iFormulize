@@ -48,7 +48,7 @@ function handleDelete($uid, $fid, $mid) {
 			// check if the current user has any items left for a this event on this form, and if not, then unsub from that event
 			$anyleft = q("SELECT * FROM " . $xoopsDB->prefix("formulize_notification_conditions") . " WHERE not_cons_uid=".intval($uid)." AND not_cons_fid = ".intval($fid)." AND not_cons_event=\"".$event[0]['not_cons_event']."\"");
 			if(count($anyleft) == 0) {
-				$notification_handler =& xoops_gethandler('notification');
+				$notification_handler = icms::handler('icms_data_notification');
 				$notification_handler->unsubscribe('form', $fid, $event[0]['not_cons_event'], $mid, $uid);
 			}
 
@@ -138,7 +138,7 @@ if($_POST['save']) {
 	} else {
 		$not_cons_uid = $uid;
 		// since this is a user specific notification, set a subscription for it
-		$notification_handler =& xoops_gethandler('notification');
+		$notification_handler = icms::handler('icms_data_notification');
 		$notification_handler->subscribe('form', $fid, $_POST['setwhen'], '', $mid, $not_cons_uid);
 		$thisnot = $notification_handler->getNotification($mid, 'form', $fid, $_POST['setwhen'], $not_cons_uid);
 	}
@@ -477,7 +477,7 @@ function buildNotOptionList($sql, $type) {
 /*
 function cleanupNots($fid, $uid, $mid) {
 	global $xoopsDB;
-	$notification_handler =& xoops_gethandler('notification');
+	$notification_handler =& icms::handler('icms_data_notification');
 	$criteria = new criteriaCompo();
 	$criteria->add(new criteria('not_modid', $mid));
 	$criteria->add(new criteria('not_itemid', $fid));
