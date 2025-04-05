@@ -42,7 +42,7 @@ if (file_exists(XOOPS_ROOT_PATH . '/class/mail/phpmailer/class.phpmailer.php')) 
 $GLOBALS['formulize_asynchronousFormDataInDatabaseReadyFormat'] = array();
 $GLOBALS['formulize_asynchronousFormDataInAPIFormat'] = array();
 
-global $xoopsDB, $myts, $xoopsUser, $xoopsModule, $xoopsTpl, $xoopsConfig;
+global $xoopsDB, $myts, $xoopsUser, $xoopsTpl, $xoopsConfig;
 
 // load the formulize language constants if they haven't been loaded already
 	if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/main.php") ) {
@@ -103,7 +103,7 @@ $myts = icms_core_Textsanitizer::getInstance();
 $title = $myts->displayTarea($desc_form);
 if(!isset($formulize_screen_id)) {
   $xoopsTpl->assign('icms_pagetitle', $title);
-} 
+}
 
 // get the global or group permission
 $groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
@@ -149,15 +149,15 @@ if($sid) {
     }
 		
 	}
-} 
+}
 
 // check for $xoopsUser added by skenow.  Forces anons to only see the form itself and never the list of entries view.
-// Really, we should build in better permission/configuration control so that more precise 
+// Really, we should build in better permission/configuration control so that more precise
 // control over anon behaviour is possible
 
 // gather $_GET['ve'] (viewentry), or prefer a global value that has been set
 if(isset($formulize_entry_id) AND is_numeric($formulize_entry_id)) {
-  $entry = $formulize_entry_id;  
+  $entry = $formulize_entry_id;
 } elseif(isset($_GET['ve']) AND is_numeric($_GET['ve'])) {
 	$entry = $_GET['ve'];
 } else {
@@ -180,7 +180,7 @@ if($screen) {
 			displayForm($screen->getVar('fid'), "", "", "", "{NOBUTTON}");
 		}
 	} else {
-		$screen_handler->render($screen, $entry, $loadThisView);	
+		$screen_handler->render($screen, $entry, $loadThisView);
 	}
   $rendered = true;
 }

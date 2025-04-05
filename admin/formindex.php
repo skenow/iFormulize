@@ -67,7 +67,7 @@ if($op == "clonedata") { cloneFormulize($title, 1); }
 
 
 include_once XOOPS_ROOT_PATH . "/modules/formulize/class/forms.php"; // form class
-$module_id = $xoopsModule->getVar('mid'); // recupere le numero id du module
+$module_id = icms::$module->getVar('mid'); // recupere le numero id du module
 
 $n = 0;
 $m = 0;
@@ -503,9 +503,9 @@ function modform($fid)
 function lockform() {
 	
 	$gperm_handler = &icms::handler('icms_member_groupperm');
-	global $xoopsUser, $xoopsModule;
+	global $xoopsUser;
 	$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
-	$module_id = $xoopsModule->getVar('mid');
+	$module_id = icms::$module->getVar('mid');
 	if(!$gperm_handler->checkRight("delete_form", intval($_GET['title']), $groups, $module_id)) {
 		redirect_header("formindex.php",3,_NO_PERM);
 	}
@@ -521,15 +521,15 @@ function delform()
 {
 
 	$gperm_handler = &icms::handler('icms_member_groupperm');
-	global $xoopsUser, $xoopsModule;
+	global $xoopsUser;
 	$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
-	$module_id = $xoopsModule->getVar('mid');
+	$module_id = icms::$module->getVar('mid');
 	if(!$gperm_handler->checkRight("delete_form", intval($_GET['title']), $groups, $module_id)) {
 		redirect_header("formindex.php",3,_NO_PERM);
 	}
 
 	global $xoopsDB, $_POST, $myts, $eh, $title, $data;
-	$module_id = $xoopsModule->getVar('mid'); // module ID added by JWE 10/11/04
+	$module_id = icms::$module->getVar('mid'); // module ID added by JWE 10/11/04
 
 	//$title4 = $myts->makeTboxData4Save($_POST["desc_form4"]);
 	$sql=sprintf("SELECT id_form FROM ".$xoopsDB->prefix("formulize_id")." WHERE desc_form='%s'",$data[$title]);
@@ -901,7 +901,7 @@ function newpermform($group_list="", $form_list="")
 	// carry on with drawing of the permissions list, if groups and forms are specified
 	if(is_array($group_list) AND is_array($form_list) AND (isset($_POST['groupsubmit']) OR isset($_POST['apply']) OR isset($_POST['addcon']))) {
 
-		global $xoopsDB, $xoopsModule;
+		global $xoopsDB;
 
 		$formulize_perms = getFormulizePerms();
 			//description of permissions added July 28/05
@@ -929,7 +929,7 @@ function newpermform($group_list="", $form_list="")
 			$perm_desc[21] = "include_in_framework -- currently has no effect.";
 			$perm_desc[22] = "bypass_form_menu -- deprecated, currently has no effect.";
 
-		$module_id = $xoopsModule->getVar('mid');
+		$module_id = icms::$module->getVar('mid');
 
 		print "<h4>" . _formulize_MODPERM_TITLE . "</h4>";
 		print "<form action=\"formindex.php?op=permeditor\" name=\"permeditor\" method = \"post\">";
@@ -1077,9 +1077,9 @@ function updatePermsDB($mid, $gid, $fid, $perm, $add="") {
 
 function updateperms() {
 
-	global $xoopsDB, $xoopsModule;
+	global $xoopsDB;
 	$formulize_perms = getFormulizePerms();
-	$module_id = $xoopsModule->getVar('mid');
+	$module_id = icms::$module->getVar('mid');
 	$gperm_handler = &icms::handler('icms_member_groupperm');
 	$form_handler = icms_getModuleHandler('forms', 'formulize');
 

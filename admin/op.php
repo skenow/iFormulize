@@ -39,11 +39,11 @@ switch($_GET['op']) {
 function deleteForm($fid) {
 
   $gperm_handler = &icms::handler('icms_member_groupperm');
-	global $xoopsUser, $xoopsModule;
-  $module_id = $xoopsModule->getVar('mid'); 
+	global $xoopsUser;
+  $module_id = icms::$module->getVar('mid');
 	$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
 		if(!$gperm_handler->checkRight("delete_form", $fid, $groups, $module_id)) {
-		return; 
+		return;
 	}
 
 	global $xoopsDB, $myts, $eh;
@@ -61,7 +61,7 @@ function deleteForm($fid) {
 	$xoopsDB->queryF($sql) or $eh->show("error supression 3 dans delform");
 
 
-// PERMISSION DELETION NOT OPERATING PROPERLY RIGHT NOW	
+// PERMISSION DELETION NOT OPERATING PROPERLY RIGHT NOW
 /*	$perms = getFormulizePerms();
 	foreach($perms as $perm_name) {
 		xoops_groupperm_deletebymoditem ($module_id,$perm_name,$id_form) ;

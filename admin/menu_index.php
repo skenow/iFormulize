@@ -30,7 +30,7 @@ include_once("admin_header.php");
 include_once "../include/functions.php";
 
 function MyMenuAdmin($cat_id="") { // modified to accept passing of category names APRIL 25/05
-        global $xoopsDB, $xoopsConfig, $xoopsModule;
+        global $xoopsDB, $xoopsConfig;
         icms_cp_header();
         OpenTable();
 
@@ -111,7 +111,7 @@ function MyMenuAdmin($cat_id="") { // modified to accept passing of category nam
 
 // ADDED MENU CATEGORY UI -- April 25/05
 
-	// javascript to confirm deletion 
+	// javascript to confirm deletion
 
 	print "<script type='text/javascript'>\n";
 	print "	function confirmdel() {\n";
@@ -153,7 +153,7 @@ echo "</p></form></td></tr><tr><td valign=top>
 <form action='menu_index.php' method='post'>
 <input type='hidden' name='op' value='menuCatUpdate'>";
 
-// if cat_id is zero (ie: not set) then get the next cat 
+// if cat_id is zero (ie: not set) then get the next cat
 if($cat_id == 0) {
 	$cat_id_q = q("SELECT MAX(cat_id) FROM " . $xoopsDB->prefix("formulize_menu_cats"));
 	$cat_id = $cat_id_q[0]['MAX(cat_id)'];
@@ -209,10 +209,10 @@ echo "<input type='hidden' name='cat_id' value='$cat_id'>
 				foreach($positions as $id=>$thispos) {
 					drawRow($thiscat['cat_name'], $thispos['menuid']);
 					$foundForms[] = $thispos['menuid'];
-                		} 
+                		}
 			} // ENDS OF NEW LOOPING STRUCTURE TO SORT BY CATEGORY
 
-			// IF NO FORMS ARE FOUND, ADD A DUMMY ENTRY TO FOUNDFORMS	
+			// IF NO FORMS ARE FOUND, ADD A DUMMY ENTRY TO FOUNDFORMS
 			if(count($foundForms)==0) { $foundForms[0] = ""; }
 
 			// NOW GET LIST OF ALL FORMS(MENUIDS)
@@ -221,7 +221,7 @@ echo "<input type='hidden' name='cat_id' value='$cat_id'>
 			foreach($allMenuIds_q as $aMenuId) {
 				$allMenuIds[] = $aMenuId['menuid'];
 			}
-			$leftOverForms = array_diff($allMenuIds, $foundForms);			
+			$leftOverForms = array_diff($allMenuIds, $foundForms);
 			foreach($leftOverForms as $thisformid) {
 				drawRow(_AM_CATGENERAL, $thisformid);
 			}
@@ -259,7 +259,7 @@ function drawRow($thiscat, $thisformid) {
 }
 
 function MyMenuEdit($menuid) {
-        global $xoopsDB, $xoopsConfig, $xoopsModule;
+        global $xoopsDB, $xoopsConfig;
         icms_cp_header();
         $result = $xoopsDB->query("SELECT position, itemname, indent, margintop, marginbottom, itemurl, bold, membersonly, mainmenu, status FROM ".$xoopsDB->prefix("formulize_menu")." WHERE menuid=$menuid");
         list($xposition, $itemname, $indent, $margintop, $marginbottom, $itemurl, $bold, $membersonly, $mainmenu, $status) = $xoopsDB->fetchRow($result);
@@ -289,15 +289,15 @@ function MyMenuEdit($menuid) {
 			$catselected = 0;
 			foreach($cats as $catid=>$catname) {
 				$catoptions .= "<option value='$catid'";
-				if($catid == $curcat_id) { 
-					$catoptions .= " selected='selected'"; 
+				if($catid == $curcat_id) {
+					$catoptions .= " selected='selected'";
 					$catselected = 1;
 				}
 				$catoptions .= ">$catname</option>";
 			}
 			$catoptions .= "<option value='0'";
 			if($catselected == 0) {
-				$catoptions .= " selected='selected'"; 
+				$catoptions .= " selected='selected'";
 			}
 			$catoptions .= ">" . _AM_CATGENERAL . "</option>";
 			
@@ -353,7 +353,7 @@ function MyMenuSave($menuid, $xposition, $itemname, $indent, $margintop, $margin
 		// 2. add the menuid to the array
 		// 3. write the new array to the db
 
-		if($cat_id != $old_cat) { 
+		if($cat_id != $old_cat) {
 
 		// write to the new cat...
 		$flatarray = q("SELECT id_form_array FROM " . $xoopsDB->prefix("formulize_menu_cats") . " WHERE cat_id='$cat_id'");
@@ -397,7 +397,7 @@ function MyMenuAdd($xposition, $itemname, $indent, $margintop, $marginbottom, $i
 // FUNCTION ADDED TO HANDLE SAVING OF CATEGORY CHANGES
 function menuCatUpdate($cat_id, $cat_name, $new_cat="") {
 
-	global $xoopsDB;	
+	global $xoopsDB;
 
 	if($new_cat) { // if we're adding a new category...
 		q("INSERT INTO " .$xoopsDB->prefix("formulize_menu_cats") . " (cat_name, id_form_array) VALUES (\"$cat_name\", \",,\")");
@@ -409,7 +409,7 @@ function menuCatUpdate($cat_id, $cat_name, $new_cat="") {
 // jwe 09/03/05
 // this function commented since deleting a menu item here causes serious problems due to the lack of proper linkage between the form ids and menu ids (deleting a menu entry throws those ids out of sync).
 /*function MyMenuDel($menuid, $ok=0) {
-        global $xoopsDB, $xoopsConfig, $xoopsModule;
+        global $xoopsDB, $xoopsConfig;
         if ( $ok == 1 ) {
                 $xoopsDB->query("DELETE FROM ".$xoopsDB->prefix(formulize_menu)." WHERE menuid=$menuid");
                 redirect_header("menu_index.php?op=MyMenuAdmin",1,_AM_DBUPDATED);
@@ -496,15 +496,15 @@ switch($op) {
                 break;
 	  case "menuCatUpdate": //this case added April 25/05 to handle updates to the categories of the menu
 		    menuCatUpdate($cat_id, $cat_name, $new_cat);
-		    MyMenuAdmin();	
+		    MyMenuAdmin();
 		    break;
 	  case "menuCatEditDel": //this case added April 25/05 to handle updates to the categories of the menu
 		    if(isset($edit)) { MyMenuAdmin($cat_id); }
-		    if(isset($del)) { 
-			menuCatDel($cat_id); 
+		    if(isset($del)) {
+			menuCatDel($cat_id);
 			MyMenuAdmin();
 		    }
-		    break;		    
+		    break;
         default:
                 MyMenuAdmin();
                 break;

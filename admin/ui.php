@@ -37,7 +37,7 @@ include_once XOOPS_ROOT_PATH . "/modules/formulize/include/functions.php";
 global $xoopsTpl;
 
 if(!isset($xoopsTpl)) {
-	global $xoopsOption, $xoopsConfig, $xoopsModule;
+	global $xoopsOption, $xoopsConfig;
 
   $xoopsOption['theme_use_smarty'] = 1;
 
