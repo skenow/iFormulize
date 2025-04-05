@@ -66,11 +66,11 @@ function displayElement($formframe="", $ele, $entry="new", $noSave = false, $scr
 		$renderedElementName = $deprefix.$element->getVar('id_form').'_'.$entry.'_'.$element->getVar('ele_id');
 	}
 	
-	global $xoopsUser;
+	
   if(!$groups) { // groups might be passed in, which covers the case of the registration form and getting the groups from the registration code
-    $groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+    $groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
   }
-	$uid = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+	$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 	static $cachedEntryOwners = array();
 	if(!isset($cachedEntryOwners[$element->getVar('id_form')][$entry])) {
 		$cachedEntryOwners[$element->getVar('id_form')][$entry] = getEntryOwner($entry, $element->getVar('id_form'));

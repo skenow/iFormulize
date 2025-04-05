@@ -33,7 +33,7 @@
 
 require_once "../../../mainfile.php";
 
-global $xoopsConfig, $xoopsDB, $xoopsUser;
+global $xoopsConfig, $xoopsDB;
 
 
 // load the formulize language constants if they haven't been loaded already
@@ -54,7 +54,7 @@ if( !$fid = $_GET['fid'] ) {
 }
 $frid = "";
 if( !$frid = $_GET['frid'] ) {
-	$frid = intval($_POST['frid']);	
+	$frid = intval($_POST['frid']);
 }
 
 if( $_GET['advcalc_acid'] ) {
@@ -72,8 +72,8 @@ if(!$acid AND $_GET['acid']) {
 
 $gperm_handler = &icms::handler('icms_member_groupperm');
 $member_handler = &icms::handler('icms_member');
-$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
-$uid = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 
 if( !$scheck = security_check( $fid, "", $uid, "", $groups, $mid, $gperm_handler ) ) {
 	print "<p>" . _NO_PERM . "</p>";

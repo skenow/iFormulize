@@ -52,11 +52,11 @@ include_once XOOPS_ROOT_PATH.'/modules/formulize/include/functions.php';
 // viewPrefixs - array of text to prepend to the beginning of the viewHandles text when displaying an entry on the calendar (meant for situations like "Booking Deadline: September Conference")
 // hidden -- array of values to be put into hidden elements in the form (so they are preserved when the user changes months)
 // $scopes - array of the scopes to use when querying for the data to display in the calendar.  Valid values are: mine, group, all, or list of group ids formatted with starting and ending commas, plus commas in between, ie: ,1,3,
-// $type - the kind of calendar to display, ie: month, week, year...??  
+// $type - the kind of calendar to display, ie: month, week, year...??
 // $start - the starting view for the calendar.  if a month, this is the year and month, ie: 2005-07.  (not sure what else it could/should be, only supporting month views to start with.)
 //
 // The idea behind all these arrays is that you can hook up your calendar to multiple sets of data.
-// So, key 0 in each array represents all the settings for that set of data.  
+// So, key 0 in each array represents all the settings for that set of data.
 // key 1 and key 2 and so on in each array, represent other sets of data.
 // ie: formframes[2] and viewHandles[2]...that's the form or framework used for dataset 2, and the handle for the element in that dataset which should be displayed on the calendar.
 // Note about scopes: scopes must be converted to the format described for the $scope param for the getData function
@@ -65,7 +65,7 @@ function displayCalendar($formframes, $mainforms="", $viewHandles, $dateHandles,
 
 
 
-	global $xoopsDB, $xoopsUser;
+	global $xoopsDB;
 
     global $xoopsTpl;
 
@@ -86,8 +86,8 @@ function displayCalendar($formframes, $mainforms="", $viewHandles, $dateHandles,
 
 	$gperm_handler = &icms::handler('icms_member_groupperm');
 	$member_handler =& icms::handler('icms_member');
-	$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
-	$uid = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+	$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+	$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 
 
 	foreach($fids as $thisFid) { // check that the user is allowed to see all the fids
@@ -95,7 +95,7 @@ function displayCalendar($formframes, $mainforms="", $viewHandles, $dateHandles,
 			print "<p>" . _NO_PERM . "</p>";
 			return;
 		}
-	}                  
+	}
 
 	$currentURL = getCurrentURL();
 
@@ -138,7 +138,7 @@ function displayCalendar($formframes, $mainforms="", $viewHandles, $dateHandles,
 				include_once XOOPS_ROOT_PATH . "/modules/formulize/include/formdisplaypages.php";
 				displayFormPages($_POST['calfrid'], $this_ent, $_POST['calfid'], $multiPageData[$_POST['calfid']]['pages'], $multiPageData[$_POST['calfid']]['conditions'], $multiPageData[$_POST['calfid']]['introtext'], $multiPageData[$_POST['calfid']]['thankstext'], $currentURL, _formulize_CAL_RETURNFROMMULTI, $settings, $dateOverride, $multiPageData[$_POST['calfid']]['printall']);
 			} else {
-				displayForm($_POST['calfrid'], $this_ent, $_POST['calfid'], $currentURL, "", $settings, "", $dateOverride, 1, 1); // first "" is the done text, second is the onetoonetitles, last two 1s are the overrides for multi form behaviour 
+				displayForm($_POST['calfrid'], $this_ent, $_POST['calfid'], $currentURL, "", $settings, "", $dateOverride, 1, 1); // first "" is the done text, second is the onetoonetitles, last two 1s are the overrides for multi form behaviour
 			}
 			return;
 		} else {
@@ -229,19 +229,19 @@ function displayCalendar($formframes, $mainforms="", $viewHandles, $dateHandles,
 	global $arrayWeekNames;
 	global $dateMonthStartDay;
 
-	$arrayMonthNames = array(_formulize_CAL_MONTH_01, _formulize_CAL_MONTH_02, _formulize_CAL_MONTH_03, _formulize_CAL_MONTH_04, _formulize_CAL_MONTH_05, _formulize_CAL_MONTH_06, _formulize_CAL_MONTH_07, _formulize_CAL_MONTH_08, _formulize_CAL_MONTH_09, _formulize_CAL_MONTH_10, _formulize_CAL_MONTH_11, _formulize_CAL_MONTH_12); 
+	$arrayMonthNames = array(_formulize_CAL_MONTH_01, _formulize_CAL_MONTH_02, _formulize_CAL_MONTH_03, _formulize_CAL_MONTH_04, _formulize_CAL_MONTH_05, _formulize_CAL_MONTH_06, _formulize_CAL_MONTH_07, _formulize_CAL_MONTH_08, _formulize_CAL_MONTH_09, _formulize_CAL_MONTH_10, _formulize_CAL_MONTH_11, _formulize_CAL_MONTH_12);
 	if($type == "mini_month")
-    {    
+    {
 		$arrayWeekNames = array(_formulize_CAL_WEEK_1_3ABRV, _formulize_CAL_WEEK_2_3ABRV, _formulize_CAL_WEEK_3_3ABRV, _formulize_CAL_WEEK_4_3ABRV, _formulize_CAL_WEEK_5_3ABRV, _formulize_CAL_WEEK_6_3ABRV, _formulize_CAL_WEEK_7_3ABRV);
 	}
     else
-    {    
+    {
 	$arrayWeekNames = array(_formulize_CAL_WEEK_1, _formulize_CAL_WEEK_2, _formulize_CAL_WEEK_3, _formulize_CAL_WEEK_4, _formulize_CAL_WEEK_5, _formulize_CAL_WEEK_6, _formulize_CAL_WEEK_7);
 	}
 
-	// convert string date into parts 
+	// convert string date into parts
 	$arrayDate = getdate(strtotime($settings['calview'] . "-01"));
-	$dateMonth = $arrayDate["mon"]; 
+	$dateMonth = $arrayDate["mon"];
 	$dateDay = $arrayDate["mday"];
 	$dateYear = $arrayDate["year"];
 
@@ -249,7 +249,7 @@ function displayCalendar($formframes, $mainforms="", $viewHandles, $dateHandles,
 	$dateMonthDays = days_in_month($dateMonth, $dateYear);
 
 	// get the month's first week start day.
-	$dateMonthStartDay = $arrayDate["wday"]; 
+	$dateMonthStartDay = $arrayDate["wday"];
 
     // get the number of weeks.
     $dateMonthWeeks = week_in_month($dateMonthDays) + 1;
@@ -271,8 +271,8 @@ function displayCalendar($formframes, $mainforms="", $viewHandles, $dateHandles,
 	if($type == "month"
 		|| $type == "mini_month"
 		|| $type == "micro_month")
-    {    
-	    // initialize grid: convert the data set into a grid of 7 columns for  
+    {
+	    // initialize grid: convert the data set into a grid of 7 columns for
 	    //  days and a row for each week
 	    $displayDay = "";
 	    for($intWeeks = 0; $intWeeks < $dateMonthWeeks; $intWeeks++)
@@ -286,7 +286,7 @@ function displayCalendar($formframes, $mainforms="", $viewHandles, $dateHandles,
 	            {
 	                if($intDays == $dateMonthStartDay)
 	                {
-	                    $displayDay = 1; 
+	                    $displayDay = 1;
 	                }
 	            }
 	            else
@@ -307,7 +307,7 @@ function displayCalendar($formframes, $mainforms="", $viewHandles, $dateHandles,
 	            $calendarData[$intWeeks][$intDays][0][1] = $dateYear . "-" . $dateMonth . "-" . (($displayDay < 10) ? "0" . $displayDay : $displayDay);
 	            //$calendarData[$intWeeks][$intDays][1] = array();
 	        }
-	    }    
+	    }
 
 		// Initialize template variables
 	    $xoopsTpl->assign('previousMonth', ((($dateMonth - 1) < 1) ? ($dateYear - 1) . "-12" : $dateYear . "-" . ((($dateMonth - 1) < 10) ? "0" . ($dateMonth - 1) : ($dateMonth - 1))));
@@ -318,7 +318,7 @@ function displayCalendar($formframes, $mainforms="", $viewHandles, $dateHandles,
 	    for($intMonth = 0; $intMonth < $numberOfMonths; $intMonth++)
 	    {
 	        $monthName = $arrayMonthNames[$intMonth];
-	        $monthSelector[((($intMonth + 1) < 10) ? "0" . ($intMonth + 1) : ($intMonth + 1))] = $monthName; 
+	        $monthSelector[((($intMonth + 1) < 10) ? "0" . ($intMonth + 1) : ($intMonth + 1))] = $monthName;
 	    }
 	    $xoopsTpl->assign('monthSelector', $monthSelector);
 
@@ -327,7 +327,7 @@ function displayCalendar($formframes, $mainforms="", $viewHandles, $dateHandles,
 	    $endYear = $dateYear + 3;
 	    for($intYear = $startYear; $intYear <= $endYear; $intYear++)
 	    {
-	        $yearSelector[] = $intYear;    
+	        $yearSelector[] = $intYear;
 	    }
 	    $xoopsTpl->assign('yearSelector', $yearSelector);
 	}
@@ -375,7 +375,7 @@ function displayCalendar($formframes, $mainforms="", $viewHandles, $dateHandles,
 		}
 		if($viewPrefixes[$i]) {
 	            $textToDisplay = $viewPrefixes[$i] . $textToDisplay;
-	      } 
+	      }
 
             $calendarDataItem = array();
             $calendarDataItem[0] = $ids[0];
@@ -388,13 +388,13 @@ function displayCalendar($formframes, $mainforms="", $viewHandles, $dateHandles,
 			$calendarDataItem[4] = false;
 		}
 
-            // Layout	
+            // Layout
 
 	        if($type == "month"
 	        	|| $type == "mini_month"
 	        	|| $type == "micro_month")
-	        {    
-	            if(is_array($dateHandles[$i])) 
+	        {
+	            if(is_array($dateHandles[$i]))
                 {
 	                $startValue = display($entry, $dateHandles[$i][0]);
 	                $endValue = display($entry, $dateHandles[$i][1]);
@@ -405,7 +405,7 @@ function displayCalendar($formframes, $mainforms="", $viewHandles, $dateHandles,
                         
                         $startDate = strtotime($startValue);
                         $endDate = strtotime($endValue);
-                        for($x=$startDate;$x<=$endDate;$x=$x+86400) 
+                        for($x=$startDate;$x<=$endDate;$x=$x+86400)
                         {
 	                        $arrayDate = getdate($x);
                             if($arrayDate["mon"] == $dateMonth)
@@ -430,8 +430,8 @@ function displayCalendar($formframes, $mainforms="", $viewHandles, $dateHandles,
 	                    $arrayDate = getdate($endDate);
 	                    $calendarData = assignItem($arrayDate, $calendarDataItem, $calendarData);
                     }
-	            } 
-                else 
+	            }
+                else
                 {
 	                $currentDate = display($entry, $dateHandles[$i]);
 	                $arrayDate = getdate(strtotime($currentDate));
@@ -439,19 +439,19 @@ function displayCalendar($formframes, $mainforms="", $viewHandles, $dateHandles,
 	            }
 	        }
 
-			// Layout	
+			// Layout
 		}
 	}
 
     
-	// Layout	
+	// Layout
 
     // Initialize common template variables
 	$xoopsTpl->assign('cal_type', $type);
 
-	$xoopsTpl->assign('rights', $rights);    
-	$xoopsTpl->assign('frids', $frids[0]);    
-	$xoopsTpl->assign('fids', $fids[0]);    
+	$xoopsTpl->assign('rights', $rights);
+	$xoopsTpl->assign('frids', $frids[0]);
+	$xoopsTpl->assign('fids', $fids[0]);
 
 	$xoopsTpl->assign('addItem', _formulize_CAL_ADD_ITEM);
 
@@ -496,21 +496,21 @@ function assignItem($arrayDate, $calendarDataItem, $calendarData) {
 
 
 
-/* 
- * days_in_month($month, $year) 
- * Returns the number of days in a given month and year, taking into account leap years. 
- * 
- * $month: numeric month (integers 1-12) 
- * $year: numeric year (any integer) 
- * 
- * Prec: $month is an integer between 1 and 12, inclusive, and $year is an integer. 
- * Post: none 
- */ 
-// corrected by ben at sparkyb dot net 
-function days_in_month($month, $year) 
-{ 
-	// calculate number of days in a month 
-	return $month == 2 ? ($year % 4 ? 28 : ($year % 100 ? 29 : ($year % 400 ? 28 : 29))) : (($month - 1) % 7 % 2 ? 30 : 31); 
+/*
+ * days_in_month($month, $year)
+ * Returns the number of days in a given month and year, taking into account leap years.
+ *
+ * $month: numeric month (integers 1-12)
+ * $year: numeric year (any integer)
+ *
+ * Prec: $month is an integer between 1 and 12, inclusive, and $year is an integer.
+ * Post: none
+ */
+// corrected by ben at sparkyb dot net
+function days_in_month($month, $year)
+{
+	// calculate number of days in a month
+	return $month == 2 ? ($year % 4 ? 28 : ($year % 100 ? 29 : ($year % 400 ? 28 : 29))) : (($month - 1) % 7 % 2 ? 30 : 31);
 }
 
 
@@ -523,7 +523,7 @@ function week_in_month($day)
 
     //echo "<br>" . $dateMonthStartDay . "::" . $value . "<br>";
     
-    return $value;    
+    return $value;
 }
 
 
@@ -552,7 +552,7 @@ function readScreenId($id, $fid) {
 		$pages = $screen->getVar('pages');
 		$pagetitles = $screen->getVar('pagetitles');
 		array_unshift($pages, ""); // displayFormPages looks for the page array to start with [1] and not [0], for readability when manually using the API.
-		array_unshift($pagetitles, ""); 
+		array_unshift($pagetitles, "");
 		$pages['titles'] = $pagetitles;
 		unset($pages[0]); // get rid of the part we just unshifted, so the page count is correct
 		foreach($screen->getVar('conditions') as $pageid=>$condata) {

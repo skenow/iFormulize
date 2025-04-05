@@ -257,7 +257,7 @@ if($_GET['fid'] != "new") {
   if($_GET['aid']) {
 	$formApplications = array(intval($_GET['aid']));
   }
-  $groupsCanEditDefaults = $xoopsUser->getGroups();
+  $groupsCanEditDefaults = icms::$user->getGroups();
   $member_handler = icms::handler('icms_member');
   $allGroups = $member_handler->getGroups();
   foreach($allGroups as $thisGroup) {

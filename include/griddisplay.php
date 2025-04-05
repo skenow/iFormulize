@@ -67,7 +67,7 @@ function displayGrid($fid, $entry="", $rowcaps, $colcaps, $title="", $orientatio
 	include_once XOOPS_ROOT_PATH.'/modules/formulize/include/functions.php';
 	include_once XOOPS_ROOT_PATH.'/modules/formulize/include/elementdisplay.php';
 	include_once XOOPS_ROOT_PATH.'/modules/formulize/class/data.php';
-	global $xoopsUser, $xoopsDB;
+	global $xoopsDB;
 	$numcols = count($colcaps);
 	if(is_array($finalCell)) {
 		$numcols = $numcols+2;
@@ -81,15 +81,15 @@ function displayGrid($fid, $entry="", $rowcaps, $colcaps, $title="", $orientatio
 		$title = trans($title);
 	}
 	$currentURL = getCurrentURL();
-	$uid = $xoopsUser ? $xoopsUser->getVar('uid') : '0';
+	$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : '0';
 	$mid = getFormulizeModId();
 	$gperm_handler =& icms::handler('icms_member_groupperm');
-	$owner = getEntryOwner($entry, $fid); 
+	$owner = getEntryOwner($entry, $fid);
 	$member_handler =& icms::handler('icms_member');
 	//$owner_groups = $owner ? $member_handler->getGroupsByUser($owner, FALSE) : array(0=>XOOPS_GROUP_ANONYMOUS);
 	$data_handler = new formulizeDataHandler($fid);
 	$owner_groups = $owner ? $data_handler->getEntryOwnerGroups($entry) : array(0=>XOOPS_GROUP_ANONYMOUS);
-	$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+	$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
 
 	if(!$calledInternal) {
 		if(!$scheck = security_check($fid, $entry, $uid, $owner, $groups, $mid, $gperm_handler)) {
@@ -104,12 +104,12 @@ function displayGrid($fid, $entry="", $rowcaps, $colcaps, $title="", $orientatio
 	if($single AND !$entry) { $entry = $single_result['entry']; }
 	if(!$entry) { $entry = "new"; }
 	// figure out where we are supposed to start in the form
-	if(!is_numeric($startID) AND $startID !== "first") { 
-		$order_query = q("SELECT ele_order FROM " . $xoopsDB->prefix("formulize") . " WHERE ele_caption = \"$startID\" AND id_form=\"$fid\""); 
+	if(!is_numeric($startID) AND $startID !== "first") {
+		$order_query = q("SELECT ele_order FROM " . $xoopsDB->prefix("formulize") . " WHERE ele_caption = \"$startID\" AND id_form=\"$fid\"");
 	} elseif($startID === "first") { // get the ele_id of the element with the lowest weight
-		$order_query = q("SELECT ele_order FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form=\"$fid\" ORDER BY ele_order LIMIT 0,1"); 
+		$order_query = q("SELECT ele_order FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form=\"$fid\" ORDER BY ele_order LIMIT 0,1");
 	} else {
-		$order_query = q("SELECT ele_order FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form=\"$fid\" AND ele_id =\"$startID\""); 
+		$order_query = q("SELECT ele_order FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form=\"$fid\" AND ele_id =\"$startID\"");
 	}
 	$starting_order = $order_query[0]['ele_order'];
 	// gather the element IDs that are to be displayed, in order (include to the end of the form, whereas we actually only will display until we run out of cells)
@@ -145,7 +145,7 @@ function displayGrid($fid, $entry="", $rowcaps, $colcaps, $title="", $orientatio
 			} elseif($orientation == "vertical") {
 				$class = "even";
 			}
-			print "<td class=$class>$thiscap</td>\n";	
+			print "<td class=$class>$thiscap</td>\n";
 		}
 	}
 	if(is_array($finalCell)) { // draw blank header for last column if there is such a thing
@@ -177,16 +177,16 @@ function displayGrid($fid, $entry="", $rowcaps, $colcaps, $title="", $orientatio
 				$class = "odd";
 			} elseif($orientation == "vertical") {
 				$class = "even";
-			}	
+			}
 			print "<td class=$class>\n";
 			// display the element starting with the initial one.  Keep trying to display something until we're successful (displaying the element might fail if the user does not have permission to view (based on which groups are allowed to view this element)
 			$rendered = "start";
 			while(($rendered != "rendered" AND $rendered != "rendered-disabled") AND isset($element_ids_query[$ele_index])) {
-				$rendered = displayElement("", $element_ids_query[$ele_index]['ele_id'], $entry, false, $screen); 
+				$rendered = displayElement("", $element_ids_query[$ele_index]['ele_id'], $entry, false, $screen);
 				$ele_index++;
 			}
-			if($rendered != "rendered" AND $rendered != "rendered-disabled") { print "&nbsp;"; }					
-			print "</td>\n";	
+			if($rendered != "rendered" AND $rendered != "rendered-disabled") { print "&nbsp;"; }
+			print "</td>\n";
 		}
 		if(is_array($finalCell)) { // draw final cell values if they exist
 			if($orientation == "vertical") {

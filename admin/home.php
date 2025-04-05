@@ -49,8 +49,8 @@ $breadcrumbtrail[1]['text'] = "Home";
 
 function readApplicationData($aid, $apps) {
   static $i = 1;
-  global $form_handler, $application_handler, $gperm_handler, $screen_handler, $xoopsUser;
-  $groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+  global $form_handler, $application_handler, $gperm_handler, $screen_handler;
+  $groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
   if($aid == 0) {
     $apps[$i]['name'] = _AM_APP_FORMWITHNOAPP;
     $apps[$i]['content']['description'] = "";

@@ -35,7 +35,7 @@ if(!isset($processedValues)) {
 }
 
 // if deletion requested and the user has permission for that
-if(isset($_POST['deleteform']) AND $_POST['deleteform'] > 0 AND $gperm_handler->checkRight("delete_form", intval($_POST['deleteform']), $xoopsUser->getGroups(), getFormulizeModId())) {
+if(isset($_POST['deleteform']) AND $_POST['deleteform'] > 0 AND $gperm_handler->checkRight("delete_form", intval($_POST['deleteform']), icms::$user->getGroups(), getFormulizeModId())) {
   $form_handler = icms_getModuleHandler('forms', 'formulize');
   $formObject = $form_handler->get($_POST['deleteform']);
   if(!$formObject->getVar('lockedform')) {
@@ -54,7 +54,7 @@ if((isset($_POST['cloneform']) AND $_POST['cloneform'] > 0) OR (isset($_POST['cl
   print "/* evalnow */ reloadWithScrollPosition()";
 }
 
-if(isset($_POST['lockdown']) AND $_POST['lockdown'] > 0 AND $gperm_handler->checkRight("delete_form", intval($_POST['lockdown']), $xoopsUser->getGroups(), getFormulizeModId())) {
+if(isset($_POST['lockdown']) AND $_POST['lockdown'] > 0 AND $gperm_handler->checkRight("delete_form", intval($_POST['lockdown']), icms::$user->getGroups(), getFormulizeModId())) {
  	$form_handler = icms_getModuleHandler('forms', 'formulize');
   $formObject = $form_handler->get($_POST['lockdown']);
   if(!$formObject->getVar('lockedform')) {

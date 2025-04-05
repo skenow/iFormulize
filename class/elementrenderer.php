@@ -48,7 +48,7 @@ class formulizeElementRenderer{
 		if (strstr(getCurrentURL(),"printview.php")) {
 			$isDisabled = true; // disabled all elements if we're on the printable view
 		}
-		global $xoopsUser, $xoopsModuleConfig, $separ, $myts;
+		global $xoopsModuleConfig, $separ, $myts;
 		$myts = icms_core_Textsanitizer::getInstance();
 		
 		
@@ -101,7 +101,7 @@ class formulizeElementRenderer{
 		if($entry != "new") {
 					$owner = getEntryOwner($entry, $id_form);
 		} else {
-					$owner = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+					$owner = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 		}
 
 		// setup the previous entry UI if necessary -- this is an option that can be specified for certain screens
@@ -248,7 +248,7 @@ class formulizeElementRenderer{
 						$groups[] = XOOPS_GROUP_USERS;
 						$groups[] = XOOPS_GROUP_ANONYMOUS;
 					} else {
-						$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+						$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
 					}
 					$module_id = getFormulizeModId();
 					
@@ -492,8 +492,8 @@ class formulizeElementRenderer{
 									$groups[] = XOOPS_GROUP_USERS;
 									$groups[] = XOOPS_GROUP_ANONYMOUS;
 								} else {
-									global $xoopsUser;
-									$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+									
+									$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
 								}
 							}
 							$pgroups = array();
@@ -1061,11 +1061,11 @@ class formulizeElementRenderer{
 	// groups is the list of groups we're using as the membership scope in this case (probably the user's groups, but might not be)
 	function addEntryRestrictionSQL($uniquenessFlag, $id_form, $groups) {
 		$sql = "";
-		global $xoopsUser;
+		
 		switch($uniquenessFlag) {
 			case 2:
 				$sql .= " AND t4.`creation_uid` = ";
-				$sql .= $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+				$sql .= is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 				break;
 			case 3:
 				$gperm_handler =& icms::handler('icms_member_groupperm');
@@ -1235,8 +1235,8 @@ class formulizeElementRenderer{
 		static $cachedEntries = array();
 		if(!isset($cachedEntries[$screen->getVar('sid')])) {
 			// identify the entry belonging to this user's group(s) in the other form.  Currently only group correspondence is supported.
-			global $xoopsUser;
-			$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+			
+			$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
 			$member_handler =& icms::handler('icms_member');
 			$gperm_handler =& icms::handler('icms_member_groupperm');
 			$mid = getFormulizeModId();

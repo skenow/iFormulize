@@ -141,7 +141,7 @@ global $xoopsConfig, $xoopsDB;
 	}
 
 
-global $xoopsDB, $xoopsUser;
+global $xoopsDB;
 include_once XOOPS_ROOT_PATH.'/modules/formulize/include/functions.php';
 
 	// Set some required variables
@@ -157,8 +157,8 @@ include_once XOOPS_ROOT_PATH.'/modules/formulize/include/functions.php';
 
 	$gperm_handler = &icms::handler('icms_member_groupperm');
 	$member_handler =& icms::handler('icms_member');
-	$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
-	$uid = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+	$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+	$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 
 
 	if(!$scheck = security_check($fid, "", $uid, "", $groups, $mid, $gperm_handler)) {

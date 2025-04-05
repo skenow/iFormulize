@@ -42,7 +42,7 @@ if (file_exists(XOOPS_ROOT_PATH . '/class/mail/phpmailer/class.phpmailer.php')) 
 $GLOBALS['formulize_asynchronousFormDataInDatabaseReadyFormat'] = array();
 $GLOBALS['formulize_asynchronousFormDataInAPIFormat'] = array();
 
-global $xoopsDB, $myts, $xoopsUser, $xoopsTpl, $xoopsConfig;
+global $xoopsDB, $myts, $xoopsTpl, $xoopsConfig;
 
 // load the formulize language constants if they haven't been loaded already
 	if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/main.php") ) {
@@ -106,8 +106,8 @@ if(!isset($formulize_screen_id)) {
 }
 
 // get the global or group permission
-$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
-$uid = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 $mid = getFormulizeModId();
 $gperm_handler =& icms::handler('icms_member_groupperm');
 $view_globalscope = $gperm_handler->checkRight("view_globalscope", $fid, $groups, $mid);
@@ -151,7 +151,7 @@ if($sid) {
 	}
 }
 
-// check for $xoopsUser added by skenow.  Forces anons to only see the form itself and never the list of entries view.
+// check for icms::$user added by skenow.  Forces anons to only see the form itself and never the list of entries view.
 // Really, we should build in better permission/configuration control so that more precise
 // control over anon behaviour is possible
 
@@ -198,7 +198,7 @@ if(!$rendered) {
       if(isset($frid) AND is_numeric($frid) AND isset($fid) AND is_numeric($fid)) {
 	// this will only be included once, but we need to do it after the fid and frid for the current page load have been determined!!
 	include_once XOOPS_ROOT_PATH . "/modules/formulize/include/readelements.php";
-     	if(((!$singleentry AND $xoopsUser) OR $view_globalscope OR ($view_groupscope AND $singleentry != "group")) AND !$entry AND (!isset($_GET['iform']) OR $_GET['iform'] != "e") AND !isset($_GET['showform'])) { // if it's multientry and there's a xoopsUser, or the user has globalscope, or the user has groupscope and it's not a one-per-group form, and after all that, no entry has been requested, then show the list (note that anonymous users default to the form view...to provide them lists of their own entries....well you can't, but groupscope and globalscope will show them all entries by anons or by everyone) ..... unless there is an override in the URL that is meant to force the form itself to display .... iform is "interactive form", devised by Feratech.
+	if(((!$singleentry AND is_object(icms::$user)) OR $view_globalscope OR ($view_groupscope AND $singleentry != "group")) AND !$entry AND (!isset($_GET['iform']) OR $_GET['iform'] != "e") AND !isset($_GET['showform'])) { // if it's multientry and there's a xoopsUser, or the user has globalscope, or the user has groupscope and it's not a one-per-group form, and after all that, no entry has been requested, then show the list (note that anonymous users default to the form view...to provide them lists of their own entries....well you can't, but groupscope and globalscope will show them all entries by anons or by everyone) ..... unless there is an override in the URL that is meant to force the form itself to display .... iform is "interactive form", devised by Feratech.
 					include_once XOOPS_ROOT_PATH . "/modules/formulize/include/entriesdisplay.php";
 					displayEntries($frid, $fid); // if it's a multi, or if a single and they have group or global scope
       	} else { // otherwise, show the form
@@ -210,7 +210,7 @@ if(!$rendered) {
 				$formObject = $form_handler->get($fid);
 				$defaultFormScreen = $formObject->getVar('defaultform');
 				$defaultListScreen = $formObject->getVar('defaultlist');
-      	if(((!$singleentry AND $xoopsUser) OR $view_globalscope OR ($view_groupscope AND $singleentry != "group")) AND !$entry AND (!isset($_GET['iform']) OR $_GET['iform'] != "e") AND !isset($_GET['showform'])) { // if it's multientry and there's a xoopsUser, or the user has globalscope, or the user has groupscope and it's not a one-per-group form, and after all that, no entry has been requested, then show the list (note that anonymous users default to the form view...to provide them lists of their own entries....well you can't, but groupscope and globalscope will show them all entries by anons or by everyone) ..... unless there is an override in the URL that is meant to force the form itself to display .... iform is "interactive form", devised by Feratech.
+				if(((!$singleentry AND is_object(icms::$user)) OR $view_globalscope OR ($view_groupscope AND $singleentry != "group")) AND !$entry AND (!isset($_GET['iform']) OR $_GET['iform'] != "e") AND !isset($_GET['showform'])) { // if it's multientry and there's a xoopsUser, or the user has globalscope, or the user has groupscope and it's not a one-per-group form, and after all that, no entry has been requested, then show the list (note that anonymous users default to the form view...to provide them lists of their own entries....well you can't, but groupscope and globalscope will show them all entries by anons or by everyone) ..... unless there is an override in the URL that is meant to force the form itself to display .... iform is "interactive form", devised by Feratech.
 					if($defaultListScreen AND !$formulize_masterUIOverride) {
 					  $basescreenObject = $screen_handler->get($defaultListScreen);
 						$finalscreen_handler = icms_getModuleHandler($basescreenObject->getVar('type').'Screen', 'formulize');

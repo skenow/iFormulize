@@ -36,8 +36,8 @@ require_once XOOPS_ROOT_PATH . "/modules/formulize/include/functions.php";
 // check permission on the fid, and if user has edit_form permission, then set the master override flag
 // then either way, carry on with normal rendering of the form
 
-$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
-$uid = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 $mid = getFormulizeModId();
 $gperm_handler = icms::handler('icms_member_groupperm');
 if($gperm_handler->checkRight("edit_form", $fid, $groups, $mid)) {

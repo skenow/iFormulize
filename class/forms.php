@@ -757,10 +757,10 @@ class formulizeFormsHandler {
 			return "";
 		}
 
-		global $xoopsUser;
-		$uid = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+		
+		$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 		if (!is_array($groupids)) {
-			$groupids = $xoopsUser ? $xoopsUser->getGroups() : array(0 => XOOPS_GROUP_ANONYMOUS);
+			$groupids = is_object(icms::$user) ? icms::$user->getGroups() : array(0 => XOOPS_GROUP_ANONYMOUS);
 		}
 
 		if ($formAlias) {

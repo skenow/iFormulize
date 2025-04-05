@@ -66,11 +66,11 @@ function displayFormPages($formframe, $entry="", $mainform="", $pages, $conditio
 	$thankstext = $thankstext ? $thankstext : _formulize_DMULTI_THANKS; 
 	$introtext = $introtext ? $introtext : "";
 	
-	global $xoopsUser;
+	
 	
 	$mid = getFormulizeModId();
-	$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
-	$uid = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+	$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+	$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 	$gperm_handler =& icms::handler('icms_member_groupperm');
 	$member_handler =& icms::handler('icms_member');
 	$update_own_entry = $gperm_handler->checkRight("update_own_entry", $fid, $groups, $mid);

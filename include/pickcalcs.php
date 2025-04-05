@@ -256,7 +256,7 @@ global $xoopsConfig;
 	}
 
 
-global $xoopsDB, $xoopsUser;
+global $xoopsDB;
 include_once XOOPS_ROOT_PATH.'/modules/formulize/include/functions.php';
 
 	// Set some required variables
@@ -272,8 +272,8 @@ include_once XOOPS_ROOT_PATH.'/modules/formulize/include/functions.php';
 
 	$gperm_handler = &icms::handler('icms_member_groupperm');
 	$member_handler =& icms::handler('icms_member');
-	$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
-	$uid = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+	$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+	$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 
 
 	if(!$scheck = security_check($fid, "", $uid, "", $groups, $mid, $gperm_handler)) {
@@ -351,8 +351,8 @@ $returned = addReqdCalcs($pickcalc);
 $pickcalc = $returned['form'];
 
 // add note for module admins to remind them of the need to set types properly for some calculations to work
-if($xoopsUser) {
-	if($gperm_handler->checkRight("module_admin", getFormulizeModId(), $xoopsUser->getGroups(), 1)) {
+if(is_object(icms::$user)) {
+	if($gperm_handler->checkRight("module_admin", getFormulizeModId(), icms::$user->getGroups(), 1)) {
 		$pickcalc->insertBreak("<div style=\"font-weight: normal;\">" . _formulize_DE_CALC_NEEDDATATYPES1 . "<a href=\"".XOOPS_URL."/modules/formulize/admin/index.php?title=$fid\" target=\"_blank\">"._formulize_DE_CALC_NEEDDATATYPES2."</a></div>", "head"); // add note for module admins to remind them to set types properly for calculations to work
 	}
 }

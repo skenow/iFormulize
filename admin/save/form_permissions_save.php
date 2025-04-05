@@ -43,7 +43,7 @@ if($formObject->getVar('lockedform')) {
 }
 
 // If the user doesn't have edit form permission, then do nothing
-if(!$gperm_handler->checkRight("edit_form", $fid, $xoopsUser->getGroups(), getFormulizeModId())) {
+if(!$gperm_handler->checkRight("edit_form", $fid, icms::$user->getGroups(), getFormulizeModId())) {
   return;
 }
 

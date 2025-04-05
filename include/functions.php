@@ -223,8 +223,8 @@ function groupNameList($list, $obeyMemberOnlyFlag = true) {
 	$grouplist = explode(",", trim($list, ","));
   if($grouplist[0] == "onlymembergroups") { // first group might be a special key to tell us to limit the selected groups
     unset($grouplist[0]);
-    global $xoopsUser;
-    $groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+    
+    $groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
   } else {
     $obeyMemberOnlyFlag = false; // no memberonly flag in effect, so we can ignore this operation later on
   }
@@ -347,8 +347,8 @@ function security_check($fid, $entry="", $uid="", $owner="", $groups="", $mid=""
 	if($entry == "proxy") { $entry=""; }
 
 	if(!$groups) { // if no groups specified, use current user
-		global $xoopsUser;
-		$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+		
+		$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
 	}
 
 	if(!$mid) { // if no mid specified, set it
@@ -364,8 +364,8 @@ function security_check($fid, $entry="", $uid="", $owner="", $groups="", $mid=""
 	}
 	
 	if(!$uid) {
-		global $xoopsUser;
-		$uid = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+		
+		$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 	}
 	
 	if(!$owner) {
@@ -715,13 +715,13 @@ function allowedCats($cats, $allowedForms) {
 // THIS FUNCTION RETURNS THE FORMS THE USER IS ALLOWED TO VIEW
 function allowedForms() {
 
-	global $xoopsUser, $xoopsDB;
+	global $xoopsDB;
 
 	// GET THE MODULE ID
         $module_id = getFormulizeModId();
 
 	// GET THE FORMS THE USER IS ALLOWED TO VIEW
-	$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+	$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
 	$gperm_handler = &icms::handler('icms_member_groupperm');
 	$allowedForms = $gperm_handler->getItemIds("view_form", $groups, $module_id);
 
@@ -1428,7 +1428,7 @@ function getMetaData($entry, $member_handler, $fid="", $useOldCode=false) {
 
 function getAllColList($fid, $frid="", $groups="", $includeBreaks=false) {
 
-	global $xoopsDB, $xoopsUser;
+	global $xoopsDB;
 	$gperm_handler = &icms::handler('icms_member_groupperm');
 	$mid = getFormulizeModId();
 
@@ -1444,7 +1444,7 @@ function getAllColList($fid, $frid="", $groups="", $includeBreaks=false) {
 	}
 
 	// reset groups to be based off user object (and this instantiates it if it weren't present before)
-	$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+	$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
 
 	// if current user does NOT have view_private_elements permission, then set a query to exclude those elements
 	$pq = "";
@@ -1465,7 +1465,7 @@ function getAllColList($fid, $frid="", $groups="", $includeBreaks=false) {
 		$check_results = checkForLinks($frid, $fids, $fid, "", "", "", "", "", "", "0");
 		$fids = $check_results['fids'];
 		$sub_fids = $check_results['sub_fids'];
-		$uid = $xoopsUser ? $xoopsUser->getVar('uid') : "0";
+		$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : "0";
 		foreach($fids as $this_fid) {
 			if(security_check($this_fid, "", $uid, "", $groups, $mid, $gperm_handler)) {
 				$c = q("SELECT ele_id, ele_caption, ele_colhead, ele_handle FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form='$this_fid' $gq $pq $incbreaks AND ele_type != \"subform\" AND ele_type != \"grid\" ORDER BY ele_order");
@@ -1513,9 +1513,9 @@ function writableQuery($items, $mod="") {
 		} elseif($items['as_' . $i] == "NOT LIKE") {
 			$items['as_' . $i]=" NOT LIKE ";
 		} elseif ($items['as_' . $i] == "{USER}" AND $mod != 1) {
-			global $xoopsUser;
-			$term = $xoopsUser->getVar('name');
-			if(!$term) { $term = $xoopsUser->getVar('uname'); }
+			
+			$term = icms::$user->getVar('name');
+			if(!$term) { $term = icms::$user->getVar('uname'); }
 			$items['as_' . $i] = $term;
 		} elseif ($items['as_' . $i] == "{BLANK}" AND $mod != 1) {
 			$items['as_' . $i] = "\" \"";
@@ -1577,8 +1577,8 @@ function buildScope($currentView, $member_handler, $gperm_handler, $uid, $groups
         } elseif(strstr($currentView, ",")) { // advanced scope, or oldscope
 		$grouplist = explode("," , trim($currentView, ","));
 		if($grouplist[0] == "onlymembergroups") { // first key may be a special flag to cause the scope to be handled differently
-	            global $xoopsUser;
-	            $groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+	            
+	            $groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
 	            unset($grouplist[0]);
 	            $grouplist = array_intersect($groups, $grouplist);
 		}
@@ -1875,9 +1875,9 @@ function prepDataForWrite($element, $ele) {
 // curly brackey entry is the id number for the entry that we're supposed to check { } terms against .... although currently only USER is supported, and all we really care about is whether this is "new" or not
 // userComparisonId is the ID of the user that should be used for {USER} when the entry is new - optional, will default to the current user's id
 function prepareLiteralTextForDB($elementObject, $value, $curlyBracketEntry, $userComparisonId = "") {
-  global $xoopsUser;
+  
   if($userComparisonId === "") {
-    $userComparisonId = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+    $userComparisonId = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
   }
   $ele_type = $elementObject->getVar('ele_type');
   switch($ele_type) {
@@ -1903,7 +1903,7 @@ function prepareLiteralTextForDB($elementObject, $value, $curlyBracketEntry, $us
     if($curlyBracketEntry != "new") {
       $value = $userComparisonId; // use the defined value for USER if this is an existing entry, and one was passed in (if none was passed in, this is set to match the current user at the top of this function.
     } else {
-      $value = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+      $value = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
     }
   }
   return $value;
@@ -1939,14 +1939,14 @@ function getElementValue($entry, $element_id, $fid) {
 
 // this function checks for singleentry status and returns the appropriate entry in the form if there is one
 function getSingle($fid, $uid, $groups, $member_handler, $gperm_handler, $mid) {
-	global $xoopsDB, $xoopsUser;
+	global $xoopsDB;
 	// determine single/multi status
 	$smq = q("SELECT singleentry FROM " . $xoopsDB->prefix("formulize_id") . " WHERE id_form=$fid");
 	if($smq[0]['singleentry'] != "") {
 		// find the entry that applies
 		$single['flag'] = $smq[0]['singleentry'] == "on" ? 1 : "group";
 		if($smq[0]['singleentry'] == "on") { // if we're looking for a regular single, find first entry for this user
-			if(!$xoopsUser) {
+			if(!is_object(icms::$user)) {
 				$single['entry'] = ""; // don't set an entry for anons...they should not share the same entry in a single entry form, since user zero is actually lots of different people...cookie logic in displayform will cause their past entry to show up for them, if they have cookies working
 			} else {
 	      $data_handler = new formulizeDataHandler($fid);
@@ -2278,7 +2278,7 @@ function _formatLinksRegularElement($matchtext, $textWidth, $ele_type, $handle, 
 // $form_id and $entry_id are passed in so they can be accessible within the eval'd code if necessary
 function getTextboxDefault($ele_value, $form_id, $entry_id) {
 
-	global $xoopsUser;
+	
 
 	if(strstr($ele_value, "\$default")) { // php default value
 		eval(stripslashes($ele_value));
@@ -2320,13 +2320,13 @@ function getTextboxDefault($ele_value, $form_id, $entry_id) {
 		if(strtolower($thisTerm) == "sequence") {
 			$replacementValue = "{SEQUENCE}";
 		}
-		if(!$xoopsUser AND !$replacementValue) {
+		if(!is_object(icms::$user) AND !$replacementValue) {
 			$replacementValue = "";
 		} elseif(!$replacementValue) {
 			if(strtolower($thisTerm) == "mail") {
 				$thisTerm = "email";
 			}
-			$replacementValue = $xoopsUser->getVar(strtolower($thisTerm));
+			$replacementValue = icms::$user->getVar(strtolower($thisTerm));
 			if($replacementValue == "") {
 				// need to get the profile module if XOOPS 2.3 is in effect and has that module installed
 				global $xoopsDB;
@@ -2335,7 +2335,7 @@ function getTextboxDefault($ele_value, $form_id, $entry_id) {
 					$array = $xoopsDB->fetchArray($res);
 					if($array['isactive']==1) {
 						$profile_handler = icms_getModuleHandler('profile', 'profile'); // this line will cause an abort of the page load if it fails, so must check for existence and active status of the module first!
-						$profile = $profile_handler->get($xoopsUser->getVar('uid'));
+						$profile = $profile_handler->get(icms::$user->getVar('uid'));
 						$replacementValue = $profile->getVar(strtolower($thisTerm));
 					}
 				}
@@ -2371,9 +2371,9 @@ function findLinkedEntries($startForm, $targetForm, $startEntry, $gperm_handler,
 
 
 	// set scope filter -- may need to pass in some exceptions here in the case of viewing entries that are covered by reports?
-	global $xoopsUser;
-	$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
-	$owner = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+	
+	$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+	$owner = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 	if($global_scope = $gperm_handler->checkRight("view_globalscope", $targetForm['fid'], $groups, $mid)) {
     $all_users = "";
     $all_groups = "";
@@ -2462,7 +2462,7 @@ function findLinkedEntries($startForm, $targetForm, $startEntry, $gperm_handler,
 function cloneEntry($entry, $frid, $fid, $copies) {
 
 
-	global $xoopsDB, $xoopsUser;
+	global $xoopsDB;
 	include_once XOOPS_ROOT_PATH . "/modules/formulize/class/forms.php";
 	$lsbpairs = array();
 	if($frid) {
@@ -2555,9 +2555,9 @@ function sendNotifications($fid, $event, $entries, $mid="", $groups=array()) {
 	// 17. determine the users subscribed and subscribe the necessary others with a oncethendelete mode
 	// 18. trigger the notification
 
-	global $xoopsDB, $xoopsUser, $xoopsConfig, $icmsConfig;
+	global $xoopsDB, $xoopsConfig, $icmsConfig;
 
-	$uid = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+	$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 
 	// 1.  get all conditions for this fid and event
 	$cons = q("SELECT * FROM " . $xoopsDB->prefix("formulize_notification_conditions") . " WHERE not_cons_fid=".intval($fid)." AND not_cons_event=\"".icms::$xoopsDB->escape($event)."\"");
@@ -2695,9 +2695,9 @@ function sendNotifications($fid, $event, $entries, $mid="", $groups=array()) {
 			$formObjs[$fid] = new formulizeForm($fid);
 		}
 		$extra_tags = array();
-		if($xoopsUser) {
-      $extra_tags['ENTRYUSERNAME'] = $xoopsUser->getVar('uname');
-			$extra_tags['ENTRYNAME'] = $xoopsUser->getVar('name') ? $xoopsUser->getVar('name') : $xoopsUser->getVar('uname');
+		if(is_object(icms::$user)) {
+      $extra_tags['ENTRYUSERNAME'] = icms::$user->getVar('uname');
+			$extra_tags['ENTRYNAME'] = icms::$user->getVar('name') ? icms::$user->getVar('name') : icms::$user->getVar('uname');
 		} else {
 			$extra_tags['ENTRYUSERNAME'] = _FORM_ANON_USER;
 		}
@@ -3021,14 +3021,14 @@ print "$prevValue<br><br>";
 
         //require_once XOOPS_ROOT_PATH . "/modules/formulize/include/extract.php";
 
-	global $xoopsUser, $formulize_mgr, $xoopsDB, $myts;
+	global $formulize_mgr, $xoopsDB, $myts;
 	if(!is_object($myts)) { $myts = icms_core_Textsanitizer::getInstance(); }
 
 	if(!$formulize_mgr) {
 		$formulize_mgr = icms_getModuleHandler('elements', 'formulize');
 	}
 
-	$uid = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+	$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 	$date = date ("Y-m-d");
 
 	if(is_numeric($ele)) {
@@ -3299,11 +3299,11 @@ function formulize_writeEntry($values, $entry="new", $action="replace", $proxyUs
   if(is_object($elementObject)) {
     $data_handler = new formulizeDataHandler($elementObject->getVar('id_form'));
     if($result = $data_handler->writeEntry($entry, $values, $proxyUser, $forceUpdate)) {
-      global $xoopsUser;
+      
       if($proxyUser) {
         $ownerForGroups = $proxyUser;
-      } elseif($xoopsUser) {
-        $ownerForGroups = $xoopsUser->getVar('uid');
+      } elseif(is_object(icms::$user)) {
+        $ownerForGroups = icms::$user->getVar('uid');
       } else {
         $ownerForGroups = 0;
       }
@@ -3778,8 +3778,8 @@ function buildFilter($id, $ele_id, $defaulttext="", $name="", $overrides=array(0
 		$pgroups = array();
 		if($element_value[3]) {
 			$scopegroups = explode(",",$element_value[3]);
-			global $xoopsUser;
-			$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+			
+			$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
 			if(!in_array("all", $scopegroups)) {
 				if($element_value[4]) { // limit by users's groups
 					foreach($groups as $gid) { // want to loop so we can get rid of reg users group simply
@@ -3970,12 +3970,12 @@ function formulize_getCalcs($formframe, $mainform, $savedView, $handle="all", $t
         $searches[$thiscol] = $v;
       }
     }
-    global $xoopsUser;
+    
     $mid = getFormulizeModId();
     $gperm_handler =& icms::handler('icms_member_groupperm');
     $member_handler =& icms::handler('icms_member');
-    $groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
-    $uid = $xoopsUser ? $xoopsUser->getVar('uid') : "0";
+    $groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+    $uid = is_object(icms::$user) ? icms::$user->getVar('uid') : "0";
     //print_r($_POST['currentview']);
     list($scope, $throwAwayCurrentView) = buildScope($_POST['currentview'], $member_handler, $gperm_handler, $uid, $groups, $fid, $mid);
     /*print "Saved View: $savedView<br>";
@@ -4474,7 +4474,7 @@ function buildConditionsFilterSQL($conditions, $targetFormId, $curlyBracketEntry
 
 // this function takes the info from the above function, and actually builds the parts of the SQL statement by analyzing the current situation
 function _buildConditionsFilterSQL($filterId, $filterOps, $filterTerms, $filterElementIds, $targetFormElementTypes, $curlyBracketEntry, $userComparisonId, $curlyBracketForm, $element_handler, $form_handler) {
-  global $xoopsUser, $xoopsDB;
+  global $xoopsDB;
   $conditionsFilterComparisonValue = "";
   $curlyBracketFormFrom = "";
   if($filterOps[$filterId] == "NOT") { $filterOps[$filterId] = "!="; }
@@ -4551,7 +4551,7 @@ function _buildConditionsFilterSQL($filterId, $filterOps, $filterTerms, $filterE
 }
 // this function simply draws in the necessary xhr javascript that is used in forms sometimes, and in lists of entries sometimes
 function drawXhrJavascript() {
-global $xoopsUser;
+
 // added xhr function Jan 5 2010
 ?>
 function initialize_formulize_xhr() {
@@ -4606,7 +4606,7 @@ function formulize_xhr_send(op,params) {
   	params_for_uri += 'param' + key + '=' + encodeURIComponent(i) + '&';
 	key++;
   });
-  formulize_xhr.open("GET", '<?php print XOOPS_URL . "/modules/formulize/formulize_xhr_responder.php?"; ?>'+params_for_uri+'op='+op+'&uid=<?php print $xoopsUser ? $xoopsUser->getVar('uid') : 0; ?>', true);
+  formulize_xhr.open("GET", '<?php print XOOPS_URL . "/modules/formulize/formulize_xhr_responder.php?"; ?>'+params_for_uri+'op='+op+'&uid=<?php print is_object(icms::$user) ? icms::$user->getVar('uid') : 0; ?>', true);
   formulize_xhr.setRequestHeader( "If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT" );
   formulize_xhr.onreadystatechange = function() {
 	//alert(formulize_xhr.readyState);

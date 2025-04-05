@@ -723,7 +723,7 @@ function importCsvValidate(&$importSet, $id_reqs, $regfid, $validateOverride=fal
 
 function importCsvProcess(& $importSet, $id_reqs, $regfid, $validateOverride)
 {
-	global $xoopsDB, $xoopsUser, $xoopsConfig, $myts;		// $xoopsDB is required by q
+	global $xoopsDB, $xoopsConfig, $myts;		// $xoopsDB is required by q
     if(!$myts) { $myts =& icms_core_Textsanitizer::getInstance(); }
 
     echo "<b>** Importing</b><br><br>";
@@ -739,7 +739,7 @@ function importCsvProcess(& $importSet, $id_reqs, $regfid, $validateOverride)
     if( $override_import_proxyid ) {
       $form_proxyid = $override_import_proxyid;
     } else {
-      $form_proxyid = $xoopsUser->getVar('uid');
+      $form_proxyid = icms::$user->getVar('uid');
     }
     //print $override_import_proxyid . ',' . $form_proxyid; exit();
 
@@ -1263,7 +1263,7 @@ function getElementOptions($ele_handle, $fid)
 // THERE IS A BUG HERE WHICH CAUSES IT NOT TO COME UP WITH THE RIGHT ID WHEN PASSED A FULL NAME???
 function getUserID($stringName)
 {
-	global $xoopsDB, $xoopsUser;
+	global $xoopsDB;
 
     $sql = "SELECT uid FROM " . $xoopsDB->prefix("users") .
         " WHERE uname='" . icms::$xoopsDB->escape($stringName) . "'";
@@ -1297,7 +1297,7 @@ function getUserID($stringName)
 		}
 
 	// instead of returning 0, return the current user's ID -- added June 29, 2006
-    return $xoopsUser->getVar('uid');
+    return icms::$user->getVar('uid');
 	
         
 }

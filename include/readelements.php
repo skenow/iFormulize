@@ -71,9 +71,9 @@ if(!isset($mid)) {
 if(!$myts) { $myts =& icms_core_Textsanitizer::getInstance(); }
 
 //$formulize_submittedElementCaptions = array(); // put into global scope and pulled down by readform.php when determining what elements have been submitted, so we don't blank data that is sent this way
-global $xoopsUser;
-$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS); // for some reason, even though this is set in pageworks index.php file, depending on how/when this file gets executed, it can have no value (in cases where there are pageworks blocks on pageworks pages, for instance?!)
-$uid = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+
+$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS); // for some reason, even though this is set in pageworks index.php file, depending on how/when this file gets executed, it can have no value (in cases where there are pageworks blocks on pageworks pages, for instance?!)
+$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 $uid = isset($GLOBALS['userprofile_uid']) ? $GLOBALS['userprofile_uid'] : $uid; // if the userprofile form is in play and a new user has been set, then use that uid
 
 if(!$element_handler) {
@@ -120,7 +120,7 @@ foreach($_POST as $k=>$v) {
 		//$GLOBALS['formulize_subformCreateEntry'][$element->getVar('id_form')][$desubformEntryIndex]
 		
 	} elseif(substr($k, 0, 6) == "decue_") {
-		// store values according to form, entry and element ID 
+		// store values according to form, entry and element ID
 		// prep them all for writing
 		$elementMetaData = explode("_", $k);
 		if(isset($_POST["de_".$elementMetaData[1]."_".$elementMetaData[2]."_".$elementMetaData[3]])) {
@@ -129,7 +129,7 @@ foreach($_POST as $k=>$v) {
 			$formulize_elementData[$elementMetaData[1]][$elementMetaData[2]][$elementMetaData[3]] = $v;
 		} elseif(is_numeric($elementMetaData[1])) {
 			$formulize_elementData[$elementMetaData[1]][$elementMetaData[2]][$elementMetaData[3]] = "{WRITEASNULL}"; // no value returned for this element that was included (cue was found) so we write it as blank to the db
-		}		
+		}
 	
 	} elseif(substr($k, 0, 12) == "userprofile_") {
 		$formulize_up[substr($k, 12)] = $v;
@@ -170,7 +170,7 @@ if(count($formulize_elementData) > 0 ) { // do security check if it looks like w
   $formulizeModule =& $module_handler->getByDirname("formulize");
   $formulizeConfig =& $config_handler->getConfigsByCat(0, $formulizeModule->getVar('mid'));
   $modulePrefUseToken = $formulizeConfig['useToken'];
-	$useToken = $screen ? $screen->getVar('useToken') : $modulePrefUseToken; 
+	$useToken = $screen ? $screen->getVar('useToken') : $modulePrefUseToken;
 	if(isset($GLOBALS['xoopsSecurity']) AND $useToken) { // avoid security check for versions of XOOPS that don't have that feature, or for when it's turned off
 		$GLOBALS['formulize_securityCheckPassed'] = true;
 		if (!$GLOBALS['xoopsSecurity']->check() AND (!strstr($cururl, "modules/wfdownloads") AND !strstr($cururl, "modules/smartdownload"))) { // skip the security check if we're in wfdownloads/smartdownloads since that module should already be handling the security checking
@@ -216,7 +216,7 @@ foreach($formulize_elementData as $elementFid=>$entryData) { // for every form w
 					$notEntriesList['new_entry'][$elementFid][] = $writtenEntryId; // log the notification info
 					writeOtherValues($writtenEntryId, $elementFid); // write the other values for this entry
 					if($creation_user == 0) { // handle cookies for anonymous users
-						setcookie('entryid_'.$elementFid, $writtenEntryId, time()+60*60*24*7, '/');	// the slash indicates the cookie is available anywhere in the domain (not just the current folder)				
+						setcookie('entryid_'.$elementFid, $writtenEntryId, time()+60*60*24*7, '/');	// the slash indicates the cookie is available anywhere in the domain (not just the current folder)
 						$_COOKIE['entryid_'.$elementFid] = $writtenEntryId;
 					}
 					afterSavingLogic($values, $writtenEntryId);
@@ -251,7 +251,7 @@ foreach($formulize_newEntryIds as $newEntryFid=>$entries){
 if(isset($updateOwnerFid) AND $gperm_handler->checkRight("update_entry_ownership", $updateOwnerFid, $groups, $mid)) {
 	$data_handler_for_owner_updating = new formulizeDataHandler($updateOwnerFid);
 	if(!$data_handler_for_owner_updating->setEntryOwnerGroups($updateOwnerNewOwnerId, $updateOwnerEntryId, true)) { // final true causes an update, instead of a normal setting of the groups from scratch.  Entry's creation user is updated too.
-		print "<b>Error: could not update the entry ownership information.  Please report this to the webmaster right away, including which entry you were trying to update.</b>";		
+		print "<b>Error: could not update the entry ownership information.  Please report this to the webmaster right away, including which entry you were trying to update.</b>";
 	}
 	$data_handler_for_owner_updating->updateCaches($updateOwnerEntryId);
 }
@@ -337,7 +337,7 @@ if($frid) {
 // send notifications
 foreach($notEntriesList as $notEvent=>$notDetails) {
 	foreach($notDetails as $notFid=>$notEntries) {
-		$notEntries = array_unique($notEntries); 
+		$notEntries = array_unique($notEntries);
 		sendNotifications($notFid, $notEvent, $notEntries);
 	}
 }
@@ -398,7 +398,7 @@ function writeUserProfile($data, $uid) {
 	// notify_method
 	// notify_mode
 
-	global $xoopsUser, $xoopsConfig;
+	global $xoopsConfig;
 	$config_handler = icms::handler('icms_config');
 	$xoopsConfigUser =& $config_handler->getConfigsByCat(XOOPS_CONF_USER);
 
@@ -412,10 +412,10 @@ function writeUserProfile($data, $uid) {
     if (empty($uid)) {
 	redirect_header(XOOPS_URL,3,_US_NOEDITRIGHT);
         exit();
-    } elseif(is_object($xoopsUser)) {
-			if($xoopsUser->getVar('uid') != $uid) {
+    } elseif(is_object(icms::$user)) {
+			if(icms::$user->getVar('uid') != $uid) {
 				redirect_header(XOOPS_URL,3,_US_NOEDITRIGHT);
-				exit();	
+				exit();
 			}
     }
 
@@ -438,7 +438,7 @@ function writeUserProfile($data, $uid) {
      	  if (strlen($password) < $xoopsConfigUser['minpass']) {
            	$errors[] = sprintf(_US_PWDTOOSHORT,$xoopsConfigUser['minpass']);
         }
-        if (!empty($data['vpass'])) { 
+        if (!empty($data['vpass'])) {
         	$vpass = icms_core_DataFilter::stripSlashesGPC(trim($data['vpass']));
         }
      	  if ($password != $vpass) {

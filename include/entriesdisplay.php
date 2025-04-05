@@ -62,15 +62,15 @@ function displayEntries($formframe, $mainform="", $loadview="", $loadOnlyView=0,
 
   formulize_benchmark("start of drawing list");
 
-	global $xoopsDB, $xoopsUser;
+	global $xoopsDB;
 
 	// Set some required variables
 	$mid = getFormulizeModId();
 	list($fid, $frid) = getFormFramework($formframe, $mainform);
 	$gperm_handler = icms::handler('icms_member_groupperm');
 	$member_handler = icms::handler('icms_member');
-	$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
-	$uid = $xoopsUser ? $xoopsUser->getVar('uid') : "0";
+	$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+	$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : "0";
 
 	if(!$scheck = security_check($fid, "", $uid, "", $groups, $mid, $gperm_handler)) {
 		print "<p>" . _NO_PERM . "</p>";
@@ -128,7 +128,7 @@ function displayEntries($formframe, $mainform="", $loadview="", $loadOnlyView=0,
 		foreach($_POST as $k=>$v) {
 			if(substr($k, 0, 7) == "delete_" AND $v != "") {
 				$thisentry = substr($k, 7);
-				if($delete_other_entries OR $xoopsUser->getVar('uid') == getEntryOwner($thisentry, $fid)) { // if they only have "delete own" then only proceed if this is their entry
+				if($delete_other_entries OR icms::$user->getVar('uid') == getEntryOwner($thisentry, $fid)) { // if they only have "delete own" then only proceed if this is their entry
 					$GLOBALS['formulize_deletionRequested'] = true;
 					// new syntax for deleteEntry, Sept 18 2005 -- used to handle deleting all unified display entries that are linked to this entry.
 					if($frid) {
@@ -161,7 +161,7 @@ function displayEntries($formframe, $mainform="", $loadview="", $loadOnlyView=0,
 			$delviewid_formulize = substr($_POST['delviewid_formulize'], 1);
 		}
     
-		if($delete_other_reports OR $xoopsUser->getVar('uid') == getSavedViewOwner($delviewid_formulize)) { // "get saved view owner" only works with new saved view format in 2.0 or greater, but since that is 2.5 years old now, should be good to go!
+		if($delete_other_reports OR icms::$user->getVar('uid') == getSavedViewOwner($delviewid_formulize)) { // "get saved view owner" only works with new saved view format in 2.0 or greater, but since that is 2.5 years old now, should be good to go!
 			if(substr($_POST['delviewid_formulize'], 1, 4) == "old_") {
 				$sql = "DELETE FROM " . $xoopsDB->prefix("formulize_reports") . " WHERE report_id='" . $delviewid_formulize . "'";
 			} else {
@@ -190,7 +190,7 @@ function displayEntries($formframe, $mainform="", $loadview="", $loadOnlyView=0,
 
 	// handle saving of the view if that has been requested
 	// only do this if there's a saveid_formulize and they passed the security check, and any one of these:  they can update other reports, or this is a "new" view, or this is not a new view, and it belongs to them and they have update own reports permission
-	if($_POST['saveid_formulize'] AND $formulize_LOESecurityPassed AND ($update_other_reports OR ((is_numeric($_POST['saveid_formulize']) AND ($update_own_reports AND $xoopsUser->getVar('uid') == getSavedViewOwner($_POST['saveid_formulize']))) OR $_POST['saveid_formulize'] == "new"))) {
+	if($_POST['saveid_formulize'] AND $formulize_LOESecurityPassed AND ($update_other_reports OR ((is_numeric($_POST['saveid_formulize']) AND ($update_own_reports AND icms::$user->getVar('uid') == getSavedViewOwner($_POST['saveid_formulize']))) OR $_POST['saveid_formulize'] == "new"))) {
 		// gather all values
 		//$_POST['currentview'] -- from save (they might have updated/changed the scope)
 		//possible situations:
@@ -1971,7 +1971,7 @@ function clickableSortLink($handle, $contents) {
 
 // this function returns the ele_ids of form elements to show, or the handles of the form elements to show for a framework
 function getDefaultCols($fid, $frid="") {
-	global $xoopsDB, $xoopsUser;
+	global $xoopsDB;
 
 	if($frid) { // expand the headerlist to include the other forms
 		$fids[0] = $fid;
@@ -1979,8 +1979,8 @@ function getDefaultCols($fid, $frid="") {
 		$fids = $check_results['fids'];
 		$sub_fids = $check_results['sub_fids'];
 		$gperm_handler = &icms::handler('icms_member_groupperm');
-		$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
-		$uid = $xoopsUser ? $xoopsUser->getVar('uid') : "0";
+		$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+		$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : "0";
 		$mid = getFormulizeModId();
 		$ele_handles = array();
 		$processedFids = array();
@@ -2225,8 +2225,8 @@ function performCalcs($cols, $calcs, $blanks, $grouping, $frid, $fid)  {
       // do the query
       $calcResult = array();
       $calcResultSQL = "$select $thisBaseQuery $allowedWhere $excludedWhere $groupByClause $orderByClause";
-      global $xoopsUser;
-      //if($xoopsUser->getVar('uid') == 1) {
+      
+      //if(icms::$user->getVar('uid') == 1) {
       //  print "$calcResultSQL<br><br>";
       //}*/
       $calcResultRes = $xoopsDB->query($calcResultSQL);
@@ -2882,10 +2882,9 @@ function calcHandle($value, $fid) {
 // THIS FUNCTION PARSES OUT THE {USER} AND {TODAY} KEYWORDS INTO THEIR LITERAL VALUES
 function parseUserAndToday($term) {
   if ($term === "{USER}") {
-		global $xoopsUser;
-		if($xoopsUser) {
-			$term = $xoopsUser->getVar('name');
-			if(!$term) { $term = $xoopsUser->getVar('uname'); }
+		if(is_object(icms::$user)) {
+			$term = icms::$user->getVar('name');
+			if(!$term) { $term = icms::$user->getVar('uname'); }
 		} else {
 			$term = 0;
 		}
@@ -2909,10 +2908,9 @@ function evalAdvSearch($entry, $handle, $op, $term) {
 		$values = convertUids($values, $handle);
 	}
 	if ($term == "{USER}") {
-		global $xoopsUser;
-		if($xoopsUser) {
-			$term = $xoopsUser->getVar('name');
-			if(!$term) { $term = $xoopsUser->getVar('uname'); }
+		if(is_object(icms::$user)) {
+			$term = icms::$user->getVar('name');
+			if(!$term) { $term = icms::$user->getVar('uname'); }
 		} else {
 			$term = 0;
 		}
@@ -3907,8 +3905,8 @@ function formulize_screenLOETemplate($screen, $type, $buttonCodeArray, $settings
 // $entry is only sent from inline buttons, so that any PHP/HTML to be rendered inline has access to all the values of the current entry
 function processCustomButton($caid, $thisCustomAction, $entries="", $entry) {
 
-	global $xoopsUser;
-	$userGroups = $xoopsUser ? $xoopsUser->getGroups() : array(XOOPS_GROUP_ANONYMOUS);
+	
+	$userGroups = is_object(icms::$user) ? icms::$user->getGroups() : array(XOOPS_GROUP_ANONYMOUS);
 	if(!is_array($thisCustomAction['groups'])) {
 		$thisCustomAction['groups'] = unserialize($thisCustomAction['groups']);	// under some circumstances, this might be serialized?  I think it's being unserialized by the getVar method before it gets this far, but anyway....
 	}
@@ -4112,8 +4110,8 @@ function formulize_screenLOEButton($button, $buttonText, $settings, $fid, $frid,
 				
 				$queryForExportFile = fopen(XOOPS_ROOT_PATH . "/cache/exportQuery_".$exportTime.".formulize_cached_query_for_export", "w");
 				fwrite($queryForExportFile, $fid."\n");
-				global $xoopsUser;
-				$exportUid = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+				
+				$exportUid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 				fwrite($queryForExportFile, $exportUid."\n");
 				fwrite($queryForExportFile, $GLOBALS['formulize_queryForExport']);
 				fclose($queryForExportFile);
@@ -4226,8 +4224,8 @@ function formulize_gatherDataSet($settings=array(), $searches, $sort="", $order=
 	// 2. loop through the data and store the results, unsetting $data as we go, and then reassigning the found array to $data at the end
 	
 	// example of as $settings:
-/*	global $xoopsUser;
-	if($xoopsUser->getVar('uid') == 'j') {
+/*
+	if(icms::$user->getVar('uid') == 'j') {
 	$settings['as_1'] = "[field]545[/field]";
 	$settings['as_2'] = "==";
 	$settings['as_3'] = "Ontario";
@@ -4298,7 +4296,7 @@ function formulize_gatherDataSet($settings=array(), $searches, $sort="", $order=
 	$ORstart = 1;
 	$ORfilter = "";
 	$individualORSearches = array();
-	global $xoopsUser;
+	
 	foreach($searches as $key=>$master_one_search) { // $key is handles for frameworks, and ele_handles for non-frameworks.
 
 		// split search based on new split string
@@ -4353,15 +4351,15 @@ function formulize_gatherDataSet($settings=array(), $searches, $sort="", $order=
 					$number = preg_replace("/[^0-9+-]/","", $searchgetkey);
 					$one_search = date("Y-m-d",mktime(0, 0, 0, date("m") , date("d")+$number, date("Y")));
 				} elseif($searchgetkey == "USER") {
-					if($xoopsUser) {
-						$one_search = $xoopsUser->getVar('name');
-						if(!$one_search) { $one_search = $xoopsUser->getVar('uname'); }
+					if(is_object(icms::$user)) {
+						$one_search = icms::$user->getVar('name');
+						if(!$one_search) { $one_search = icms::$user->getVar('uname'); }
 					} else {
 						$one_search = 0;
 					}
 				} elseif($searchgetkey == "USERNAME") {
-					if($xoopsUser) {
-						$one_search = $xoopsUser->getVar('uname');
+					if(is_object(icms::$user)) {
+						$one_search = icms::$user->getVar('uname');
 					} else {
 						$one_search = "";
 					}
@@ -4394,9 +4392,9 @@ function formulize_gatherDataSet($settings=array(), $searches, $sort="", $order=
 			}
 			
 			// do additional search for {USERNAME} or {USER} in case they are embedded in another string
-			if($xoopsUser) {
-				$one_search = str_replace("{USER}", $xoopsUser->getVar('name'), $one_search);
-				$one_search = str_replace("{USERNAME}", $xoopsUser->getVar('uname'), $one_search);
+			if(is_object(icms::$user)) {
+				$one_search = str_replace("{USER}", icms::$user->getVar('name'), $one_search);
+				$one_search = str_replace("{USERNAME}", icms::$user->getVar('uname'), $one_search);
 			}
 
 			
@@ -4459,9 +4457,8 @@ function formulize_gatherDataSet($settings=array(), $searches, $sort="", $order=
 	}
 	
   /*
-	global $xoopsUser;
-	if($xoopsUser) {
-		if($xoopsUser->getVar('uid') == 1) {
+	if(is_object(icms::$user)) {
+		if(icms::$user->getVar('uid') == 1) {
 			print "<br>formulize cacheddata: ". $settings['formulize_cacheddata'];
 			print "<br>forcequery: $forcequery";
 			print "<br>lastentry: ".$_POST['lastentry'];

@@ -196,7 +196,7 @@ if( $op != 'addform' && $op != 'modform' && $op != 'renform' && $op != 'delform'
 
 	// added August 12 2005 - jpc
 	$gperm_handler = &icms::handler('icms_member_groupperm');
-	$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+	$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
 
 
 	foreach($data as $id => $titre) {
@@ -503,8 +503,8 @@ function modform($fid)
 function lockform() {
 	
 	$gperm_handler = &icms::handler('icms_member_groupperm');
-	global $xoopsUser;
-	$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+	
+	$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
 	$module_id = icms::$module->getVar('mid');
 	if(!$gperm_handler->checkRight("delete_form", intval($_GET['title']), $groups, $module_id)) {
 		redirect_header("formindex.php",3,_NO_PERM);
@@ -521,8 +521,8 @@ function delform()
 {
 
 	$gperm_handler = &icms::handler('icms_member_groupperm');
-	global $xoopsUser;
-	$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+	
+	$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
 	$module_id = icms::$module->getVar('mid');
 	if(!$gperm_handler->checkRight("delete_form", intval($_GET['title']), $groups, $module_id)) {
 		redirect_header("formindex.php",3,_NO_PERM);

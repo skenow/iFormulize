@@ -53,14 +53,14 @@ if($aid == 0) {
 }
 $screen_handler = icms_getModuleHandler('screen', 'formulize');
 $gperm_handler = icms::handler('icms_member_groupperm');
-global $xoopsUser;
+
 foreach($formObjects as $thisFormObject) {
-	if(!$gperm_handler->checkRight("edit_form", $thisFormObject->getVar('id_form'), $xoopsUser->getGroups(), getFormulizeModId())) {
+	if(!$gperm_handler->checkRight("edit_form", $thisFormObject->getVar('id_form'), icms::$user->getGroups(), getFormulizeModId())) {
 		continue;
 	}
 	$formsInApp[$thisFormObject->getVar('id_form')]['name'] = $thisFormObject->getVar('title');
 	$formsInApp[$thisFormObject->getVar('id_form')]['fid'] = $thisFormObject->getVar('id_form'); // forms tab uses fid
-	$hasDelete = $gperm_handler->checkRight("delete_form", $thisFormObject->getVar('id_form'), $xoopsUser->getGroups(), getFormulizeModId());
+	$hasDelete = $gperm_handler->checkRight("delete_form", $thisFormObject->getVar('id_form'), icms::$user->getGroups(), getFormulizeModId());
 	$formsInApp[$thisFormObject->getVar('id_form')]['hasdelete'] = $hasDelete;
 	// get the default screens for each form too
 	$defaultFormScreen = $thisFormObject->getVar('defaultform');

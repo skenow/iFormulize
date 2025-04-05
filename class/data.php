@@ -367,7 +367,7 @@ class formulizeDataHandler {
 		$form_handler = icms_getModuleHandler('forms', 'formulize');
 		$formObject = $form_handler->get($this->fid);
 		$sql = "SELECT t1.entry_id FROM " . $xoopsDB->prefix("formulize_" . $formObject->getVar('form_handle')) . " as t1, " . $xoopsDB->prefix("formulize_entry_owner_groups") . " as t2 WHERE t1.entry_id = t2.entry_id AND t2.fid=" . $this->fid . " AND t2.groupid IN (" . implode(",", $group_ids) . ") ORDER BY t1.entry_id LIMIT 0,1";
-		global $xoopsUser;
+		
 		if (!$res = $xoopsDB->query($sql)) {
 			return false;
 		}
@@ -628,7 +628,7 @@ class formulizeDataHandler {
 	// $proxyUser is optional and if present will override the current xoopsuser uid as the creation user
 	// $updateMetadata is a flag to allow us to skip updating the modification user and time. Introduced for when we update derived values and the mod user and time should not change.
 	function writeEntry($entry, $values, $proxyUser = false, $forceUpdate = false, $updateMetadata = true) {
-		global $xoopsDB, $xoopsUser;
+		global $xoopsDB;
 		$form_handler = icms_getModuleHandler('forms', 'formulize');
 		$formObject = $form_handler->get($this->fid);
 		static $cachedMaps = array();
@@ -715,7 +715,7 @@ class formulizeDataHandler {
 		}
 
 		// do the actual writing now that we have prepared all the info we need
-		$uid = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+		$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 		if ($entry == "new") {
 			$sql = "INSERT INTO " . $xoopsDB->prefix("formulize_" . $formObject->getVar('form_handle')) . " (`creation_datetime`, `mod_datetime`, `creation_uid`, `mod_uid`";
 			$sqlValues = "";

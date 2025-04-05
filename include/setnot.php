@@ -70,7 +70,7 @@ global $xoopsConfig;
 	}
 
 
-global $xoopsDB, $xoopsUser;
+global $xoopsDB;
 include_once XOOPS_ROOT_PATH.'/modules/formulize/include/functions.php';
 
 	// Set some required variables
@@ -82,8 +82,8 @@ include_once XOOPS_ROOT_PATH.'/modules/formulize/include/functions.php';
 
 	$gperm_handler = &icms::handler('icms_member_groupperm');
 	$member_handler =& icms::handler('icms_member');
-	$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
-	$uid = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+	$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+	$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 
 	if(!$scheck = security_check($fid, "", $uid, "", $groups, $mid, $gperm_handler)) {
 		print "<p>" . _NO_PERM . "</p>";
@@ -156,7 +156,7 @@ $deleted = handleDelete($uid, $fid, $mid); // returns 1 if a deletion was made, 
 
 // Get all existing notifications
 // $nots will be an array sent back by the q function
-$nots = getCurNots($fid, $canSetNots, $xoopsUser->getVar('uid'));
+$nots = getCurNots($fid, $canSetNots, icms::$user->getVar('uid'));
 
 $noNots = count($nots) == 0 ? true : false;
 
@@ -233,7 +233,7 @@ $setnot->addElement($setwhen);
 if($canSetNots) {
 
 	if(!isset($_POST['setwho'])) {
-		$_POST['setwho'] = $xoopsUser->getVar('uid');
+		$_POST['setwho'] = icms::$user->getVar('uid');
 	}
 
 	$setwho = new icms_form_elements_Tray(_formulize_DE_SETNOT_WHO, "<br />");

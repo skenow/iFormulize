@@ -21,7 +21,7 @@
 // ------------------------------------------------------------------------- //
 
 function block_formulizeMENU_show() {
-        global $xoopsDB, $xoopsUser, $myts;
+        global $xoopsDB, $myts;
 		    $myts =& icms_core_Textsanitizer::getInstance();
 
         $block = array();

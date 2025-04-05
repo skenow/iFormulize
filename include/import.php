@@ -62,7 +62,7 @@ global $xoopsConfig;
 
 
 
-global $xoopsDB, $xoopsUser;
+global $xoopsDB;
 
 $config_handler = icms::handler('icms_config');
 $xoopsConfigUser =& $config_handler->getConfigsByCat(XOOPS_CONF_USER);
@@ -80,13 +80,13 @@ include_once XOOPS_ROOT_PATH.'/modules/formulize/include/functions.php';
 	$frid = isset($_GET['frid']) ? intval($_GET['frid']) : "";
 	$frid = isset($_POST['frid']) ? intval($_POST['frid']) : $frid;
 	/*if(!$frid = $_GET['frid']) {
-		$frid = $_POST['frid'];	
+		$frid = $_POST['frid'];
 	}*/
 	
 	$gperm_handler = &icms::handler('icms_member_groupperm');
 	$member_handler =& icms::handler('icms_member');
-	$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
-	$uid = $xoopsUser->getVar('uid');
+	$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+	$uid = icms::$user->getVar('uid');
 
 	// additional check to see if the user has import_data permission for this form
 	if(!$scheck = security_check($fid, "", $uid, "", $groups, $mid, $gperm_handler) OR !$import_data = $gperm_handler->checkRight("import_data", $fid, $groups, $mid)) {
@@ -98,13 +98,13 @@ include_once XOOPS_ROOT_PATH.'/modules/formulize/include/functions.php';
 // main body of page and logic goes here...
 
 // basic premise is that we have the $fid, and that is the form that we are importing data into.
-// We need a browse box that the user can use to select the .csv they have prepared, and then when 
+// We need a browse box that the user can use to select the .csv they have prepared, and then when
 // they click the submit button to upload that file, presto, the import process begins.  If there
-// are parse errors on the file, the import process communicates them.  If the parse is successful, 
+// are parse errors on the file, the import process communicates them.  If the parse is successful,
 // the import begins and the user gets a message, maybe a report of the number of records entered into
 // the DB, or whatever seems appropriate.  Then there is a button to close the window.
 
-// This popup window can be reloaded and receive form submissions in it just like any other window, of 
+// This popup window can be reloaded and receive form submissions in it just like any other window, of
 // course.  It's essentially a compartmentalized extension of the main "list of entries" UI.
 
 
@@ -120,7 +120,7 @@ $themecss = xoops_getcss();
 print "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"$themecss\" />\n";
 
 print "</head>";
-print "<body style=\"background: white; margin-top:20px;\"><center>"; 
+print "<body style=\"background: white; margin-top:20px;\"><center>";
 print "<table width=100%><tr><td width=5%></td><td width=90%>";
 
 print "<table class=outer><tr><th colspan=2>" . _formulize_DE_IMPORT . "</th></tr>";
@@ -193,7 +193,7 @@ print "<ul><li>" . _formulize_DE_IMPORT_DATATEMP . "<br><a href=\"\" onclick=\"j
 print "</li></ul></td></tr>\n";
 print "<tr><td class=head><p>" . _formulize_DE_IMPORT_STEP2 . "</p></td><td class=even>" . _formulize_DE_IMPORT_INSTRUCTIONS;
 
-if($regfid == $fid) { 
+if($regfid == $fid) {
 	print _formulize_DE_IMPORT_INSTNEWPROFILE;
 } else {
 	print _formulize_DE_IMPORT_INSTNEW;

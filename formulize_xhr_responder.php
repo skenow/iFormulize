@@ -39,14 +39,14 @@ ob_end_clean(); // stop all buffering of output (ie: related to the error loggin
 
 // check that the user who sent this request is the same user we have a session for now, if not, bail
 $sentUid = $_GET['uid'];
-if(($xoopsUser AND $sentUid != $xoopsUser->getVar('uid')) OR (!$xoopsUser AND $sentUid !== 0)) {
-  exit(); 
+if((is_object(icms::$user) AND $sentUid != icms::$user->getVar('uid')) OR (!is_object(icms::$user) AND $sentUid !== 0)) {
+  exit();
 }
 
 $GLOBALS['formulize_asynchronousFormDataInDatabaseReadyFormat'] = array();
 $GLOBALS['formulize_asynchronousFormDataInAPIFormat'] = array();
 
-// unpack the op 
+// unpack the op
 $op = $_GET['op'];
 
 // validate op
@@ -166,7 +166,7 @@ switch($op) {
 	if($elementObject->getVar('ele_type') == "ib") {// if it's a break, handle it differently...
 	  $class = ($form_ele[1] != '') ? " class='".$form_ele[1]."'" : '';
 	  if ($form_ele[0]) {
-	    $html = "<td colspan='2' $class><div style=\"font-weight: normal;\">" . trans(stripslashes($form_ele[0])) . "</div></td>"; 
+	    $html = "<td colspan='2' $class><div style=\"font-weight: normal;\">" . trans(stripslashes($form_ele[0])) . "</div></td>";
 	  } else {
 	    $html = "<td colspan='2' $class>&nbsp;</td>";
 	  }
@@ -186,7 +186,7 @@ switch($op) {
 	  $html .= "</td><td class='even'>" . $form_ele->render() . "</td>";
 	}
 	print $html;
-      } 
+      }
     }
     //print "de_".$fid."_".$entryId."_".$elementId."<<||>>$html";
 }

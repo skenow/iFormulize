@@ -234,7 +234,7 @@ $common['ele_id'] = $ele_id;
 $common['fid'] = $fid;
 $common['aid'] = $aid;
 $common['type'] = $ele_type;
-$common['uid'] = $xoopsUser->getVar('uid');
+$common['uid'] = icms::$user->getVar('uid');
 
 
 $options = array();

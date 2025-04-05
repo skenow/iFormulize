@@ -230,8 +230,8 @@ function getEntryValues($entry, $formulize_mgr, $groups, $fid, $elements="", $mi
 		if(!$mid) { $mid = getFormulizeModId(); }
 	
 		if(!$uid) {
-			global $xoopsUser;
-			$uid = $xoopsUser ? $xoopsUser->getVar("uid") : 0; // if there is no uid, then use the $xoopsUser uid if there is one, or zero for anons
+			
+			$uid = is_object(icms::$user) ? icms::$user->getVar("uid") : 0; // if there is no uid, then use the $xoopsUser uid if there is one, or zero for anons
 		}
 
 		if(!$owner) {
@@ -347,14 +347,14 @@ if(!is_numeric($titleOverride) AND $titleOverride != "" AND $titleOverride != "a
 //3. if entry specified, then get data for that entry
 //4. drawform with data if necessary
 
-	global $xoopsDB, $xoopsUser, $myts;
+	global $xoopsDB, $myts;
 
 	global $sfidsDrawn;
 	if(!is_array($sfidsDrawn)) {
 		$sfidsDrawn = array();
 	}
 
-	$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+	$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
 
 	$original_entry = $entry; // flag used to tell whether the function was called with an actual entry specified, ie: we're supposed to be editing this entry, versus the entry being set by coming back form a sub_form or other situation.
 
@@ -423,7 +423,7 @@ if(!is_numeric($titleOverride) AND $titleOverride != "" AND $titleOverride != "a
 		$groups[] = XOOPS_GROUP_USERS;
 		$groups[] = XOOPS_GROUP_ANONYMOUS;
 	}
-	$uid = $xoopsUser ? $xoopsUser->getVar('uid') : '0';
+	$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : '0';
 
 	$single_result = getSingle($fid, $uid, $groups, $member_handler, $gperm_handler, $mid);
 	$single = $single_result['flag'];
@@ -900,7 +900,7 @@ function addProfileFields($form, $profileForm) {
 	// timezone
 	// password
 
-	global $xoopsUser, $xoopsConfig, $xoopsConfigUser;
+	global $xoopsConfig, $xoopsConfigUser;
 	$config_handler = icms::handler('icms_config');
 	$xoopsConfigUser =& $config_handler->getConfigsByCat(XOOPS_CONF_USER);
 	$user_handler = icms::handler('icms_member_user');
@@ -1689,7 +1689,7 @@ function compileElements($fid, $form, $formulize_mgr, $prevEntry, $entry, $go_ba
 	
 	$entryForDEElements = is_numeric($entry) ? $entry : "new"; // if there is no entry, ie: a new entry, then $entry is "" so when writing the entry value into decue_ and other elements that go out to the HTML form, we need to use the keyword "new"
 	
-	global $xoopsDB, $xoopsUser;
+	global $xoopsDB;
 
 	// find hidden elements first...
 	// elementdisplay.php also has handling for this...they should be amalgamated/rationalized at some point
@@ -1866,7 +1866,7 @@ function compileElements($fid, $form, $formulize_mgr, $prevEntry, $entry, $go_ba
 			continue;
 		}
 
-		$uid = is_object($xoopsUser) ? $xoopsUser->getVar('uid') : 0;
+		$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 		$owner = getEntryOwner($entry, $fid);
 		$ele_type = $i->getVar('ele_type');
 		$ele_value = $i->getVar('ele_value');
@@ -2051,8 +2051,8 @@ function compileElements($fid, $form, $formulize_mgr, $prevEntry, $entry, $go_ba
 // $groups is deprecated and not used in this function any longer
 // $owner_groups is used when dealing with a usernames or fullnames selectbox
 function loadValue($prevEntry, $i, $ele_value, $owner_groups, $groups, $entry, $profileForm="") {
-//global $xoopsUser;
-//if($xoopsUser->getVar('uid') == 1) {
+//
+//if(icms::$user->getVar('uid') == 1) {
 //print_r($prevEntry);
 
 //}
@@ -2312,9 +2312,9 @@ function compileGrid($ele_value, $title, $element) {
 function formulize_formatDateTime($dt) {
 	// assumption is that the server timezone has been set correctly!
 	// needs to figure out daylight savings time correctly...ie: is the user's timezone one that has daylight savings, and if so, if they are currently in a different dst condition than they were when the entry was created, add or subtract an hour from the seconds offset, so that the time information is displayed correctly.
-	global $xoopsConfig, $xoopsUser;
+	global $xoopsConfig;
 	$serverTimeZone = $xoopsConfig['server_TZ'];
-	$userTimeZone = $xoopsUser ? $xoopsUser->getVar('timezone_offset') : $serverTimeZone;
+	$userTimeZone = is_object(icms::$user) ? icms::$user->getVar('timezone_offset') : $serverTimeZone;
 	$tzDiff = $userTimeZone - $serverTimeZone;
 	$tzDiffSeconds = $tzDiff*3600;
 	
@@ -2450,8 +2450,8 @@ static $drawnJavascript = false;
 if($drawnJavascript) {
 	return;
 }
-global $xoopsUser;
-$uid = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+
+$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 // Left in for possible future use by the rankOrderList element type or other elements that might use jQuery
 //print "<script type=\"text/javascript\" src=\"".XOOPS_URL."/modules/formulize/jquery/jquery-1.3.2.min.js\"></script><script type=\"text/javascript\" src=\"".XOOPS_URL."/modules/formulize/jquery/jquery-ui-1.7.2.custom.min.js\"></script>";
 //$GLOBALS['formulize_jQuery_included'] = true;
@@ -2591,8 +2591,8 @@ $drawnJavascript = true;
 
 function drawJavascriptForConditionalElements($conditionalElements, $entries, $sub_entries) {
 
-global $xoopsUser;
-$uid = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+
+$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 
 // need to setup governing elements array...which is inverse of the conditional elements
 $element_handler = icms_getModuleHandler('elements','formulize');

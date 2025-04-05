@@ -31,8 +31,8 @@
 
 include "../../mainfile.php";
 
-$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
-$uid = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
+$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 
 $entry_id = intval($_GET['entry_id']);
 $element_id = intval($_GET['element']);

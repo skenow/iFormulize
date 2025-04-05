@@ -257,7 +257,7 @@ class formulizeAdvancedCalculationHandler {
 	}
 
 	function buildCacheKey($acid, $localGroup = false) {
-		global $xoopsUser;
+		
 		$newPost = unserialize(serialize($_POST));
 		unset($newPost['XOOPS_TOKEN_REQUEST']);
 		unset($newPost['formulize_cacheddata']);
@@ -271,8 +271,8 @@ class formulizeAdvancedCalculationHandler {
 				}
 			}
 		}
-		// print "<pre>"; var_export( $_POST ); var_export( $newPost ); var_export( $xoopsUser->getGroups() ); print "</pre>";
-		$userGroups = $xoopsUser->getGroups();
+		// print "<pre>"; var_export( $_POST ); var_export( $newPost ); var_export( icms::$user->getGroups() ); print "</pre>";
+		$userGroups = icms::$user->getGroups();
 		$key = md5(serialize($newPost) . serialize($userGroups));
 		$fileName = XOOPS_ROOT_PATH . "/modules/formulize/cache/formulize_advancedCalculation_procid_" . intval($acid) . "_groupids_" . implode("_", $userGroups) . "_" . $key . ".php";
 		return $fileName;
@@ -288,8 +288,8 @@ class formulizeAdvancedCalculationHandler {
 			return false;
 		}
 		// for now...override...webmasters always skip cache
-		global $xoopsUser;
-		$groups = $xoopsUser->getGroups();
+		
+		$groups = icms::$user->getGroups();
 		if (in_array(XOOPS_GROUP_ADMIN, $groups)) {
 			return false;
 		}
@@ -303,7 +303,7 @@ class formulizeAdvancedCalculationHandler {
 	}
 
 	function calculate($advCalcObject, $debugFlag = false) {
-		global $xoopsUser;
+		
 		if (!is_object($advCalcObject)) {
 			$advCalcObject = $this->get($advCalcObject);
 		}
@@ -395,7 +395,7 @@ class formulizeAdvancedCalculationHandler {
 		// check to see if logging is enabled
 		// print "<pre>POST<br>"; print_r( $_POST ); print "<br>Filters and Groupings<br>"; print_r( $filtersAndGroupings ); print "</pre>";
 		if ($modulePrefLogProcedure) {
-			$logid = $this->createLog($acid, $xoopsUser->uid());
+			$logid = $this->createLog($acid, icms::$user->uid());
 
 			$prefix = $acid . "_";
 			$prefixLen = strlen($prefix);
@@ -1292,8 +1292,8 @@ jQuery(document).ready(function() {
 			}
 		}
 		/*
-		 * global $xoopsUser;
-		 * if($xoopsUser->getVar('uid')==1021) {
+		 * 
+		 * if(icms::$user->getVar('uid')==1021) {
 		 * print_r( $packedFormFilters );
 		 * }
 		 */
@@ -1307,10 +1307,10 @@ function groupScopeFilter($handle, $alias = "") {
 	$formObject = $form_handler->getByHandle($handle);
 	$scopeFilter = "";
 	if (is_object($formObject)) {
-		global $xoopsUser;
+		
 		$fid = $formObject->getVar('id_form');
 		$alias = $alias ? $alias . "." : icms::$xoopsDB->prefix($handle) . ".";
-		$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0 => XOOPS_GROUP_ANONYMOUS);
+		$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0 => XOOPS_GROUP_ANONYMOUS);
 		$regUsersKey = array_search(2, $groups);
 		if ($regUsersKey !== false) { // if registered users is found in the group list, then remove it
 			unset($groups[$regUsersKey]);

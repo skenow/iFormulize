@@ -101,9 +101,9 @@ if(!isset($_POST['exportsubmit'])) {
 	
 	// read the query data from the cached file
 	$queryData = file(XOOPS_ROOT_PATH."/cache/exportQuery_".intval($_GET['eq']).".formulize_cached_query_for_export");
-	global $xoopsUser;
-	$exportUid = $xoopsUser ? $xoopsUser->getVar('uid') : 0;
-	$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
+	
+	$exportUid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
+	$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
 	if(trim($queryData[0]) == intval($_GET['fid']) AND trim($queryData[1]) == $exportUid) { // query fid must match passed fid in URL, and the current user id must match the userid at the time the export file was created
 			
 			$GLOBALS['formulize_doingExport'] = true;

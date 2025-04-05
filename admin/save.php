@@ -32,14 +32,14 @@
 include_once "../../../mainfile.php";
 ob_end_clean();
 ob_end_clean(); // in some cases ther appear to be two buffers active?!  So we must try to end twice.
-global $xoopsUser;
-if(!$xoopsUser) {
+
+if(!is_object(icms::$user)) {
   print "Error: you are not logged in";
   return;
 }
 $gperm_handler = icms::handler('icms_member_groupperm');
 include_once XOOPS_ROOT_PATH . "/modules/formulize/include/functions.php";
-$groups = $xoopsUser->getGroups();
+$groups = icms::$user->getGroups();
 $mid = getFormulizeModId();
 $permissionToCheck = "module_admin";
 $itemToCheck = $mid;
@@ -57,7 +57,7 @@ foreach($_POST as $k=>$v) {
   $v = recursive_stripslashes($v);
   if(is_array($v) AND $class != "elements") { // elements class is written using cleanVars so arrays are serialized automagically
     $v = serialize($v);
-  } 
+  }
   $processedValues[$class][$property] = $v;
 }
 
