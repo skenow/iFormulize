@@ -1001,8 +1001,8 @@ class formulizeFormsHandler {
 
 		// replicate permissions of the original form on the new cloned form
 		$criteria = new icms_db_criteria_Compo();
-		$criteria->add(new Criteria('gperm_itemid', $fid), 'AND');
-		$criteria->add(new Criteria('gperm_modid', getFormulizeModId()), 'AND');
+		$criteria->add(new icms_db_criteria_Item('gperm_itemid', $fid), 'AND');
+		$criteria->add(new icms_db_criteria_Item('gperm_modid', getFormulizeModId()), 'AND');
 		$gperm_handler = icms::handler('icms_member_groupperm');
 		$oldFormPerms = $gperm_handler->getObjects($criteria);
 		foreach ($oldFormPerms as $thisOldPerm) {

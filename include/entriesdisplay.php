@@ -2592,7 +2592,7 @@ function convertRawValuestoRealValues($value, $handle, $returnFlat=false) {
 		$criteria = new icms_db_criteria_Compo();
 		foreach($allRealValuesNames as $thisUid) {
 			if(is_numeric($thisUid)) {
-				$criteria->add(new Criteria('uid', $thisUid), 'OR');
+				$criteria->add(new icms_db_criteria_Item('uid', $thisUid), 'OR');
 			}
 		}
 		$users = $user_handler->getObjects($criteria, true); // true causes key of returned array to be uids

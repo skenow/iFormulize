@@ -92,7 +92,7 @@ $grid_background->addElement($grid_background_ver);
 // 5. starting element
 
 $formulize_mgr =& icms_getModuleHandler('elements', 'formulize');
-$grid_elements_criteria = new Criteria();
+$grid_elements_criteria = new icms_db_criteria_Item();
 $grid_elements_criteria->setSort('ele_order');
 $grid_elements_criteria->setOrder('ASC');
 $grid_elements = $formulize_mgr->getObjects2($grid_elements_criteria, $id_form);

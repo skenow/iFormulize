@@ -214,9 +214,9 @@ if($_GET['fid'] != "new") {
   $i = 0;
   foreach($selectedGroups as $thisGroup) {
     // get all the permissions this group has on this form
-  		$criteria = new icms_db_criteria_Compo(new Criteria('gperm_groupid', $thisGroup));
-  		$criteria->add(new Criteria('gperm_itemid', $fid));
-  		$criteria->add(new Criteria('gperm_modid', getFormulizeModId()));
+  		$criteria = new icms_db_criteria_Compo(new icms_db_criteria_Item('gperm_groupid', $thisGroup));
+  		$criteria->add(new icms_db_criteria_Item('gperm_itemid', $fid));
+  		$criteria->add(new icms_db_criteria_Item('gperm_modid', getFormulizeModId()));
   		$perms = $gperm_handler->getObjects($criteria, true);
       $groupObject = $member_handler->getGroup($thisGroup);
       $groupperms[$i]['name'] = $groupObject->getVar('name');
@@ -310,8 +310,8 @@ $permissions['hello'] = "Hello Permission World";
 // need to get screen data so this can be populated properly
 $screens = array();
 $screen_handler = icms_getModuleHandler('screen', 'formulize');
-$criteria_object = new icms_db_criteria_Compo(new Criteria('type','multiPage'));
-$criteria_object->add(new Criteria('type','form'), 'OR');
+$criteria_object = new icms_db_criteria_Compo(new icms_db_criteria_Item('type','multiPage'));
+$criteria_object->add(new icms_db_criteria_Item('type','form'), 'OR');
 $mulitPageAndFormScreens = $screen_handler->getObjects($criteria_object,$fid);
 $i = 1;
 foreach($mulitPageAndFormScreens as $screen) {
@@ -320,7 +320,7 @@ foreach($mulitPageAndFormScreens as $screen) {
   $screens['screens'][$i]['type'] = $screen->getVar('type');
   $i++;
 }
-$listOfEntriesScreens = $screen_handler->getObjects(new Criteria('type','listOfEntries'),$fid);
+$listOfEntriesScreens = $screen_handler->getObjects(new icms_db_criteria_Item('type','listOfEntries'),$fid);
 $i = 1;
 foreach($listOfEntriesScreens as $screen) {
   $screens['listOfEntries'][$i]['sid'] = $screen->getVar('sid');

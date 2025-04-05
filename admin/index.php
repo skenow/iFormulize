@@ -148,7 +148,7 @@ if( $_POST['op'] != 'save' ){
 			<th colspan="4">&nbsp;</th>
 		</tr>
 	';
-	$criteria = new Criteria(1,1);
+	$criteria = new icms_db_criteria_Item(1,1);
 	$criteria->setSort('ele_order');
 	$criteria->setOrder('ASC');
 	$elements =& $formulize_mgr->getObjects2($criteria,$id_form);

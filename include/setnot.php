@@ -479,9 +479,9 @@ function cleanupNots($fid, $uid, $mid) {
 	global $xoopsDB;
 	$notification_handler =& icms::handler('icms_data_notification');
 	$criteria = new icms_db_criteria_Compo();
-	$criteria->add(new criteria('not_modid', $mid));
-	$criteria->add(new criteria('not_itemid', $fid));
-	$criteria->add(new criteria('not_uid', $uid));
+	$criteria->add(new icms_db_criteria_Item('not_modid', $mid));
+	$criteria->add(new icms_db_criteria_Item('not_itemid', $fid));
+	$criteria->add(new icms_db_criteria_Item('not_uid', $uid));
 	print $criteria->renderWhere();
 	$user_nots = $notification_handler->getObjects($criteria, true); // true is use IDs as keys
 	$sub_ids = array_keys($user_nots);

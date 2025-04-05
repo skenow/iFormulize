@@ -138,8 +138,8 @@ if($_GET['sid'] != "new" && $settings['type'] == 'listOfEntries') {
   unset($limitViewOptions['blank']);
   // get the available screens
   $screen_handler = icms_getModuleHandler('screen', 'formulize');
-  $criteria_object = new icms_db_criteria_Compo(new Criteria('type','multiPage'));
-  $criteria_object->add(new Criteria('type','form'), 'OR');
+  $criteria_object = new icms_db_criteria_Compo(new icms_db_criteria_Item('type','multiPage'));
+  $criteria_object->add(new icms_db_criteria_Item('type','form'), 'OR');
   $viewentryscreenOptionsDB = $screen_handler->getObjects($criteria_object, $fid); 
   $viewentryscreenOptions["none"] = _AM_FORMULIZE_SCREEN_LOE_VIEWENTRYSCREEN_DEFAULT;
   foreach($viewentryscreenOptionsDB as $thisViewEntryScreenOption) {

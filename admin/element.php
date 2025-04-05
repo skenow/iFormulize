@@ -312,7 +312,7 @@ if($ele_type=='text') {
   $options['background'] = $ele_value[3];
   $options['heading'] = $ele_value[0];
   $options['sideortop'] = $ele_value[5] == 1 ? "side" : "above";
-  $grid_elements_criteria = new Criteria();
+  $grid_elements_criteria = new icms_db_criteria_Item();
   $grid_elements_criteria->setSort('ele_order');
   $grid_elements_criteria->setOrder('ASC');
   $grid_elements = $element_handler->getObjects2($grid_elements_criteria, $fid);
