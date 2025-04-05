@@ -3546,7 +3546,7 @@ function loadOldReport($id, $fid, $view_groupscope) {
 				$found_scope .= "," . substr($thisscope, 1);
 			} else { // the case of only userscopes, need to set the scope to the groups that the user is a member of
 				$user_scope[] = $thisscope; // save and include as an advanced search property looking for the user id
-				if(!$membership_handler) { $membership_handler =& xoops_gethandler('membership'); }
+				if(!$membership_handler) { $membership_handler = icms::handler('icms_member_group_membership'); }
 				unset($uidGroups);
 				unset($groupString);
 				$uidGroups = $membership_handler->getGroupsByUser($thisscope);
