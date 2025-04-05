@@ -165,7 +165,7 @@ $formulize_allWrittenFids = array();
 $notEntriesList = array();
 if(count($formulize_elementData) > 0 ) { // do security check if it looks like we're going to be writing things...
 	$cururl = getCurrentURL();
-	$module_handler =& xoops_gethandler('module');
+	$module_handler = icms::handler('icms_module');
 	$config_handler =& xoops_gethandler('config');
   $formulizeModule =& $module_handler->getByDirname("formulize");
   $formulizeConfig =& $config_handler->getConfigsByCat(0, $formulizeModule->getVar('mid'));

@@ -934,7 +934,7 @@ function addProfileFields($form, $profileForm) {
 
 	$form->insertBreak(_formulize_ACTDETAILS, "head");
 	// Check reg_codes module option to use email address as username
-	$module_handler =& xoops_gethandler('module');
+	$module_handler = icms::handler('icms_module');
 	$regcodesModule =& $module_handler->getByDirname("reg_codes");
 	$regcodesConfig =& $config_handler->getConfigsByCat(0, $regcodesModule->getVar('mid'));
 

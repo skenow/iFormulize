@@ -99,7 +99,7 @@ list($formlink, $selectedLinkElementId) = createFieldList($ele_value[2]); // two
 // if there's no selected element, then if FULLNAMES or USERNAMES are in effect, then use the profile form if one is specified in the module config options
 $selectedLinkFormId = "";
 if(isset($ele_value[2]['{FULLNAMES}']) OR isset($ele_value[2]['{USERNAMES}'])) {
-	$module_handler =& xoops_gethandler('module');
+	$module_handler = icms::handler('icms_module');
 	$config_handler =& xoops_gethandler('config');
 	$formulizeModule =& $module_handler->getByDirname("formulize");
 	$formulizeConfig =& $config_handler->getConfigsByCat(0, $formulizeModule->getVar('mid'));

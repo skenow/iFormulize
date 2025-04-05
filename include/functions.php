@@ -152,7 +152,7 @@ function gatherNames($groups, $nametype, $requireAllGroups=false, $filter=false)
   // handle any filter that might be specified on the user profile form
   
   // determine which form the "User Profile" is
-  $module_handler =& xoops_gethandler('module');
+  $module_handler = icms::handler('icms_module');
   $config_handler =& xoops_gethandler('config');
   $formulizeModule =& $module_handler->getByDirname("formulize");
 	$formulizeConfig =& $config_handler->getConfigsByCat(0, $formulizeModule->getVar('mid'));
@@ -2759,7 +2759,7 @@ function sendNotifications($fid, $event, $entries, $mid="", $groups=array()) {
 			$uids_cust_real = compileNotUsers2($uids_cust_con, $uids_complete, $notification_handler, $fid, $event, $mid);
 
 			// set the custom template and subject
-	            $module_handler =& xoops_gethandler('module');
+	            $module_handler = icms::handler('icms_module');
 		    $module =& $module_handler->get($mid);
 			$not_config =& $module->getInfo('notification');
 			switch($event) {
@@ -2824,7 +2824,7 @@ function sendNotifications($fid, $event, $entries, $mid="", $groups=array()) {
 // $template should include .tpl on the end
 function sendNotificationToEmail($email, $event, $tags, $subject, $template) {
   
-  $module_handler = xoops_gethandler('module');
+  $module_handler = icms::handler('icms_module');
   $module = $module_handler->get(getFormulizeModId());
   
   $tags['X_ITEM_NAME'] = '[' . _NOT_ITEMNAMENOTAVAILABLE . ']';

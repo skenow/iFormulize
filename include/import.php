@@ -134,7 +134,7 @@ define("IMPORT_DEBUG", false);
 $errors = array();
 
 // get id of profile form
-$module_handler =& xoops_gethandler('module');
+$module_handler = icms::handler('icms_module');
 $formulizeModule =& $module_handler->getByDirname("formulize");
 $formulizeConfig =& $config_handler->getConfigsByCat(0, $formulizeModule->getVar('mid'));
 $regfid = $formulizeConfig['profileForm'];

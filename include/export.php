@@ -71,7 +71,7 @@ if(!isset($_POST['exportsubmit'])) {
 		print "<p>"._formulize_DE_IMPORT_DATATEMP3."</p>\n";
 	}
 	
-	$module_handler = xoops_gethandler('module');
+	$module_handler = icms::handler('icms_module');
 	$config_handler = xoops_gethandler('config');
 	$formulizeModule = $module_handler->getByDirname("formulize");
 	$formulizeConfig = $config_handler->getConfigsByCat(0, $formulizeModule->getVar('mid'));

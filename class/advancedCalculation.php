@@ -310,7 +310,7 @@ class formulizeAdvancedCalculationHandler {
 		$acid = $advCalcObject->getVar('acid');
 
 		// get formulize preferences
-		$module_handler = &xoops_gethandler('module');
+		$module_handler = icms::handler('icms_module');
 		$config_handler = &xoops_gethandler('config');
 		$formulizeModule = &$module_handler->getByDirname("formulize");
 		$formulizeConfig = &$config_handler->getConfigsByCat(0, $formulizeModule->getVar('mid'));
