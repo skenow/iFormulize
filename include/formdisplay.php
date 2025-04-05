@@ -1242,7 +1242,7 @@ function drawSubLinks($sfid, $sub_entries, $uid, $groups, $member_handler, $frid
         $subEntWritten = writeElementValue($_POST['target_sub'], $element_to_write, "new", $value_to_write, $creation_user_touse, "", true); // Last param is override that allows direct writing to linked selectboxes if we have prepped the value first!
 	$element_handler = icms_getModuleHandler('elements', 'formulize');
 				if(!isset($elementsForDefaults)) {
-					$criteria = new CriteriaCompo();
+					$criteria = new icms_db_criteria_Compo();
 					$criteria->add(new Criteria('ele_type', 'text'), 'OR');
 					$criteria->add(new Criteria('ele_type', 'textarea'), 'OR');
 					$elementsForDefaults = $element_handler->getObjects2($criteria,$_POST['target_sub']); // get all the text or textarea elements in the form
@@ -1695,11 +1695,11 @@ function compileElements($fid, $form, $formulize_mgr, $prevEntry, $entry, $go_ba
 	// elementdisplay.php also has handling for this...they should be amalgamated/rationalized at some point
 	$hiddenElements = array();
 	//if(!$entry) {
-		$notAllowedCriteria = new CriteriaCompo();
+		$notAllowedCriteria = new icms_db_criteria_Compo();
 		$notAllowedCriteria->add(new Criteria('ele_forcehidden', 1));
-		$criteria = new CriteriaCompo();
+		$criteria = new icms_db_criteria_Compo();
 		$criteria->add(new Criteria('ele_display', 0), 'OR');
-		$criteria2 = new CriteriaCompo();
+		$criteria2 = new icms_db_criteria_Compo();
 		foreach($groups as $thisgroup) {
 			$criteria2->add(new Criteria('ele_display', '%,'.$thisgroup.',%', 'NOT LIKE'), 'AND');
 		}
@@ -1785,14 +1785,14 @@ function compileElements($fid, $form, $formulize_mgr, $prevEntry, $entry, $go_ba
 
 	// set criteria for matching on display
 	// set the basics that everything has to match
-	$criteriaBase = new CriteriaCompo();
+	$criteriaBase = new icms_db_criteria_Compo();
 	$criteriaBase->add(new Criteria('ele_display', 1), 'OR');
 	foreach($groups as $thisgroup) {
 		$criteriaBase->add(new Criteria('ele_display', '%,'.$thisgroup.',%', 'LIKE'), 'OR');
 	}
 	if(is_array($elements_allowed)) {
 		// if we're limiting the elements, then add a criteria for that (multiple criteria are joined by AND unless you specify OR manually when adding them (as in the base above))
-		$criteria = new CriteriaCompo();
+		$criteria = new icms_db_criteria_Compo();
 		$criteria->add(new Criteria('ele_id', "(".implode(",",$elements_allowed).")", "IN"));
 		$criteria->add($criteriaBase);
 	} else {

@@ -325,7 +325,7 @@ include_once(SMARTOBJECT_ROOT_PATH . "class/smartobjectcategory.php");
 // Creating the screen handler object
 $formulize_screen_handler =& icms_getModuleHandler('screen', 'formulize');
 
-$criteria = new CriteriaCompo();
+$criteria = new icms_db_criteria_Compo();
 
 include_once SMARTOBJECT_ROOT_PATH."class/smartobjecttable.php";
 $objectTable = new SmartObjectTable($formulize_screen_handler, $criteria);

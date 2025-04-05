@@ -2589,7 +2589,7 @@ function convertRawValuestoRealValues($value, $handle, $returnFlat=false) {
 	if(count($allRealValuesNames) > 0) {
 		// convert all uids found into names with only one query
 		$user_handler = icms::handler('icms_member_user');
-		$criteria = new CriteriaCompo();
+		$criteria = new icms_db_criteria_Compo();
 		foreach($allRealValuesNames as $thisUid) {
 			if(is_numeric($thisUid)) {
 				$criteria->add(new Criteria('uid', $thisUid), 'OR');

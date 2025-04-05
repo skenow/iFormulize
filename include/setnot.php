@@ -478,7 +478,7 @@ function buildNotOptionList($sql, $type) {
 function cleanupNots($fid, $uid, $mid) {
 	global $xoopsDB;
 	$notification_handler =& icms::handler('icms_data_notification');
-	$criteria = new criteriaCompo();
+	$criteria = new icms_db_criteria_Compo();
 	$criteria->add(new criteria('not_modid', $mid));
 	$criteria->add(new criteria('not_itemid', $fid));
 	$criteria->add(new criteria('not_uid', $uid));

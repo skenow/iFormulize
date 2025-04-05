@@ -214,7 +214,7 @@ if($_GET['fid'] != "new") {
   $i = 0;
   foreach($selectedGroups as $thisGroup) {
     // get all the permissions this group has on this form
-  		$criteria = new CriteriaCompo(new Criteria('gperm_groupid', $thisGroup));
+  		$criteria = new icms_db_criteria_Compo(new Criteria('gperm_groupid', $thisGroup));
   		$criteria->add(new Criteria('gperm_itemid', $fid));
   		$criteria->add(new Criteria('gperm_modid', getFormulizeModId()));
   		$perms = $gperm_handler->getObjects($criteria, true);
@@ -310,7 +310,7 @@ $permissions['hello'] = "Hello Permission World";
 // need to get screen data so this can be populated properly
 $screens = array();
 $screen_handler = icms_getModuleHandler('screen', 'formulize');
-$criteria_object = new CriteriaCompo(new Criteria('type','multiPage'));
+$criteria_object = new icms_db_criteria_Compo(new Criteria('type','multiPage'));
 $criteria_object->add(new Criteria('type','form'), 'OR');
 $mulitPageAndFormScreens = $screen_handler->getObjects($criteria_object,$fid);
 $i = 1;
