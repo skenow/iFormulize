@@ -2588,7 +2588,7 @@ function convertRawValuestoRealValues($value, $handle, $returnFlat=false) {
 	}
 	if(count($allRealValuesNames) > 0) {
 		// convert all uids found into names with only one query
-		$user_handler = xoops_gethandler('user');
+		$user_handler = icms::handler('icms_member_user');
 		$criteria = new CriteriaCompo();
 		foreach($allRealValuesNames as $thisUid) {
 			if(is_numeric($thisUid)) {

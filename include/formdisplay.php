@@ -903,7 +903,7 @@ function addProfileFields($form, $profileForm) {
 	global $xoopsUser, $xoopsConfig, $xoopsConfigUser;
 	$config_handler = icms::handler('icms_config');
 	$xoopsConfigUser =& $config_handler->getConfigsByCat(XOOPS_CONF_USER);
-	$user_handler =& xoops_gethandler('user');
+	$user_handler = icms::handler('icms_member_user');
 	$thisUser = $user_handler->get($profileForm);
 
 	// initialize $thisUser
