@@ -67,8 +67,8 @@ function displayEntries($formframe, $mainform="", $loadview="", $loadOnlyView=0,
 	// Set some required variables
 	$mid = getFormulizeModId();
 	list($fid, $frid) = getFormFramework($formframe, $mainform);
-	$gperm_handler =& icms::handler('icms_member_groupperm');
-	$member_handler =& icms::handler('icms_member');
+	$gperm_handler = icms::handler('icms_member_groupperm');
+	$member_handler = icms::handler('icms_member');
 	$groups = $xoopsUser ? $xoopsUser->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
 	$uid = $xoopsUser ? $xoopsUser->getVar('uid') : "0";
 
