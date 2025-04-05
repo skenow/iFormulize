@@ -62,7 +62,7 @@ $listOfElements_output = $listOfElements->render() . "\n<br />\n<input type=butt
 $formulaBox->setDescription($listOfElements_output . "<br /><br />" . _AM_ELE_DERIVED_DESC);
 
 // Copied from ele_text.php to add number formatting options. kw 2008-10-31
-$config_handler = $config_handler =& xoops_gethandler('config');
+$config_handler = $config_handler = icms::handler('icms_config');
 $formulizeConfig =& $config_handler->getConfigsByCat(0, getFormulizeModId());
 if(isset($value[1])) {
 	$decimalDefault = $value[1];

@@ -2248,7 +2248,7 @@ if(!$xoopsDB) {
 				break;
 		} 
 	}
-        $config_handler =& xoops_gethandler('config');
+        $config_handler = icms::handler('icms_config');
 	$formulizeModuleConfig =& $config_handler->getConfigsByCat(0, getFormulizeModId()); // get the *Formulize* module config settings
  	$GLOBALS['formulize_LOE_limit'] = $formulizeModuleConfig['LOE_limit'];
         

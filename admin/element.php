@@ -36,7 +36,7 @@ $aid = intval($_GET['aid']);
 $application_handler = icms_getModuleHandler('applications','formulize');
 $form_handler = icms_getModuleHandler('forms','formulize');
 $element_handler = icms_getModuleHandler('elements', 'formulize');
-$config_handler = $config_handler =& xoops_gethandler('config');
+$config_handler = $config_handler = icms::handler('icms_config');
 $formulizeConfig =& $config_handler->getConfigsByCat(0, getFormulizeModId());
 
 if($aid == 0) {

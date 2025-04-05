@@ -111,7 +111,7 @@ if( ! is_array( $formframe ) && $screenid && !$ele_allowed) { // no element list
 }
 
 $module_handler = icms::handler('icms_module');
-$config_handler =& xoops_gethandler('config');
+$config_handler = icms::handler('icms_config');
 $formulizeModule =& $module_handler->getByDirname("formulize");
 $formulizeConfig =& $config_handler->getConfigsByCat(0, $formulizeModule->getVar('mid'));
 $modulePrefUseToken = $formulizeConfig['useToken'];

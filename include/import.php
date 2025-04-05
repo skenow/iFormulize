@@ -64,7 +64,7 @@ global $xoopsConfig;
 
 global $xoopsDB, $xoopsUser;
 
-$config_handler =& xoops_gethandler('config');
+$config_handler = icms::handler('icms_config');
 $xoopsConfigUser =& $config_handler->getConfigsByCat(XOOPS_CONF_USER);
 
 

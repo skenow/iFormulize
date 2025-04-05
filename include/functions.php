@@ -153,7 +153,7 @@ function gatherNames($groups, $nametype, $requireAllGroups=false, $filter=false)
   
   // determine which form the "User Profile" is
   $module_handler = icms::handler('icms_module');
-  $config_handler =& xoops_gethandler('config');
+  $config_handler = icms::handler('icms_config');
   $formulizeModule =& $module_handler->getByDirname("formulize");
 	$formulizeConfig =& $config_handler->getConfigsByCat(0, $formulizeModule->getVar('mid'));
   $fid = $formulizeConfig['profileForm'];
@@ -727,7 +727,7 @@ function allowedForms() {
 
 	// EXCLUDE THE USERPROFILE FORM UNLESS THE USER HAS VIEW_GROUPSCOPE OR VIEW_GLOBALSCOPE ON IT
 	// added Mar 15 2006, jwe
-	$config_handler =& xoops_gethandler('config');
+	$config_handler = icms::handler('icms_config');
 	$xoopsModuleConfig =& $config_handler->getConfigsByCat(0, $module_id); // get the *Formulize* module config settings
  	$pform = $xoopsModuleConfig['profileForm'];
 	if(!$pform) { return $allowedForms; }
@@ -2704,7 +2704,7 @@ function sendNotifications($fid, $event, $entries, $mid="", $groups=array()) {
 		$extra_tags['FORMNAME'] = trans($formObjs[$fid]->getVar('title'));
 		// determine if this is the profile form and if so, construct the URL for the notification differently
 		// so the user goes to the userinfo.php page instead of the form page
-		$config_handler =& xoops_gethandler('config');
+		$config_handler = icms::handler('icms_config');
 		$formulizeConfig =& $config_handler->getConfigsByCat(0, $mid);
      	     	$profileFormId = $formulizeConfig['profileForm'];
 		if($profileFormId == $fid) {
@@ -3881,7 +3881,7 @@ function formulize_numberFormat($value, $handle, $decimalOverride=0) {
 // internal function used by formulize_numberFormat to actually do the formatting
 // different element types have different parts of ele_value where the number values are stored, so that's the reason for abstracting this out one level
 function _formulize_numberFormat($value, $decimalOverride, $decimals="", $decSepExists=false, $decsep="", $sepExists=false, $sep="", $prefixExists=false, $prefix="") {
-	$config_handler =& xoops_gethandler('config');
+	$config_handler = icms::handler('icms_config');
 	$formulizeConfig =& $config_handler->getConfigsByCat(0, getFormulizeModId());
 	if($decimalOverride) {
 		$decimals = $decimalOverride; // use the override if it's present

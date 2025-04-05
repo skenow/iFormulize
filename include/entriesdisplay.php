@@ -81,7 +81,7 @@ function displayEntries($formframe, $mainform="", $loadview="", $loadOnlyView=0,
 	$formulize_LOESecurityPassed = (isset($GLOBALS['formulize_securityCheckPassed']) AND $GLOBALS['formulize_securityCheckPassed']) ? true : false;
 	if((($_POST['delconfirmed'] OR $_POST['cloneconfirmed'] OR $_POST['delviewid_formulize'] OR $_POST['saveid_formulize'] OR is_numeric($_POST['caid']))) AND !$formulize_LOESecurityPassed) {
 		$module_handler = icms::handler('icms_module');
-		$config_handler =& xoops_gethandler('config');
+		$config_handler = icms::handler('icms_config');
     $formulizeModule =& $module_handler->getByDirname("formulize");
     $formulizeConfig =& $config_handler->getConfigsByCat(0, $formulizeModule->getVar('mid'));
     $modulePrefUseToken = $formulizeConfig['useToken'];
@@ -1916,7 +1916,7 @@ function drawHeaders($headers, $cols, $useBoxes=null, $useLinks=null, $numberOfB
 	static $headingHelpLink;
 	if(!$checkedHelpLink) {
 		$module_handler = icms::handler('icms_module');
-		$config_handler =& xoops_gethandler('config');
+		$config_handler = icms::handler('icms_config');
 		$formulizeModule = $module_handler->getByDirname("formulize");
 		$formulizeConfig =& $config_handler->getConfigsByCat(0, $formulizeModule->getVar('mid'));
 		$headingHelpLink = $formulizeConfig['heading_help_link'];

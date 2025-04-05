@@ -57,7 +57,7 @@ $valueType->setDescription(_AM_ELE_TYPE_DESC);
 // and prefix for display
 // and separator for thousands
 
-$config_handler = $config_handler =& xoops_gethandler('config');
+$config_handler = $config_handler = icms::handler('icms_config');
 $formulizeConfig =& $config_handler->getConfigsByCat(0, getFormulizeModId());
 if(isset($value[5])) {
 	$decimalDefault = $value[5];

@@ -311,7 +311,7 @@ class formulizeAdvancedCalculationHandler {
 
 		// get formulize preferences
 		$module_handler = icms::handler('icms_module');
-		$config_handler = &xoops_gethandler('config');
+		$config_handler = icms::handler('icms_config');
 		$formulizeModule = &$module_handler->getByDirname("formulize");
 		$formulizeConfig = &$config_handler->getConfigsByCat(0, $formulizeModule->getVar('mid'));
 		$modulePrefUseCache = $formulizeConfig['useCache'];

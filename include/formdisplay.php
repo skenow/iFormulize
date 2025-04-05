@@ -587,7 +587,7 @@ if(!is_numeric($titleOverride) AND $titleOverride != "" AND $titleOverride != "a
       }
 
 	// set the alldoneoverride if necessary -- August 22 2006
-	$config_handler =& xoops_gethandler('config');
+	$config_handler = icms::handler('icms_config');
 	$formulizeConfig = $config_handler->getConfigsByCat(0, $mid);
 	// remove the all done button if the config option says 'no', and we're on a single-entry form, or the function was called to look at an existing entry, or we're on an overridden Multi-entry form
 	$allDoneOverride = (!$formulizeConfig['all_done_singles'] AND !$profileForm AND (($single OR $overrideMulti OR $original_entry) AND !$_POST['target_sub'] AND !$_POST['goto_sfid'] AND !$_POST['deletesubsflag'] AND !$_POST['parent_form'])) ? true : false;
@@ -901,7 +901,7 @@ function addProfileFields($form, $profileForm) {
 	// password
 
 	global $xoopsUser, $xoopsConfig, $xoopsConfigUser;
-	$config_handler =& xoops_gethandler('config');
+	$config_handler = icms::handler('icms_config');
 	$xoopsConfigUser =& $config_handler->getConfigsByCat(XOOPS_CONF_USER);
 	$user_handler =& xoops_gethandler('user');
 	$thisUser = $user_handler->get($profileForm);
