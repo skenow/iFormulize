@@ -40,7 +40,7 @@ require_once XOOPS_ROOT_PATH.'/class/theme.php';
 require_once XOOPS_ROOT_PATH.'/class/theme_blocks.php';
 $xoopsThemeFactory = new xos_opal_ThemeFactory();
 $xoTheme =& $xoopsThemeFactory->createInstance();
-$xoopsTpl =& $xoTheme->template;
+$icmsAdminTpl =& $xoTheme->template;
 
 
 global $xoopsConfig, $xoopsDB;
@@ -75,8 +75,8 @@ $content['form1']['default'] = getDefault($lid, 1);
 $content['form2']['default'] = getDefault($lid, 2);
 
 
-$xoopsTpl->assign("content",$content);
-$xoopsTpl->display("db:admin/relationship_common_values.html");
+$icmsAdminTpl->assign("content",$content);
+$icmsAdminTpl->display("db:admin/relationship_common_values.html");
 
 
 // THIS FUNCTION CREATES THE ARRAY OF ELEMENTS FOR USE IN THE LISTBOXES
@@ -100,4 +100,3 @@ function getDefault($lid, $order) {
 		return false;
 	}
 }
-?>

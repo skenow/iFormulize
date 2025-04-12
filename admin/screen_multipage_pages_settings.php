@@ -33,14 +33,9 @@ require_once "../../../mainfile.php";
 
 include_once XOOPS_ROOT_PATH."/modules/formulize/include/functions.php";
 
-// setup a smarty object that we can use for templating our own pages
-
-require_once XOOPS_ROOT_PATH.'/class/template.php';
-require_once XOOPS_ROOT_PATH.'/class/theme.php';
-require_once XOOPS_ROOT_PATH.'/class/theme_blocks.php';
-$xoopsThemeFactory = new xos_opal_ThemeFactory();
+$xoopsThemeFactory = new icms_view_theme_Factory();
 $xoTheme =& $xoopsThemeFactory->createInstance();
-$xoopsTpl =& $xoTheme->template;
+$icmsAdminTpl =& $xoTheme->template;
 
 $pageIndex = intval($_GET['page']);
 $sid = intval($_GET['sid']);
@@ -88,11 +83,11 @@ $filterSettingsToSend = count($conditions[$pageIndex] > 0) ? $conditions[$pageIn
   }
 $pageConditions = formulize_createFilterUI($filterSettingsToSend, "pagefilter_".$pageIndex, $screen->getVar('fid'), "popupform");
 
-$xoopsTpl->assign("pageTitle",$pageTitle);
-$xoopsTpl->assign("pageNumber",$pageNumber);
-$xoopsTpl->assign("pageIndex",$pageIndex);
-$xoopsTpl->assign("pageElements",$pageElements);
-$xoopsTpl->assign("pageConditions",$pageConditions);
-$xoopsTpl->assign("options",$options);
-$xoopsTpl->assign("sid",$sid);
-$xoopsTpl->display("db:admin/screen_multipage_pages_settings.html");
+$icmsAdminTpl->assign("pageTitle",$pageTitle);
+$icmsAdminTpl->assign("pageNumber",$pageNumber);
+$icmsAdminTpl->assign("pageIndex",$pageIndex);
+$icmsAdminTpl->assign("pageElements",$pageElements);
+$icmsAdminTpl->assign("pageConditions",$pageConditions);
+$icmsAdminTpl->assign("options",$options);
+$icmsAdminTpl->assign("sid",$sid);
+$icmsAdminTpl->display("db:admin/screen_multipage_pages_settings.html");

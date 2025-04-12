@@ -42,7 +42,7 @@ if (file_exists(XOOPS_ROOT_PATH . '/class/mail/phpmailer/class.phpmailer.php')) 
 $GLOBALS['formulize_asynchronousFormDataInDatabaseReadyFormat'] = array();
 $GLOBALS['formulize_asynchronousFormDataInAPIFormat'] = array();
 
-global $xoopsDB, $myts, $xoopsTpl, $xoopsConfig;
+global $xoopsDB, $myts, $xoopsConfig;
 
 // load the formulize language constants if they haven't been loaded already
 	if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/main.php") ) {
@@ -102,7 +102,7 @@ if ( $res ) {
 $myts = icms_core_Textsanitizer::getInstance();
 $title = $myts->displayTarea($desc_form);
 if(!isset($formulize_screen_id)) {
-  $xoopsTpl->assign('icms_pagetitle', $title);
+  $icmsTpl->assign('icms_pagetitle', $title);
 }
 
 // get the global or group permission
@@ -144,8 +144,8 @@ if($sid) {
 			$frid = $screen->getVar('frid'); // set these here just in case it's needed in readelements.php
 		}
 		
-    if(is_object($xoopsTpl)) {
-      $xoopsTpl->assign('icms_pagetitle', $screen->getVar('title'));
+    if(is_object($icmsTpl)) {
+    	$icmsTpl->assign('icms_pagetitle', $screen->getVar('title'));
     }
 		
 	}
