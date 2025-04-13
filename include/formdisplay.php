@@ -988,7 +988,7 @@ function addProfileFields($form, $profileForm) {
 	$form->addElement($pwd_tray, $pass_required);
 	$name_text = new icms_form_elements_Text(_US_REALNAME, 'userprofile_name', 30, 60, $thisUser_name);
 	$form->addElement($name_text, 1);
-	$timezone_select = new icms_form_elements_SelectTimezone(_US_TIMEZONE, 'userprofile_timezone_offset', $thisUser_timezone_offset);
+	$timezone_select = new icms_form_elements_select_Timezone(_US_TIMEZONE, 'userprofile_timezone_offset', $thisUser_timezone_offset);
 	$form->addElement($timezone_select);
 
 	if($profileForm != "new") {
