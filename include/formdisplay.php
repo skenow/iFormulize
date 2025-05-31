@@ -1103,8 +1103,8 @@ function addSubmitButton($form, $subButtonText, $go_back="", $currentURL, $butto
 		print "<form name='printview' action='".$newcurrentURL."' method=post target=_blank>\n";
 		
 		// add security token
-		if(isset($GLOBALS['xoopsSecurity'])) {
-			print $GLOBALS['xoopsSecurity']->getTokenHTML();
+		if(isset(icms::$security)) {
+			print icms::$security->getTokenHTML();
 		}
 		
 		$currentPage = "";

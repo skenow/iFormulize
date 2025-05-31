@@ -43,7 +43,7 @@ print "<link rel='stylesheet' type='text/css' media='all' href='".getcss($xoopsC
 // figure out if this is XOOPS or ICMS
 if(file_exists(XOOPS_ROOT_PATH."/class/icmsform/index.html")) {
 	print "<link rel=\"stylesheet\" media=\"screen\" href=\"".XOOPS_URL."/icms.css\" type=\"text/css\" />\n";
-} 
+}
 PRINT "</HEAD>";
 
 $formframe = $_POST['formframe'];
@@ -98,7 +98,7 @@ if( ! is_array( $formframe ) && $screenid && !$ele_allowed) { // no element list
 		ksort($pages); // make sure the arrays are sorted by key, ie: page number
 		ksort($pagetitles);
 		array_unshift($pages, ""); // convention dictates that the page arrays start with [1] and not [0], for readability when manually using the API, so we bump up all the numbers by one by adding something to the front of the array
-		array_unshift($pagetitles, ""); 
+		array_unshift($pagetitles, "");
     unset($pages[0]); // get rid of the part we just unshifted, so the page count is correct
 		unset($pagetitles[0]);
 		$formframe['pagetitles'] = $pagetitles;
@@ -116,8 +116,8 @@ $formulizeModule =& $module_handler->getByDirname("formulize");
 $formulizeConfig =& $config_handler->getConfigsByCat(0, $formulizeModule->getVar('mid'));
 $modulePrefUseToken = $formulizeConfig['useToken'];
 $useToken = $screen ? $screen->getVar('useToken') : $modulePrefUseToken;  // screen type for regular forms doesn't yet exist, but when it does, this check will be relevant
-if(isset($GLOBALS['xoopsSecurity']) AND $useToken) { // avoid security check for versions of XOOPS that don't have that feature, or for when it's turned off
-	if (!$GLOBALS['xoopsSecurity']->check()) { 
+if(isset(icms::$security) AND $useToken) { // avoid security check for versions of XOOPS that don't have that feature, or for when it's turned off
+	if (!icms::$security->check()) {
 	  print "<b>Error: it appears you should not be viewing this page.  Please contact the webmaster for assistance.</b>";
 		return false;
 	}
@@ -127,7 +127,7 @@ if(isset($GLOBALS['xoopsSecurity']) AND $useToken) { // avoid security check for
 //print "<p> mainform = ".$mainform."</p>";
 //print "<p> ventry = ".$ventry."</p>";
 
-print "<center>"; 
+print "<center>";
 print "<table width=100%><tr><td width=5%></td><td width=90%>";
 print "<div id=\"formulize-printpreview\">";
 include_once XOOPS_ROOT_PATH . "/modules/formulize/include/formdisplay.php";
@@ -206,7 +206,7 @@ function canViewPage( $entry, $currentPage, $conditions, $formframe, $mainform )
 			} else {
 				$data = getData("", $formframe, $finalFilter, $masterBoolean, "", "", "", "", "", false, 0, false, "", false, true);
 			}
-			if(!$data) { 
+			if(!$data) {
 				$pagesSkipped = true;
 			} else {
 				$conditionsMet = true;

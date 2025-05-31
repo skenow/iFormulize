@@ -85,8 +85,8 @@ function displayEntries($formframe, $mainform="", $loadview="", $loadOnlyView=0,
     $formulizeConfig =& $config_handler->getConfigsByCat(0, $formulizeModule->getVar('mid'));
     $modulePrefUseToken = $formulizeConfig['useToken'];
 		$useToken = $screen ? $screen->getVar('useToken') : $modulePrefUseToken;
-		if(isset($GLOBALS['xoopsSecurity']) AND $useToken) {
-			$formulize_LOESecurityPassed = $GLOBALS['xoopsSecurity']->check();
+		if(isset(icms::$security) AND $useToken) {
+			$formulize_LOESecurityPassed = icms::$security->check();
 		} else { // if there is no security token, then assume true -- necessary for old versions of XOOPS.
 			$formulize_LOESecurityPassed = true;
 		}
@@ -4518,8 +4518,8 @@ function formulize_gatherDataSet($settings=array(), $searches, $sort="", $order=
 	print "<div id=listofentries>\n";
 
 	print "<form name=controls id=controls action=$currentURL method=post onsubmit=\"javascript:showLoading();\">\n";
-	if(isset($GLOBALS['xoopsSecurity'])) {
-		print $GLOBALS['xoopsSecurity']->getTokenHTML();
+	if(isset(icms::$security)) {
+		print icms::$security->getTokenHTML();
 	}
 		
 	print "<input type=hidden name=formulize_cacheddata id=formulize_cacheddata value=\"$formulize_cachedDataId\">\n"; // set the cached data id that we might want to read on next page load

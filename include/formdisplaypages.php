@@ -31,7 +31,7 @@
 ##  Project: Formulize                                                       ##
 ###############################################################################
 
-//THIS FILE HANDLES THE DISPLAY OF FORMS AS MULTIPLE PAGES.  
+//THIS FILE HANDLES THE DISPLAY OF FORMS AS MULTIPLE PAGES.
 
 global $xoopsConfig;
 // load the formulize language constants if they haven't been loaded already
@@ -63,7 +63,7 @@ function displayFormPages($formframe, $entry="", $mainform="", $pages, $conditio
 	
 	list($fid, $frid) = getFormFramework($formframe, $mainform);
 	
-	$thankstext = $thankstext ? $thankstext : _formulize_DMULTI_THANKS; 
+	$thankstext = $thankstext ? $thankstext : _formulize_DMULTI_THANKS;
 	$introtext = $introtext ? $introtext : "";
 	
 	
@@ -129,12 +129,12 @@ function displayFormPages($formframe, $entry="", $mainform="", $pages, $conditio
 	
 			//$owner_groups =& $member_handler->getGroupsByUser($owner, FALSE);
 			$data_handler = new formulizeDataHandler($fid);
-			$owner_groups = $data_handler->getEntryOwnerGroups($entry);		
+			$owner_groups = $data_handler->getEntryOwnerGroups($entry);
 	
 			$entries[$fid][0] = $entry;
 	
-			if($frid) { 
-				$linkResults = checkForLinks($frid, array(0=>$fid), $fid, $entries, $gperm_handler, $owner_groups, $mid, $member_handler, $owner); 
+			if($frid) {
+				$linkResults = checkForLinks($frid, array(0=>$fid), $fid, $entries, $gperm_handler, $owner_groups, $mid, $member_handler, $owner);
 				unset($entries);
 				$entries = $linkResults['entries'];
 			}
@@ -208,7 +208,7 @@ function displayFormPages($formframe, $entry="", $mainform="", $pages, $conditio
 	// if the conditions are not met, move on to the next page and repeat the condition check
 	// conditions only checked once there is an entry!
 	$pagesSkipped = false;
-	if(is_array($conditions) AND $entry) { 
+	if(is_array($conditions) AND $entry) {
 		$conditionsMet = false;
 		while(!$conditionsMet) {
 			if(isset($conditions[$currentPage]) AND count($conditions[$currentPage][0])>0) { // conditions on the current page
@@ -260,7 +260,7 @@ function displayFormPages($formframe, $entry="", $mainform="", $pages, $conditio
 				}
 				include_once XOOPS_ROOT_PATH . "/modules/formulize/include/extract.php";
 				$data = getData($frid, $fid, $finalFilter, $masterBoolean, "", "", "", "", "", false, 0, false, "", false, true);
-				if(!$data) { 
+				if(!$data) {
 					if($prevPage < $currentPage) {
 						$currentPage++;
 					} else {
@@ -293,7 +293,7 @@ function displayFormPages($formframe, $entry="", $mainform="", $pages, $conditio
 	
 	if($currentPage == $thanksPage) {
 	
-		if(is_array($thankstext)) { 
+		if(is_array($thankstext)) {
 			if($thankstext[0] === "PHP") {
 				eval($thankstext[1]);
 			} else {
@@ -323,7 +323,7 @@ function displayFormPages($formframe, $entry="", $mainform="", $pages, $conditio
 		}
 	
 	
-	} 
+	}
 	
 	$submitJavascriptNext =  "onclick=\"javascript:submitForm($nextPage, $currentPage);return false;\"";
 	$submitJavascriptPrev =  "onclick=\"javascript:submitForm($previousPage, $currentPage);return false;\"";
@@ -397,7 +397,7 @@ function displayFormPages($formframe, $entry="", $mainform="", $pages, $conditio
 		$nextPageButton = generatePrevNextButtonMarkup("next", $nextButtonText, $submitJavascriptNext, $usersCanSave, $nextPage, $previousPage, $thanksPage);
 		$totalPages = count($pages);
 		$skippedPageMessage = $pagesSkipped ? _formulize_DMULTI_SKIP : "";
-		$pageSelectionList = pageSelectionList($currentPage, $totalPages, $pageTitles, "above");   // calling for the 'above' drawPageNav 
+		$pageSelectionList = pageSelectionList($currentPage, $totalPages, $pageTitles, "above");   // calling for the 'above' drawPageNav
 	       
 		// setting up the basic templateVars for all templates
 		// templatevariables must be called after all the variables are loaded otherwise they do not make it into renderTemplate
@@ -438,7 +438,7 @@ function displayFormPages($formframe, $entry="", $mainform="", $pages, $conditio
 				$elementMarkup = $form_ele->render();
 				$elementCaption = displayCaption("", $thisElement);
 				$elementDescription = displayDescription("", $thisElement);
-				$templateVariables['elementCaption'] = $elementCaption;  // here we can assume that the $previousPageButton etc has not be changed before rendering 
+				$templateVariables['elementCaption'] = $elementCaption;  // here we can assume that the $previousPageButton etc has not be changed before rendering
 				$templateVariables['elementMarkup'] = $elementMarkup;
 				$templateVariables['elementDescription'] = $elementDescription;
 				$templateVariables['elementObjectForRendering'] = $form_ele;
@@ -452,9 +452,9 @@ function displayFormPages($formframe, $entry="", $mainform="", $pages, $conditio
 		    print "<input type=hidden name=formulize_doneDest value='".$settings['formulize_doneDest']."'>";
 		    print "<input type=hidden name=formulize_buttonText value='".$settings['formulize_buttonText']."'>";
 		    print "<input type=hidden name=ventry value='".$settings['ventry']."'>";
-		    print $GLOBALS['xoopsSecurity']->getTokenHTML();
+		    print icms::$security->getTokenHTML();
 		    if($entry) {
-			    print "<input type=hidden name=entry".$fid." value=".intval($entry).">"; // need this to persist the entry that the user is 
+			    print "<input type=hidden name=entry".$fid." value=".intval($entry).">"; // need this to persist the entry that the user is
 		    }
 		    print "</form></div>";
 		    print "<div id=savingmessage style=\"display: none; position: absolute; width: 100%; right: 0px; text-align: center; padding-top: 50px;\">\n";
@@ -479,14 +479,14 @@ function displayFormPages($formframe, $entry="", $mainform="", $pages, $conditio
 	    // have to get the new value for $pageSelection list if the user requires it on the users view.
 	    $pageSelectionList = pageSelectionList($currentPage, $totalPages, $pageTitles, "below");
 	    print "<form name=\"pageNavOptions_below\" id==\"pageNavOptions_below\">\n";
-	    if ($screen AND $bottomtemplate = $screen->getVar('bottomtemplate')) { 
+	    if ($screen AND $bottomtemplate = $screen->getVar('bottomtemplate')) {
 		    $templateVariables['pageSelectionList'] = $pageSelectionList; // assign the new pageSelectionList, since it was redone for the bottom section
 		    print renderTemplate($bottomtemplate, $templateVariables);
 	    } else {
 		    drawPageNav($usersCanSave, $currentPage, $totalPages, "below", $nextPageButton, $previousPageButton, $skippedPageMessage, $pageSelectionList);
 	    }
 	    print "</form>";
-    }	
+    }
 
 
     formulize_benchmark("End of displayFormPages.");
@@ -511,7 +511,7 @@ function drawPageNav($usersCanSave="", $currentPage="", $totalPages, $aboveBelow
 		print "<td style=\"vertical-align: middle;\">";
 		print _formulize_DMULTI_JUMPTO . "&nbsp;&nbsp;" . $pageSelectionList;
 		print "</td></tr></table></div></form><br />";
-        } else { 
+        } else {
                 //navigation options below the form print like this
                 print "<br><div id=\"bottomPageNumber\"><center><p>" . _formulize_DMULTI_PAGE . " $currentPage " . _formulize_DMULTI_OF . " " . $totalPages;
                 if(!$usersCanSave) {print "<br>" . _formulize_INFO_NOSAVE;}

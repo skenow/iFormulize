@@ -116,7 +116,7 @@ function displayGrid($fid, $entry="", $rowcaps, $colcaps, $title="", $orientatio
 
 	// initialize form
 	if(!$calledInternal) {
-		print $GLOBALS['xoopsSecurity']->getTokenHTML();
+		print icms::$security->getTokenHTML();
 	}
 
 	// start buffering the output
