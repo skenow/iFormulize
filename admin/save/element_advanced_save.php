@@ -64,8 +64,8 @@ if(!$gperm_handler->checkRight("edit_form", $fid, $groups, $mid)) {
 
 $ele_value = $element->getVar('ele_value');
 $ele_encrypt = $_POST['elements-ele_encrypt'];
-$databaseElement = ($ele_type == "areamodif" OR $ele_type == "ib" OR $ele_type == "sep" OR $ele_type == "subform" OR $ele_type == "grid" OR (property_exists($element,'hasData') AND $element->hasData == false) ) ? false : true; 
-$reloadneeded = false;    
+$databaseElement = ($ele_type == "areamodif" OR $ele_type == "ib" OR $ele_type == "sep" OR $ele_type == "subform" OR $ele_type == "grid" OR (property_exists($element,'hasData') AND $element->hasData == false) ) ? false : true;
+$reloadneeded = false;
 if($ele_encrypt != $element->getVar('ele_encrypt') AND $databaseElement AND !$_GET['ele_id']) { // the setting has changed on this pageload, and it's a database element, and it's not new
   $reloadneeded = true; // display of data type goes on/off when encryption is off/on
   // if the encryption setting changed, then we need to encrypt/decrypt all the existing data
@@ -77,7 +77,6 @@ if($ele_encrypt != $element->getVar('ele_encrypt') AND $databaseElement AND !$_G
 }
 
 if($databaseElement AND $_GET['ele_id']) { // ele_id is only in the URL when we're on the first save for a new element
-  global $xoopsDB;
   // figure out what the data type should be.
   // the rules:
   // if it's encrypted, it's a BLOB, otherwise...
@@ -107,7 +106,7 @@ if($databaseElement AND $_GET['ele_id']) { // ele_id is only in the URL when we'
                               $datadecimals = 20;
                         }
                         $datadigits = $datadecimals < 10 ? 11 : $datadecimals + 1; // digits must be larger than the decimal value, but a minimum of 11
-                        $dataType = "decimal($datadigits,$datadecimals)"; 
+                        $dataType = "decimal($datadigits,$datadecimals)";
                   } else {
                         $dataType = 'int(10)'; // value in () is just the visible number of digits to use in a mysql console display
                   }
@@ -178,14 +177,14 @@ function getRequestedDataType() {
 												break;
 									case 'varchar':
 												if(!$varcharsize = intval($_POST['element_datatype_varcharsize'])) {
-														$varcharsize = 255;  
+														$varcharsize = 255;
 												}
 												$varcharsize = $varcharsize > 255 ? 255 : $varcharsize;
 												$dataType = "varchar($varcharsize)";
 												break;
 									case 'char':
 												if(!$charsize = intval($_POST['element_datatype_charsize'])) {
-														$charsize = 255;  
+														$charsize = 255;
 												}
 												$charsize = $charsize > 255 ? 255 : $charsize;
 												$dataType = "char($charsize)";

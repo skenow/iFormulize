@@ -337,11 +337,10 @@ $modversion['config'][] = array(
 
 // get all the available forms and populate the options array
 // this is not permission controlled yet -- should make use of the edit_form permission perhaps
-global $xoopsDB;
-$getFormsSQL = "SELECT id_form, desc_form FROM " . $xoopsDB->prefix("formulize_id");
-$resFormsSQL = $xoopsDB->query($getFormsSQL);
+$getFormsSQL = "SELECT id_form, desc_form FROM " . icms::$xoopsDB->prefix("formulize_id");
+$resFormsSQL = icms::$xoopsDB->query($getFormsSQL);
 $pformoptions["-------------"] = 0;
-while($resArray = $xoopsDB->fetchArray($resFormsSQL)) {
+while($resArray = icms::$xoopsDB->fetchArray($resFormsSQL)) {
 	$pformoptions[$resArray['desc_form']] = $resArray['id_form'];
 }
 // $xoopsModuleConfig['profileForm']

@@ -80,7 +80,6 @@ switch ($op) {
 }
 
 function addlink($fid1, $fid2, $cf) {
-	global $xoopsDB;
 
   $success = true;
 
@@ -90,8 +89,8 @@ function addlink($fid1, $fid2, $cf) {
 	$forms[] = $fid2;
 
 	// write the link to the links table
-	$writelink = "INSERT INTO " . $xoopsDB->prefix("formulize_framework_links") . " (fl_frame_id, fl_form1_id, fl_form2_id, fl_key1, fl_key2, fl_relationship, fl_unified_display, fl_common_value) VALUES ('$cf', '$fid1', '$fid2', 0, 0, 1, 0, 0)";
-	if(!$res = $xoopsDB->query($writelink)) {
+	$writelink = "INSERT INTO " . icms::$xoopsDB->prefix("formulize_framework_links") . " (fl_frame_id, fl_form1_id, fl_form2_id, fl_key1, fl_key2, fl_relationship, fl_unified_display, fl_common_value) VALUES ('$cf', '$fid1', '$fid2', 0, 0, 1, 0, 0)";
+	if(!$res = icms::$xoopsDB->query($writelink)) {
 		print "Error: could not write link of $fid1 and $fid2 to the links table for framework $cf";
     $success = false;
 	}
@@ -100,12 +99,11 @@ function addlink($fid1, $fid2, $cf) {
 }
 
 function deletelink($fl_id, $cf) {
-	global $xoopsDB;
 
   $success = true;
 
-	$deleteq = "DELETE FROM " . $xoopsDB->prefix("formulize_framework_links") . " WHERE fl_id='$fl_id'";
-	if(!$res = $xoopsDB->queryF($deleteq)) {
+  $deleteq = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_framework_links") . " WHERE fl_id='$fl_id'";
+  if(!$res = icms::$xoopsDB->queryF($deleteq)) {
 		print "Error: link deletion unsuccessful";
     $success = false;
 	}
@@ -159,16 +157,15 @@ function updateframe($cf) {
 }
 
 function updaterels($fl_id, $value) {
-	global $xoopsDB;
 
-	$sql = "UPDATE " . $xoopsDB->prefix("formulize_framework_links") . " SET fl_relationship='$value' WHERE fl_id='$fl_id'";
-	if(!$res = $xoopsDB->query($sql)) {
+	$sql = "UPDATE " . icms::$xoopsDB->prefix("formulize_framework_links") . " SET fl_relationship='$value' WHERE fl_id='$fl_id'";
+	if(!$res = icms::$xoopsDB->query($sql)) {
 		print "Error: could not update relationship for framework link $fl_id";
 	}
 }
 
 function updatelinks($fl_id, $value) {
-  global $xoopsDB, $processedValues;
+  global $processedValues;
 
 	$keys = explode("+", $value);
 	if(isset($keys[2]) AND $keys[2] == "common") {
@@ -177,16 +174,15 @@ function updatelinks($fl_id, $value) {
 		$common = $processedValues['relationships']['preservecommon'.$fl_id] == $value ? 1 : 0;
 	}
 	
-	$sql = "UPDATE " . $xoopsDB->prefix("formulize_framework_links") . " SET fl_key1='" . $keys[0] . "', fl_key2='" . $keys[1] . "', fl_common_value='$common' WHERE fl_id='$fl_id'";
-	if(!$res = $xoopsDB->query($sql)) {
+	$sql = "UPDATE " . icms::$xoopsDB->prefix("formulize_framework_links") . " SET fl_key1='" . $keys[0] . "', fl_key2='" . $keys[1] . "', fl_common_value='$common' WHERE fl_id='$fl_id'";
+	if(!$res = icms::$xoopsDB->query($sql)) {
 		print "Error: could not update key fields for framework link $fl_id";
 	}
 }
 
 function updatedisplays($fl_id, $value) {
-	global $xoopsDB;
-	$sql = "UPDATE " . $xoopsDB->prefix("formulize_framework_links") . " SET fl_unified_display='$value' WHERE fl_id='$fl_id'";	
-	if(!$res = $xoopsDB->query($sql)) {
+	$sql = "UPDATE " . icms::$xoopsDB->prefix("formulize_framework_links") . " SET fl_unified_display='$value' WHERE fl_id='$fl_id'";
+	if(!$res = icms::$xoopsDB->query($sql)) {
 		print "Error: could not update unified display setting for framework link $fl_id";
 	}
 }

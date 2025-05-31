@@ -63,10 +63,6 @@ include_once XOOPS_ROOT_PATH.'/modules/formulize/include/functions.php';
 
 function displayCalendar($formframes, $mainforms="", $viewHandles, $dateHandles, $filters, $viewPrefixes, $scopes, $hidden, $type="month", $start="", $multiPageData="") {
 
-
-
-	global $xoopsDB;
-
     global $xoopsTpl;
 
 	// Set some required variables

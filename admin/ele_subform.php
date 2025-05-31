@@ -46,23 +46,22 @@ if(isset($_POST['subformrefresh'])) {
 
 // put in a select box for the valid forms in a framework with this form
 
-global $xoopsDB;
-$validForms1 = q("SELECT t1.fl_form1_id, t2.desc_form FROM " . $xoopsDB->prefix("formulize_framework_links") . " AS t1, " . $xoopsDB->prefix("formulize_id") . " AS t2 WHERE t1.fl_form2_id=" . intval($id_form) . " AND t1.fl_unified_display=1 AND t1.fl_relationship != 1 AND t1.fl_form1_id=t2.id_form");
-$validForms2 = q("SELECT t1.fl_form2_id, t2.desc_form FROM " . $xoopsDB->prefix("formulize_framework_links") . " AS t1, " . $xoopsDB->prefix("formulize_id") . " AS t2 WHERE t1.fl_form1_id=" . intval($id_form) . " AND t1.fl_unified_display=1 AND t1.fl_relationship != 1 AND t1.fl_form2_id=t2.id_form");
+$validForms1 = q("SELECT t1.fl_form1_id, t2.desc_form FROM " . icms::$xoopsDB->prefix("formulize_framework_links") . " AS t1, " . icms::$xoopsDB->prefix("formulize_id") . " AS t2 WHERE t1.fl_form2_id=" . intval($id_form) . " AND t1.fl_unified_display=1 AND t1.fl_relationship != 1 AND t1.fl_form1_id=t2.id_form");
+$validForms2 = q("SELECT t1.fl_form2_id, t2.desc_form FROM " . icms::$xoopsDB->prefix("formulize_framework_links") . " AS t1, " . icms::$xoopsDB->prefix("formulize_id") . " AS t2 WHERE t1.fl_form1_id=" . intval($id_form) . " AND t1.fl_unified_display=1 AND t1.fl_relationship != 1 AND t1.fl_form2_id=t2.id_form");
 
 $caughtfirst = false;
 foreach($validForms1 as $vf1) {
 	$validForms[$vf1['fl_form1_id']] = $vf1['desc_form'];
-	if(!$caughtfirst) { 
-		$firstform = $vf1['fl_form1_id']; 
+	if(!$caughtfirst) {
+		$firstform = $vf1['fl_form1_id'];
 		$caughtfirst = true;
 	}
 }
 foreach($validForms2 as $vf2) {
 	if(!isset($validForms[$vf2['fl_form2_id']])) {
 		$validForms[$vf2['fl_form2_id']] = $vf2['desc_form'];
-		if(!$caughtfirst) { 
-			$firstform = $vf2['fl_form2_id']; 
+		if(!$caughtfirst) {
+			$firstform = $vf2['fl_form2_id'];
 			$caughtfirst = true;
 		}
 	}
@@ -84,7 +83,7 @@ if($caughtfirst) {
 	
 	$formtouse = $ele_value[0] ? $ele_value[0] : $firstform; // use the user's selection, unless there isn't one, then use the first form found
 
-	$elementsq = q("SELECT ele_caption, ele_id FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form=" . intval($formtouse) . " AND ele_type != \"ib\" AND ele_type != \"subform\" ORDER BY ele_order");
+	$elementsq = q("SELECT ele_caption, ele_id FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form=" . intval($formtouse) . " AND ele_type != \"ib\" AND ele_type != \"subform\" ORDER BY ele_order");
 	foreach($elementsq as $oneele) {
 		$elements_array[$oneele['ele_id']] = $oneele['ele_caption'];
 	}

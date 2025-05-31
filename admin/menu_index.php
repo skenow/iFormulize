@@ -30,7 +30,7 @@ include_once("admin_header.php");
 include_once "../include/functions.php";
 
 function MyMenuAdmin($cat_id="") { // modified to accept passing of category names APRIL 25/05
-        global $xoopsDB, $xoopsConfig;
+        global $xoopsConfig;
         icms_cp_header();
         OpenTable();
 
@@ -155,7 +155,7 @@ echo "</p></form></td></tr><tr><td valign=top>
 
 // if cat_id is zero (ie: not set) then get the next cat
 if($cat_id == 0) {
-	$cat_id_q = q("SELECT MAX(cat_id) FROM " . $xoopsDB->prefix("formulize_menu_cats"));
+	$cat_id_q = q("SELECT MAX(cat_id) FROM " . icms::$xoopsDB->prefix("formulize_menu_cats"));
 	$cat_id = $cat_id_q[0]['MAX(cat_id)'];
 	if(!$cat_id == 0) {
 		$cat_id++;
@@ -164,7 +164,7 @@ if($cat_id == 0) {
 	}
 	echo"<input type='hidden' name='new_cat' value=1>";
 } else { // otherwise, set the $cat_name
-	$cat_name_q = q("SELECT cat_name FROM " . $xoopsDB->prefix("formulize_menu_cats") . " WHERE cat_id='$cat_id'");
+	$cat_name_q = q("SELECT cat_name FROM " . icms::$xoopsDB->prefix("formulize_menu_cats") . " WHERE cat_id='$cat_id'");
 	$cat_name = $cat_name_q[0]['cat_name'];
 }
 
@@ -195,7 +195,7 @@ echo "<input type='hidden' name='cat_id' value='$cat_id'>
                 <td><b>"._AM_STATUS."</b></td></tr>";
 
 			// CHANGED THE LOOPING HERE SO THAT ENTRIES ARE SORTED BY CATEGORY
-			$allcats = q("SELECT cat_id, cat_name, id_form_array FROM " . $xoopsDB->prefix("formulize_menu_cats") . " ORDER BY cat_name");
+			$allcats = q("SELECT cat_id, cat_name, id_form_array FROM " . icms::$xoopsDB->prefix("formulize_menu_cats") . " ORDER BY cat_name");
 			foreach($allcats as $thiscat) {
 				$formids = explode(",", trim($thiscat['id_form_array'], ",")); // note that there is a trailing and leading comma on this array
 
@@ -205,7 +205,7 @@ echo "<input type='hidden' name='cat_id' value='$cat_id'>
 
 
 				// do an interim query to sort the formids according to position
-				$positions = q("SELECT menuid FROM " . $xoopsDB->prefix("formulize_menu") . " WHERE $sortfilter ORDER BY position");
+				$positions = q("SELECT menuid FROM " . icms::$xoopsDB->prefix("formulize_menu") . " WHERE $sortfilter ORDER BY position");
 				foreach($positions as $id=>$thispos) {
 					drawRow($thiscat['cat_name'], $thispos['menuid']);
 					$foundForms[] = $thispos['menuid'];
@@ -217,7 +217,7 @@ echo "<input type='hidden' name='cat_id' value='$cat_id'>
 
 			// NOW GET LIST OF ALL FORMS(MENUIDS)
 			// draw a row for each one that isn't in the foundForms array
-			$allMenuIds_q = q("SELECT menuid FROM " . $xoopsDB->prefix("formulize_menu"));
+			$allMenuIds_q = q("SELECT menuid FROM " . icms::$xoopsDB->prefix("formulize_menu"));
 			foreach($allMenuIds_q as $aMenuId) {
 				$allMenuIds[] = $aMenuId['menuid'];
 			}
@@ -238,11 +238,9 @@ echo "<input type='hidden' name='cat_id' value='$cat_id'>
 // FUNCTION HANDLES DRAWING OF A ROW OF THE MAIN LISTING OF FORMS
 function drawRow($thiscat, $thisformid) {
 
-	global $xoopsDB;
-
-	$result = $xoopsDB->query("SELECT menuid, position, itemname, indent, margintop, marginbottom, itemurl, bold, membersonly, mainmenu, status FROM ".$xoopsDB->prefix("formulize_menu")." WHERE menuid = '$thisformid' ORDER BY position");
+	$result = icms::$xoopsDB->query("SELECT menuid, position, itemname, indent, margintop, marginbottom, itemurl, bold, membersonly, mainmenu, status FROM " . icms::$xoopsDB->prefix("formulize_menu")." WHERE menuid = '$thisformid' ORDER BY position");
 	$myts =& icms_core_Textsanitizer::getInstance();
-	while ( list($menuid, $position, $itemname, $indent, $margintop, $marginbottom, $itemurl, $bold, $membersonly, $mainmenu, $status) = $xoopsDB->fetchRow($result) ) {
+	while ( list($menuid, $position, $itemname, $indent, $margintop, $marginbottom, $itemurl, $bold, $membersonly, $mainmenu, $status) = icms::$xoopsDB->fetchRow($result) ) {
 	     	$itemname = $myts->makeTboxData4Show($itemname);
             $itemurl = $myts->makeTboxData4Show($itemurl);
 		echo "<tr class='bg1'><td>" . $thiscat . "</td>"; // added to display category names (class moved from position line below)
@@ -259,10 +257,10 @@ function drawRow($thiscat, $thisformid) {
 }
 
 function MyMenuEdit($menuid) {
-        global $xoopsDB, $xoopsConfig;
+        global $xoopsConfig;
         icms_cp_header();
-        $result = $xoopsDB->query("SELECT position, itemname, indent, margintop, marginbottom, itemurl, bold, membersonly, mainmenu, status FROM ".$xoopsDB->prefix("formulize_menu")." WHERE menuid=$menuid");
-        list($xposition, $itemname, $indent, $margintop, $marginbottom, $itemurl, $bold, $membersonly, $mainmenu, $status) = $xoopsDB->fetchRow($result);
+        $result = icms::$xoopsDB->query("SELECT position, itemname, indent, margintop, marginbottom, itemurl, bold, membersonly, mainmenu, status FROM " . icms::$xoopsDB->prefix("formulize_menu")." WHERE menuid=$menuid");
+        list($xposition, $itemname, $indent, $margintop, $marginbottom, $itemurl, $bold, $membersonly, $mainmenu, $status) = icms::$xoopsDB->fetchRow($result);
         $myts =& icms_core_Textsanitizer::getInstance();
         $itemname  = $myts->makeTboxData4Edit($itemname);
         $itemurl   = $myts->makeTboxData4Edit($itemurl);
@@ -284,7 +282,7 @@ function MyMenuEdit($menuid) {
 			// 3. write out HTML
 
 			$cats = fetchCats();
-			$curcat_q = q("SELECT cat_id FROM " . $xoopsDB->prefix("formulize_menu_cats") . " WHERE id_form_array LIKE \"%,$menuid,%\"");
+			$curcat_q = q("SELECT cat_id FROM " . icms::$xoopsDB->prefix("formulize_menu_cats") . " WHERE id_form_array LIKE \"%,$menuid,%\"");
 			$curcat_id = $curcat_q[0]['cat_id'];
 			$catselected = 0;
 			foreach($cats as $catid=>$catname) {
@@ -341,11 +339,10 @@ function MyMenuEdit($menuid) {
 }
 
 function MyMenuSave($menuid, $xposition, $itemname, $indent, $margintop, $marginbottom, $itemurl, $bold, $membersonly, $mainmenu, $status, $cat_id, $old_cat) {
-        global $xoopsDB;
         $myts =& icms_core_Textsanitizer::getInstance();
    		 	$itemname  = $myts->makeTboxData4Save(trim($itemname));
     		$itemurl   = $myts->makeTboxData4Save(trim($itemurl));
-        $xoopsDB->query("UPDATE ".$xoopsDB->prefix("formulize_menu")." SET position=$xposition, status=$status WHERE menuid=$menuid");
+        icms::$xoopsDB->query("UPDATE " . icms::$xoopsDB->prefix("formulize_menu")." SET position=$xposition, status=$status WHERE menuid=$menuid");
 
 		// ADDED CODE TO HANDLE SAVING OF CATEGORY April 25/05
 		// 0. compare cat_id and old_cat to see if there's been a change
@@ -356,16 +353,16 @@ function MyMenuSave($menuid, $xposition, $itemname, $indent, $margintop, $margin
 		if($cat_id != $old_cat) {
 
 		// write to the new cat...
-		$flatarray = q("SELECT id_form_array FROM " . $xoopsDB->prefix("formulize_menu_cats") . " WHERE cat_id='$cat_id'");
+		$flatarray = q("SELECT id_form_array FROM " . icms::$xoopsDB->prefix("formulize_menu_cats") . " WHERE cat_id='$cat_id'");
 		if($flatarray[0]['id_form_array'] == ",,") {
 			$newarray = "," . $menuid . ","; // note the leading and trailing commas
 		} else {
 			$newarray = $flatarray[0]['id_form_array'] . $menuid . ",";
 		}
-		q("UPDATE " . $xoopsDB->prefix("formulize_menu_cats") . " SET id_form_array='$newarray' WHERE cat_id='$cat_id'");
+		q("UPDATE " . icms::$xoopsDB->prefix("formulize_menu_cats") . " SET id_form_array='$newarray' WHERE cat_id='$cat_id'");
 
 		//erase from the old cat...
-		$oldflatarray = q("SELECT id_form_array FROM " . $xoopsDB->prefix("formulize_menu_cats") . " WHERE cat_id='$old_cat'");
+		$oldflatarray = q("SELECT id_form_array FROM " . icms::$xoopsDB->prefix("formulize_menu_cats") . " WHERE cat_id='$old_cat'");
 		$oldarray = explode(",", trim($oldflatarray[0]['id_form_array'], ",")); // note the trim of commas
 		$key = array_search($menuid, $oldarray); // get the key of the old item
 		$olditem = array_splice($oldarray, $key, 1); // extract that part of the old array
@@ -373,7 +370,7 @@ function MyMenuSave($menuid, $xposition, $itemname, $indent, $margintop, $margin
 		$newflatarray = ",";
 		$newflatarray .= implode(",", $newarray);
 		$newflatarray .= ",";
-		q("UPDATE " . $xoopsDB->prefix("formulize_menu_cats") . " SET id_form_array='$newflatarray' WHERE cat_id='$old_cat'");
+		q("UPDATE " . icms::$xoopsDB->prefix("formulize_menu_cats") . " SET id_form_array='$newflatarray' WHERE cat_id='$old_cat'");
 		} // end of if new cat not equal to old cat
 
         redirect_header("menu_index.php?op=MyMenuAdmin",1,_AM_DBUPDATED);
@@ -382,13 +379,12 @@ function MyMenuSave($menuid, $xposition, $itemname, $indent, $margintop, $margin
 
 
 function MyMenuAdd($xposition, $itemname, $indent, $margintop, $marginbottom, $itemurl, $bold, $membersonly, $mainmenu, $status, $cat_id) {
-        global $xoopsDB;
         $myts =& icms_core_Textsanitizer::getInstance();
     		$itemname  = $myts->makeTboxData4Save(trim($itemname));
     		$itemurl   = $myts->makeTboxData4Save(trim($itemurl));
-        $newid = $xoopsDB->genId($xoopsDB->prefix("formulize_menu")."_menuid_seq");
+        $newid = icms::$xoopsDB->genId($xoopsDB->prefix("formulize_menu")."_menuid_seq");
         
-    		$xoopsDB->query("INSERT INTO ".$xoopsDB->prefix("formulize_menu")." (menuid, position, itemname, indent, margintop, marginbottom, itemurl, bold, membersonly, mainmenu, status) VALUES ('$newid', '$xposition', '$itemname', '$indent', '$margintop', '$marginbottom', '$itemurl', '$bold', '0', '$mainmenu', '$status')");
+    	 icms::$xoopsDB->query("INSERT INTO " . icms::$xoopsDB->prefix("formulize_menu")." (menuid, position, itemname, indent, margintop, marginbottom, itemurl, bold, membersonly, mainmenu, status) VALUES ('$newid', '$xposition', '$itemname', '$indent', '$margintop', '$marginbottom', '$itemurl', '$bold', '0', '$mainmenu', '$status')");
 
     redirect_header("menu_index.php?op=MyMenuAdmin",1,_AM_DBUPDATED);
     exit();
@@ -397,28 +393,26 @@ function MyMenuAdd($xposition, $itemname, $indent, $margintop, $marginbottom, $i
 // FUNCTION ADDED TO HANDLE SAVING OF CATEGORY CHANGES
 function menuCatUpdate($cat_id, $cat_name, $new_cat="") {
 
-	global $xoopsDB;
-
 	if($new_cat) { // if we're adding a new category...
-		q("INSERT INTO " .$xoopsDB->prefix("formulize_menu_cats") . " (cat_name, id_form_array) VALUES (\"$cat_name\", \",,\")");
+		q("INSERT INTO " . icms::$xoopsDB->prefix("formulize_menu_cats") . " (cat_name, id_form_array) VALUES (\"$cat_name\", \",,\")");
 	} else { // we're updating an existing category...
-		q("UPDATE " .$xoopsDB->prefix("formulize_menu_cats") . " SET cat_name=\"$cat_name\" WHERE cat_id=\"$cat_id\"");
+		q("UPDATE " . icms::$xoopsDB->prefix("formulize_menu_cats") . " SET cat_name=\"$cat_name\" WHERE cat_id=\"$cat_id\"");
 	}
 }
 
 // jwe 09/03/05
 // this function commented since deleting a menu item here causes serious problems due to the lack of proper linkage between the form ids and menu ids (deleting a menu entry throws those ids out of sync).
 /*function MyMenuDel($menuid, $ok=0) {
-        global $xoopsDB, $xoopsConfig;
+        global$xoopsConfig;
         if ( $ok == 1 ) {
-                $xoopsDB->query("DELETE FROM ".$xoopsDB->prefix(formulize_menu)." WHERE menuid=$menuid");
+                icms::$xoopsDB->query("DELETE FROM " icms::$xoopsDB->prefix(formulize_menu)." WHERE menuid=$menuid");
                 redirect_header("menu_index.php?op=MyMenuAdmin",1,_AM_DBUPDATED);
                 exit();
         } else {
                 icms_cp_header();
                 OpenTable();
-                $result = $xoopsDB->query("SELECT position, itemname, indent, margintop, marginbottom, itemurl, bold, membersonly, mainmenu, status FROM ".$xoopsDB->prefix("formulize_menu")." WHERE menuid=$menuid");
-                list($position, $itemname, $indent, $margintop, $marginbottom, $itemurl, $bold, $membersonly, $mainmenu, $status) = $xoopsDB->fetchRow($result);
+                $result = icms::$xoopsDB->query("SELECT position, itemname, indent, margintop, marginbottom, itemurl, bold, membersonly, mainmenu, status FROM " icms::$xoopsDB->prefix("formulize_menu")." WHERE menuid=$menuid");
+                list($position, $itemname, $indent, $margintop, $marginbottom, $itemurl, $bold, $membersonly, $mainmenu, $status) = icms::$xoopsDB->fetchRow($result);
                 echo "<big><b>"._AM_TITLE."</big></b>";
                 echo "<h4 style='text-align:left;'>"._AM_DELETEMENUITEM."</h4>
                 <form action='menu_index.php' method='post'>
@@ -458,9 +452,7 @@ function menuCatUpdate($cat_id, $cat_name, $new_cat="") {
 // FUNCTION DELETES A CATEGORY added April 25/05
 function menuCatDel($cat_id) {
 	
-	global $xoopsDB;
-
-	q("DELETE FROM " . $xoopsDB->prefix("formulize_menu_cats") . " WHERE cat_id='$cat_id'");
+	q("DELETE FROM " . icms::$xoopsDB->prefix("formulize_menu_cats") . " WHERE cat_id='$cat_id'");
 }
 
 

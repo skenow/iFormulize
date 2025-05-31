@@ -119,10 +119,9 @@ if($ele_type == "checkbox") {
 
 if($ele_type == "select") {
   if(isset($_POST['formlink']) AND $_POST['formlink'] != "none") {
-    global $xoopsDB;
-    $sql_link = "SELECT ele_caption, id_form, ele_handle FROM " . $xoopsDB->prefix("formulize") . " WHERE ele_id = " . intval($_POST['formlink']);
-		$res_link = $xoopsDB->query($sql_link);
-		$array_link = $xoopsDB->fetchArray($res_link);
+  	$sql_link = "SELECT ele_caption, id_form, ele_handle FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE ele_id = " . intval($_POST['formlink']);
+  	$res_link = icms::$xoopsDB->query($sql_link);
+  	$array_link = icms::$xoopsDB->fetchArray($res_link);
 		$processedValues['elements']['ele_value'][2] = $array_link['id_form'] . "#*=:*" . $array_link['ele_handle'];
   } else {
     list($_POST['ele_value'], $processedValues['elements']['ele_uitext']) = formulize_extractUIText($_POST['ele_value']);

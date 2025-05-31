@@ -62,8 +62,6 @@ global $xoopsConfig;
 
 
 
-global $xoopsDB;
-
 $config_handler = icms::handler('icms_config');
 $xoopsConfigUser =& $config_handler->getConfigsByCat(XOOPS_CONF_USER);
 
@@ -151,9 +149,9 @@ if($csv_name != "")
 	$filenameparts = explode("_", $_FILES['csv_name']['name']);
 	if(isset($filenameparts[1])) {
 		$fileid = substr($filenameparts[1], 0, -4);
-		$filesql = "SELECT id_reqs FROM " . $xoopsDB->prefix("formulize_valid_imports") . " WHERE file='" . floatval($fileid)."'";
-		$fileres = $xoopsDB->query($filesql);
-		$filerow = $xoopsDB->fetchRow($fileres);
+		$filesql = "SELECT id_reqs FROM " . icms::$xoopsDB->prefix("formulize_valid_imports") . " WHERE file='" . floatval($fileid)."'";
+		$fileres = icms::$xoopsDB->query($filesql);
+		$filerow = icms::$xoopsDB->fetchRow($fileres);
 		if($filerow[0]) {
 			$id_reqs = unserialize($filerow[0]);
 		} else {

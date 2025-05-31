@@ -230,10 +230,9 @@ class formulizeListOfEntriesScreenHandler extends formulizeScreenHandler {
 		}
 		// get all the pageworks page IDs and include them too with a special prefix that will be picked up when this screen is rendered, so we don't confuse "view entry screens" and "view entry pageworks pages" -- added by jwe April 16 2009
 		if (file_exists(XOOPS_ROOT_PATH . "/modules/pageworks/index.php")) {
-			global $xoopsDB;
-			$pageworksSQL = "SELECT page_id, page_name, page_title FROM " . $xoopsDB->prefix("pageworks_pages") . " ORDER BY page_name, page_title, page_id";
-			$pageworksResult = $xoopsDB->query($pageworksSQL);
-			while ($pageworksArray = $xoopsDB->fetchArray($pageworksResult)) {
+			$pageworksSQL = "SELECT page_id, page_name, page_title FROM " . icms::$xoopsDB->prefix("pageworks_pages") . " ORDER BY page_name, page_title, page_id";
+			$pageworksResult = icms::$xoopsDB->query($pageworksSQL);
+			while ($pageworksArray = icms::$xoopsDB->fetchArray($pageworksResult)) {
 				$pageworksName = $pageworksArray['page_name'] ? $pageworksArray['page_name'] : $pageworksArray['page_title'];
 				$viewentryscreenOptions["p" . $pageworksArray['page_id']] = _AM_FORMULIZE_SCREEN_LOE_VIEWENTRYPAGEWORKS . " -- " . printSmart(trans($pageworksName), 85);
 			}

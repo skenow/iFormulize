@@ -34,7 +34,7 @@ include_once XOOPS_ROOT_PATH."/modules/formulize/include/functions.php";
 // need to listen for $_GET['aid'] later so we can limit this to just the application that is requested
 $aid = intval($_GET['aid']);
 if($aid == 0) {
-	$appName = "Forms with no app"; 
+	$appName = "Forms with no app";
 } else {
   $application_handler = icms_getModuleHandler('applications','formulize');
 	$appObject = $application_handler->get($aid);
@@ -57,10 +57,10 @@ $sid = $_GET['sid'];
 
 
 $links = array();
-$sql = 'SELECT DISTINCT frameworks.frame_id, frameworks.frame_name FROM '.$xoopsDB->prefix("formulize_framework_links").' as links, '.$xoopsDB->prefix("formulize_frameworks").' as frameworks WHERE fl_form1_id='.intval($fid).' OR fl_form2_id='.intval($fid).' AND links.fl_frame_id=frameworks.frame_id';
-$res = $xoopsDB->query($sql);
+$sql = 'SELECT DISTINCT frameworks.frame_id, frameworks.frame_name FROM ' icms::$xoopsDB->prefix("formulize_framework_links").' as links, ' icms::$xoopsDB->prefix("formulize_frameworks").' as frameworks WHERE fl_form1_id='.intval($fid).' OR fl_form2_id='.intval($fid).' AND links.fl_frame_id=frameworks.frame_id';
+$res = icms::$xoopsDB->query($sql);
 if ($res) {
-  while ($row = $xoopsDB->fetchRow($res)) {
+  while ($row = icms::$xoopsDB->fetchRow($res)) {
     $links[] = array("id"=>$row[0], "name"=>$row[1]);
   }
 }
@@ -140,17 +140,16 @@ if($_GET['sid'] != "new" && $settings['type'] == 'listOfEntries') {
   $screen_handler = icms_getModuleHandler('screen', 'formulize');
   $criteria_object = new icms_db_criteria_Compo(new icms_db_criteria_Item('type','multiPage'));
   $criteria_object->add(new icms_db_criteria_Item('type','form'), 'OR');
-  $viewentryscreenOptionsDB = $screen_handler->getObjects($criteria_object, $fid); 
+  $viewentryscreenOptionsDB = $screen_handler->getObjects($criteria_object, $fid);
   $viewentryscreenOptions["none"] = _AM_FORMULIZE_SCREEN_LOE_VIEWENTRYSCREEN_DEFAULT;
   foreach($viewentryscreenOptionsDB as $thisViewEntryScreenOption) {
       $viewentryscreenOptions[$thisViewEntryScreenOption->getVar('sid')] = printSmart(trans($thisViewEntryScreenOption->getVar('title')), 100);
   }
 	// get all the pageworks page IDs and include them too with a special prefix that will be picked up when this screen is rendered, so we don't confuse "view entry screens" and "view entry pageworks pages" -- added by jwe April 16 2009
 	if(file_exists(XOOPS_ROOT_PATH."/modules/pageworks/index.php")) {
-			global $xoopsDB;
-			$pageworksSQL = "SELECT page_id, page_name, page_title FROM ".$xoopsDB->prefix("pageworks_pages")." ORDER BY page_name, page_title, page_id";
-			$pageworksResult = $xoopsDB->query($pageworksSQL);
-			while($pageworksArray = $xoopsDB->fetchArray($pageworksResult)) {
+			$pageworksSQL = "SELECT page_id, page_name, page_title FROM " . icms::$xoopsDB->prefix("pageworks_pages")." ORDER BY page_name, page_title, page_id";
+			$pageworksResult = icms::$xoopsDB->query($pageworksSQL);
+			while($pageworksArray = icms::$xoopsDB->fetchArray($pageworksResult)) {
 					$pageworksName = $pageworksArray['page_name'] ? $pageworksArray['page_name'] : $pageworksArray['page_title'];
 					$viewentryscreenOptions["p".$pageworksArray['page_id']] = _AM_FORMULIZE_SCREEN_LOE_VIEWENTRYPAGEWORKS . " -- " . printSmart(trans($pageworksName), 85);
 			}
@@ -267,7 +266,7 @@ if($_GET['sid'] != "new" && $settings['type'] == 'listOfEntries') {
           $custom['custombuttons'][$buttonId]['content'][$key]['description'] = _AM_FORMULIZE_SCREEN_LOE_CUSTOMBUTTON_EFFECT_CUSTOM_HTML_DESC;
         } else {
           if(strstr($buttonData['applyto'], "new_per_selected_")) {
-            $thisEffectFid = substr($buttonData['applyto'], 17);            
+            $thisEffectFid = substr($buttonData['applyto'], 17);
           } elseif(strstr($buttonData['applyto'], "new_")) {
             $thisEffectFid = substr($buttonData['applyto'], 4);
           } else {
@@ -347,8 +346,8 @@ if($_GET['sid'] != "new" && $settings['type'] == 'multiPage') {
   // template data
   $multipageTemplates = array();   // Added by Gordon Woodmansey, 29-08-2012
   $multipageTemplates['toptemplate'] = $screen->getVar('toptemplate');
-  $multipageTemplates['elementtemplate'] = $screen->getVar('elementtemplate'); 
-  $multipageTemplates['bottomtemplate'] = $screen->getVar('bottomtemplate'); 
+  $multipageTemplates['elementtemplate'] = $screen->getVar('elementtemplate');
+  $multipageTemplates['bottomtemplate'] = $screen->getVar('bottomtemplate');
 
   // pages data
   $multipagePages = array();
@@ -362,7 +361,7 @@ if($_GET['sid'] != "new" && $settings['type'] == 'form') {
   $options['alldonebuttontext'] = $screen->getVar('alldonebuttontext');
   $options['displayheading'] = $screen->getVar('displayheading');
   $options['reloadblank'] = $screen->getVar('reloadblank') ? "blank" : "entry";
-} 
+}
 
 // common values should be assigned to all tabs
 $common['name'] = $screenName;
@@ -372,9 +371,9 @@ $common['fid'] = $fid;
 $common['aid'] = $aid;
 
 // generate a group list for use with the custom buttons
-$sql = "SELECT name, groupid FROM ".$xoopsDB->prefix("groups")." ORDER BY groupid";
-if($res = $xoopsDB->query($sql)) {
-	while($array = $xoopsDB->fetchArray($res)) {
+$sql = "SELECT name, groupid FROM " . icms::$xoopsDB->prefix("groups")." ORDER BY groupid";
+if($res = icms::$xoopsDB->query($sql)) {
+	while($array = icms::$xoopsDB->fetchArray($res)) {
 		$common['grouplist'][$array['groupid']] = $array['name'];
 	}
 }
@@ -404,8 +403,8 @@ if($_GET['sid'] != "new" && $settings['type'] == 'multiPage') {
   $adminPage['tabs'][4]['template'] = "db:admin/screen_multipage_pages.html";
   $adminPage['tabs'][4]['content'] = $multipagePages + $common;
 
-  $adminPage['tabs'][5]['name'] = _AM_FORM_SCREEN_TEMPLATES;  
-  $adminPage['tabs'][5]['template'] = "db:admin/screen_multipage_templates.html";  
+  $adminPage['tabs'][5]['name'] = _AM_FORM_SCREEN_TEMPLATES;
+  $adminPage['tabs'][5]['template'] = "db:admin/screen_multipage_templates.html";
   $adminPage['tabs'][5]['content'] = $multipageTemplates + $common;
 }
 

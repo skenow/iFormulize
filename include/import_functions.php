@@ -101,7 +101,6 @@ function importCsv($csv_name, $id_reqs, $regfid, $validateOverride)
 //function importCsvSetup(& $importSets)
 function importCsvSetup(&$importSet, $id_reqs)
 {
-	global $xoopsDB;
 
     // First cell on the first line of the csv file contained the form name.
     // This is now provided through formulize variable $fid which is now the id,
@@ -137,7 +136,7 @@ function importCsvSetup(&$importSet, $id_reqs)
     }
 
     // 4. get the form id
-    /*$form_idq = q("SELECT id_form FROM " . $xoopsDB->prefix("formulize_id") .
+    /*$form_idq = q("SELECT id_form FROM " . icms::$xoopsDB->prefix("formulize_id") .
         " WHERE desc_form='" . $importSet[2] . "'");
     if($form_idq == null)
     {
@@ -156,7 +155,7 @@ function importCsvSetup(&$importSet, $id_reqs)
     // 5. get the form column ids and process linked elements
 	if($importSet[4])
     {
-        $form_elementsq = q("SELECT * FROM " . $xoopsDB->prefix("formulize") .
+        $form_elementsq = q("SELECT * FROM " . icms::$xoopsDB->prefix("formulize") .
         	" WHERE id_form='" . $importSet[4] . "'");
 				
         if($form_elementsq == null)
@@ -235,7 +234,7 @@ function importCsvSetup(&$importSet, $id_reqs)
 					    /*echo "form: " . $parts[0] .
 						"<br>element: " . $parts[1];*/
 					
-					    $sql = "SELECT * FROM " . $xoopsDB->prefix("formulize") .
+					    $sql = "SELECT * FROM " . icms::$xoopsDB->prefix("formulize") .
 						" WHERE id_form='" . $parts[0] . "'" .
 					    " AND ele_handle='" . icms::$xoopsDB->escape($parts[1]) . "'";
 									    $form_elementlinkq = q($sql);
@@ -270,7 +269,7 @@ function importCsvValidate(&$importSet, $id_reqs, $regfid, $validateOverride=fal
 {
 	if($validateOverride) { return true; }
 	
-	global $errors, $xoopsDB;
+	global $errors;
 
 
 
@@ -480,7 +479,7 @@ function importCsvValidate(&$importSet, $id_reqs, $regfid, $validateOverride=fal
 								if($temparraykeys[0] === "{FULLNAMES}") { $nametype = "name"; }
 								if($temparraykeys[0] === "{USERNAMES}") { $nametype = "uname"; }
 								if(!isset($fullnamelist)) {
-									$fullnamelistq = q("SELECT uid, $nametype FROM " . $xoopsDB->prefix("users"));
+									$fullnamelistq = q("SELECT uid, $nametype FROM " . icms::$xoopsDB->prefix("users"));
 									static $fullnamelist = array();
 									foreach($fullnamelistq as $thisname) {
 										$fullnamelist[$thisname['uid']] = $thisname[$nametype];
@@ -705,10 +704,9 @@ function importCsvValidate(&$importSet, $id_reqs, $regfid, $validateOverride=fal
 
 		// check validity of any entry ids the user has set
 		if(count($useTheseEntryIds) > 0) {
-			global $xoopsDB;
-			$checkIdsSQL = "SELECT entry_id FROM ".$xoopsDB->prefix("formulize_".$importSet[8]) . " WHERE entry_id IN (".implode(",",$useTheseEntryIds).")";
-			$checkIdsRes = $xoopsDB->query($checkIdsSQL);
-			while($checkIdsArray = $xoopsDB->fetchArray($checkIdsRes)) {
+			$checkIdsSQL = "SELECT entry_id FROM " . icms::$xoopsDB->prefix("formulize_".$importSet[8]) . " WHERE entry_id IN (".implode(",",$useTheseEntryIds).")";
+			$checkIdsRes = icms::$xoopsDB->query($checkIdsSQL);
+			while($checkIdsArray = icms::$xoopsDB->fetchArray($checkIdsRes)) {
 				$errors[] = "<li><b>Entry id ".$checkIdsArray['entry_id']." is already in use.</b>  You cannot import new data with an existing entry id.</li>";
 			}
 		}
@@ -723,7 +721,7 @@ function importCsvValidate(&$importSet, $id_reqs, $regfid, $validateOverride=fal
 
 function importCsvProcess(& $importSet, $id_reqs, $regfid, $validateOverride)
 {
-	global $xoopsDB, $xoopsConfig, $myts;		// $xoopsDB is required by q
+	global $xoopsConfig, $myts;
     if(!$myts) { $myts =& icms_core_Textsanitizer::getInstance(); }
 
     echo "<b>** Importing</b><br><br>";
@@ -745,9 +743,9 @@ function importCsvProcess(& $importSet, $id_reqs, $regfid, $validateOverride)
 
 	// lock formulize_form
 	if($regfid == $importSet[4]) { // only lockup reg codes table if we're dealing with a profile form, in which case we assume reg codes is installed and the table exists
-		$xoopsDB->query("LOCK TABLES " . $xoopsDB->prefix("formulize_".$importSet[8]) . " WRITE, ". $xoopsDB->prefix("users") . " WRITE, ".$xoopsDB->prefix("formulize_entry_owner_groups") . " WRITE, " . $xoopsDB->prefix("reg_codes") . " WRITE, " . $xoopsDB->prefix("groups_users_link") . " WRITE, ". $xoopsDB->prefix("modules") . " READ, " . $xoopsDB->prefix("config") . " READ, " . $xoopsDB->prefix("formulize") . " READ");
+	 icms::$xoopsDB->query("LOCK TABLES " . icms::$xoopsDB->prefix("formulize_".$importSet[8]) . " WRITE, ". icms::$xoopsDB->prefix("users") . " WRITE, " . icms::$xoopsDB->prefix("formulize_entry_owner_groups") . " WRITE, " . icms::$xoopsDB->prefix("reg_codes") . " WRITE, " . icms::$xoopsDB->prefix("groups_users_link") . " WRITE, ". icms::$xoopsDB->prefix("modules") . " READ, " . icms::$xoopsDB->prefix("config") . " READ, " . icms::$xoopsDB->prefix("formulize") . " READ");
 	} else {
-		$xoopsDB->query("LOCK TABLES " . $xoopsDB->prefix("formulize_".$importSet[8]) . " WRITE, ". $xoopsDB->prefix("users") . " READ, ".$xoopsDB->prefix("formulize_entry_owner_groups") . " WRITE, " . $xoopsDB->prefix("groups_users_link") . " READ, " . $xoopsDB->prefix("formulize") . " READ");
+	 icms::$xoopsDB->query("LOCK TABLES " . icms::$xoopsDB->prefix("formulize_".$importSet[8]) . " WRITE, ". icms::$xoopsDB->prefix("users") . " READ, " . icms::$xoopsDB->prefix("formulize_entry_owner_groups") . " WRITE, " . icms::$xoopsDB->prefix("groups_users_link") . " READ, " . icms::$xoopsDB->prefix("formulize") . " READ");
 	}
     
 
@@ -790,7 +788,7 @@ function importCsvProcess(& $importSet, $id_reqs, $regfid, $validateOverride)
                     
             // get the current max id_req
 		if(!$this_id_req) {
-	           $max_id_reqq = q("SELECT MAX(entry_id) FROM " . $xoopsDB->prefix("formulize_".$importSet[8]));
+	           $max_id_reqq = q("SELECT MAX(entry_id) FROM " . icms::$xoopsDB->prefix("formulize_".$importSet[8]));
       	     $max_id_req = $max_id_reqq[0]["MAX(entry_id)"] + 1;
 		} else {
 			$max_id_req = $this_id_req;
@@ -915,7 +913,7 @@ function importCsvProcess(& $importSet, $id_reqs, $regfid, $validateOverride)
 								if($temparraykeys[0] === "{FULLNAMES}") { $nametype = "name"; }
 								if($temparraykeys[0] === "{USERNAMES}") { $nametype = "uname"; }
 								if(!isset($fullnamelist)) {
-									$fullnamelistq = q("SELECT uid, $nametype FROM " . $xoopsDB->prefix("users") . " ORDER BY uid");
+									$fullnamelistq = q("SELECT uid, $nametype FROM " . icms::$xoopsDB->prefix("users") . " ORDER BY uid");
 									static $fullnamelist = array();
 									foreach($fullnamelistq as $thisname) {
 										$fullnamelist[$thisname['uid']] = $thisname[$nametype];
@@ -1033,7 +1031,7 @@ function importCsvProcess(& $importSet, $id_reqs, $regfid, $validateOverride)
              						if($foundit) {
              	                                    $element_value .= "*=+*:" . $item_value;
              						} elseif($hasother) {
-             							$other_values[] = "INSERT INTO " . $xoopsDB->prefix("formulize_other") . " (id_req, ele_id, other_text) VALUES (\"$max_id_req\", \"" . $element["ele_id"] . "\", \"" . icms_core_DataFilter::htmlSpecialChars(trim($item_value)) . "\")";
+             							$other_values[] = "INSERT INTO " . icms::$xoopsDB->prefix("formulize_other") . " (id_req, ele_id, other_text) VALUES (\"$max_id_req\", \"" . $element["ele_id"] . "\", \"" . icms_core_DataFilter::htmlSpecialChars(trim($item_value)) . "\")";
              							$element_value .= "*=+*:" . $hasother;
              						} elseif(!$validateOverride) {
              							print "ERROR: INVALID TEXT FOUND FOR A CHECKBOX ITEM -- $item_value -- IN ROW:<BR>";
@@ -1066,7 +1064,7 @@ function importCsvProcess(& $importSet, $id_reqs, $regfid, $validateOverride)
 								}
 							}
 							if(!$foundit AND $hasother) {
-								$other_values[] = "INSERT INTO " . $xoopsDB->prefix("formulize_other") . " (id_req, ele_id, other_text) VALUES (\"$max_id_req\", \"" . $element["ele_id"] . "\", \"" . icms_core_DataFilter::htmlSpecialChars(trim($row_value)) . "\")";
+								$other_values[] = "INSERT INTO " . icms::$xoopsDB->prefix("formulize_other") . " (id_req, ele_id, other_text) VALUES (\"$max_id_req\", \"" . $element["ele_id"] . "\", \"" . icms_core_DataFilter::htmlSpecialChars(trim($row_value)) . "\")";
 								$row_value = $hasother;
 							} elseif(!$foundit AND !$validateOverride) {
 								print "ERROR: INVALID TEXT FOUND FOR A RADIO BUTTON ITEM -- $row_value -- IN ROW:<BR>";
@@ -1110,7 +1108,7 @@ function importCsvProcess(& $importSet, $id_reqs, $regfid, $validateOverride)
 							
 							$form_uid = $this_uid;
 							
-							$updateSQL = "UPDATE " . $xoopsDB->prefix("formulize_".$importSet[8])." SET ";
+							$updateSQL = "UPDATE " . icms::$xoopsDB->prefix("formulize_".$importSet[8])." SET ";
 							$start = true;
 							foreach($fieldValues as $elementHandle=>$fieldValue) {
 								if(!$start) { $updateSQL .= ", "; } // on subsequent fields, add a comma
@@ -1120,7 +1118,7 @@ function importCsvProcess(& $importSet, $id_reqs, $regfid, $validateOverride)
 							$updateSQL .= ", mod_datetime=NOW(), mod_uid=$form_proxyid WHERE entry_id=".intval($this_id_req);
 							
 							if(IMPORT_WRITE) {
-								if(!$result = $xoopsDB->queryF($updateSQL)) {
+								if(!$result = icms::$xoopsDB->queryF($updateSQL)) {
 									print "<br><b>FAILED</b> to update data, SQL: $updateSQL<br>".icms::$xoopsDB->error()."<br>";
 								}
 							}
@@ -1145,11 +1143,11 @@ function importCsvProcess(& $importSet, $id_reqs, $regfid, $validateOverride)
 							
 							$entryIdFieldText = $newEntryId ? "entry_id, " : "";
 							$newEntryId .= $newEntryId ? ", " : "";
-							$insertElement = "INSERT INTO " . $xoopsDB->prefix("formulize_".$importSet[8])." (".$entryIdFieldText."creation_datetime, mod_datetime, creation_uid, mod_uid".$fields.") VALUES (".$newEntryId."NOW(), NOW(), '" . intval($form_uid) . "', '" . intval($form_proxyid)."'".$values.")";
+							$insertElement = "INSERT INTO " . icms::$xoopsDB->prefix("formulize_".$importSet[8])." (".$entryIdFieldText."creation_datetime, mod_datetime, creation_uid, mod_uid".$fields.") VALUES (".$newEntryId."NOW(), NOW(), '" . intval($form_uid) . "', '" . intval($form_proxyid)."'".$values.")";
 
 							if(IMPORT_WRITE)
 							{
-									if(!$result = $xoopsDB->queryF($insertElement))
+									if(!$result = icms::$xoopsDB->queryF($insertElement))
 									{
 										
 										static $duplicatesFound = false;
@@ -1164,7 +1162,7 @@ function importCsvProcess(& $importSet, $id_reqs, $regfid, $validateOverride)
 									} else {
 										// need to record new group ownership info too
 										$usersMap[] = $form_uid;
-										$entriesMap[] = $xoopsDB->getInsertId();
+										$entriesMap[] = icms::$xoopsDB->getInsertId();
 									}
 							}
 							else
@@ -1189,11 +1187,11 @@ function importCsvProcess(& $importSet, $id_reqs, $regfid, $validateOverride)
 		}
 
 	// unlock tables
-	$xoopsDB->query("UNLOCK TABLES");
+ icms::$xoopsDB->query("UNLOCK TABLES");
 
     // insert all the other values that were recorded
     foreach($other_values as $other) {
-			if(!$result = $xoopsDB->query($other)) {
+			if(!$result = icms::$xoopsDB->query($other)) {
 				print "ERROR: could not insert 'other' value: $other<br>";
 			}
     }
@@ -1205,20 +1203,20 @@ function getElementID($id_form, $ele_caption, $ele_value)
 {
 	static $cachedElementIDs = array();
 	if(!isset($cachedElementIDs[$id_form][$ele_caption][$ele_value])) {
-		global $xoopsDB, $myts;
+		global $myts;
 		if(!$myts) { $myts =& icms_core_Textsanitizer::getInstance(); }
 	
 	
-	    $sql = "SELECT ele_id FROM " . $xoopsDB->prefix("formulize_form") .
+	    $sql = "SELECT ele_id FROM " . icms::$xoopsDB->prefix("formulize_form") .
 		" WHERE id_form='" . $id_form . "'" .
 		" AND ele_caption='" . icms::$xoopsDB->escape(formformCaption($ele_caption)) . "'" .
 		" AND ele_value='" . icms::$xoopsDB->escape($myts->htmlSpecialChars($ele_value)) . "'";
 	
 	    //echo $sql . "<br>";
 	    $foundResult = "";
-	    if($result = $xoopsDB->query($sql))
+	    if($result = icms::$xoopsDB->query($sql))
 	    {
-			$item = $xoopsDB->fetchArray($result);
+			$item = icms::$xoopsDB->fetchArray($result);
 		if(@$item["ele_id"])
 		{
 				$foundResult = $item["ele_id"];
@@ -1240,18 +1238,18 @@ function getElementOptions($ele_handle, $fid)
 {
 	static $cachedElementOptions = array();
 	if(!isset($cachedElementOptions[$fid][$ele_handle])) {
-		global $xoopsDB, $myts;
+		global $myts;
 		$form_handler = icms_getModuleHandler('forms', 'formulize');
 		$formObject = $form_handler->get($fid);
 		$result = array();
 		if(!$myts) { $myts =& icms_core_Textsanitizer::getInstance(); }
 	
-	    $sql = "SELECT entry_id, `".$ele_handle."` FROM " . $xoopsDB->prefix("formulize_".$formObject->getVar('form_handle'));
+	    $sql = "SELECT entry_id, `".$ele_handle."` FROM " . icms::$xoopsDB->prefix("formulize_".$formObject->getVar('form_handle'));
 	
-		$res = $xoopsDB->query($sql);
+		$res = icms::$xoopsDB->query($sql);
 		$result = array();
 		$resultIDs = array();
-		while ($item = $xoopsDB->fetchArray($res)) {
+		while ($item = icms::$xoopsDB->fetchArray($res)) {
 			$result[] = icms_core_DataFilter::undoHtmlSpecialChars($item[$ele_handle]);
 			$resultIDs[] = $item['entry_id'];
 		}
@@ -1261,17 +1259,14 @@ function getElementOptions($ele_handle, $fid)
 }
 
 // THERE IS A BUG HERE WHICH CAUSES IT NOT TO COME UP WITH THE RIGHT ID WHEN PASSED A FULL NAME???
-function getUserID($stringName)
-{
-	global $xoopsDB;
-
-    $sql = "SELECT uid FROM " . $xoopsDB->prefix("users") .
+function getUserID($stringName) {
+    $sql = "SELECT uid FROM " . icms::$xoopsDB->prefix("users") .
         " WHERE uname='" . icms::$xoopsDB->escape($stringName) . "'";
 
-	$result = $xoopsDB->query($sql);
+	$result = icms::$xoopsDB->query($sql);
     if($xoopsDB->getRowsNum($result) > 0)
     {
-		$item = $xoopsDB->fetchArray($result);
+		$item = icms::$xoopsDB->fetchArray($result);
         if(@$item["uid"])
         {
 			return $item["uid"];
@@ -1279,12 +1274,12 @@ function getUserID($stringName)
     }
     else // or, if no username match found, get the first matching full name -- added June 29, 2006
     {
-	    $sql = "SELECT uid FROM " . $xoopsDB->prefix("users") .
+	    $sql = "SELECT uid FROM " . icms::$xoopsDB->prefix("users") .
         " WHERE name='" . icms::$xoopsDB->escape($stringName) . "'";
 
-	    if($result = $xoopsDB->query($sql))
+	    if($result = icms::$xoopsDB->query($sql))
 	    {
-			$item = $xoopsDB->fetchArray($result);
+			$item = icms::$xoopsDB->fetchArray($result);
 		        if(@$item["uid"])
 		        {
 				return $item["uid"];

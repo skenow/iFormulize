@@ -34,19 +34,18 @@
 
 // delete notifications
 function handleDelete($uid, $fid, $mid) {
-	global $xoopsDB;
 	$delete = 0;
 	foreach($_POST as $k=>$v) {
 		if(strstr($k, "delete_")) {
 			$delete = 1;
 			$id = substr($k, 7);
-			$event = q("SELECT not_cons_event FROM " . $xoopsDB->prefix("formulize_notification_conditions") . " WHERE not_cons_id=" .intval($id));
-			$sql = "DELETE FROM " . $xoopsDB->prefix("formulize_notification_conditions") . " WHERE not_cons_id=" .intval($id);
-			if(!$result = $xoopsDB->query($sql)) {
+			$event = q("SELECT not_cons_event FROM " . icms::$xoopsDB->prefix("formulize_notification_conditions") . " WHERE not_cons_id=" .intval($id));
+			$sql = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_notification_conditions") . " WHERE not_cons_id=" .intval($id);
+			if(!$result = icms::$xoopsDB->query($sql)) {
 				exit("Error:  could not remove notification info.  SQL:<br>$sql</br>");
 			}
 			// check if the current user has any items left for a this event on this form, and if not, then unsub from that event
-			$anyleft = q("SELECT * FROM " . $xoopsDB->prefix("formulize_notification_conditions") . " WHERE not_cons_uid=".intval($uid)." AND not_cons_fid = ".intval($fid)." AND not_cons_event=\"".$event[0]['not_cons_event']."\"");
+			$anyleft = q("SELECT * FROM " . icms::$xoopsDB->prefix("formulize_notification_conditions") . " WHERE not_cons_uid=".intval($uid)." AND not_cons_fid = ".intval($fid)." AND not_cons_event=\"".$event[0]['not_cons_event']."\"");
 			if(count($anyleft) == 0) {
 				$notification_handler = icms::handler('icms_data_notification');
 				$notification_handler->unsubscribe('form', $fid, $event[0]['not_cons_event'], $mid, $uid);
@@ -70,7 +69,6 @@ global $xoopsConfig;
 	}
 
 
-global $xoopsDB;
 include_once XOOPS_ROOT_PATH.'/modules/formulize/include/functions.php';
 
 	// Set some required variables
@@ -145,8 +143,8 @@ if($_POST['save']) {
 	$not_cons_con = ($_POST['setfor'] == "all" OR count($_POST['terms']) == 0) ? "all" : serialize(array(serialize($_POST['elements']), serialize($_POST['ops']), serialize($_POST['terms'])));
 	
 	$template_filename = strstr($_POST['template'], ".tpl") ? str_replace(".tpl", "", $_POST['template']) : $_POST['template']; // strip .tpl out of the template name if it's present
-	$sql = "INSERT INTO " . $xoopsDB->prefix("formulize_notification_conditions") . " (not_cons_fid, not_cons_event, not_cons_uid, not_cons_curuser, not_cons_groupid, not_cons_creator, not_cons_elementuids, not_cons_linkcreator, not_cons_elementemail, not_cons_con, not_cons_template, not_cons_subject) VALUES (\"$fid\", \"".icms::$xoopsDB->escape($_POST['setwhen'])."\", \"$not_cons_uid\", \"$not_cons_curuser\", \"$not_cons_groupid\", \"$not_cons_creator\", \"$not_cons_elementuids\", \"$not_cons_linkcreator\", \"$not_cons_elementemail\", \"".icms::$xoopsDB->escape($not_cons_con)."\", \"".icms::$xoopsDB->escape($template_filename)."\", \"".icms::$xoopsDB->escape($_POST['subject'])."\")";
-	if(!$result = $xoopsDB->query($sql)) {
+	$sql = "INSERT INTO " . icms::$xoopsDB->prefix("formulize_notification_conditions") . " (not_cons_fid, not_cons_event, not_cons_uid, not_cons_curuser, not_cons_groupid, not_cons_creator, not_cons_elementuids, not_cons_linkcreator, not_cons_elementemail, not_cons_con, not_cons_template, not_cons_subject) VALUES (\"$fid\", \"".icms::$xoopsDB->escape($_POST['setwhen'])."\", \"$not_cons_uid\", \"$not_cons_curuser\", \"$not_cons_groupid\", \"$not_cons_creator\", \"$not_cons_elementuids\", \"$not_cons_linkcreator\", \"$not_cons_elementemail\", \"".icms::$xoopsDB->escape($not_cons_con)."\", \"".icms::$xoopsDB->escape($template_filename)."\", \"".icms::$xoopsDB->escape($_POST['subject'])."\")";
+	if(!$result = icms::$xoopsDB->query($sql)) {
 		exit("Error:  notification could not be saved.  SQL:<br>$sql<br>");
 	}
 	unset($_POST);
@@ -172,15 +170,15 @@ if($canSetNots) {
 	natcasesort($group_options);
 	
 	// gather the list of elements that have user names
-	$sql = "SELECT ele_id, ele_caption, ele_colhead FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form = " . intval($fid) . " AND ele_type = \"select\" AND (ele_value LIKE \"%{FULLNAMES}%\" OR ele_value LIKE \"%{USERNAMES}%\")";
+	$sql = "SELECT ele_id, ele_caption, ele_colhead FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form = " . intval($fid) . " AND ele_type = \"select\" AND (ele_value LIKE \"%{FULLNAMES}%\" OR ele_value LIKE \"%{USERNAMES}%\")";
 	$element_options = buildNotOptionList($sql, "elementuid");
 		
 	// gather the list of elements that are linked selectboxes
-	$sql = "SELECT ele_id, ele_caption, ele_colhead FROM " . $xoopsDB->prefix("formulize")  . " WHERE id_form = " . intval($fid) . " AND ele_type = \"select\" AND ele_value LIKE \"%#*=:*%\"";
+	$sql = "SELECT ele_id, ele_caption, ele_colhead FROM " . icms::$xoopsDB->prefix("formulize")  . " WHERE id_form = " . intval($fid) . " AND ele_type = \"select\" AND ele_value LIKE \"%#*=:*%\"";
 	$linkcreator_options = buildNotOptionList($sql, "linkcreator");
 	
 	// gather the list of all elements that are not grid, subform, areamodif, ib
-	$sql = "SELECT ele_id, ele_caption, ele_colhead FROM " . $xoopsDB->prefix("formulize")  . " WHERE id_form = " . intval($fid) . " AND ele_type != \"subform\" AND ele_type != \"grid\" AND ele_type != \"ib\" AND ele_type != \"areamodif\"";
+	$sql = "SELECT ele_id, ele_caption, ele_colhead FROM " . icms::$xoopsDB->prefix("formulize")  . " WHERE id_form = " . intval($fid) . " AND ele_type != \"subform\" AND ele_type != \"grid\" AND ele_type != \"ib\" AND ele_type != \"areamodif\"";
 	$elementemail_options = buildNotOptionList($sql, "elementemail");
 	
 } else {
@@ -441,24 +439,22 @@ print "</HTML>";
 // this function returns all the current notifications for a form, including notifications for other groups if the user has permission to set such things
 // does not return other user's own personal notifications
 function getCurNots($fid, $setNots=false, $uid) {
-	global $xoopsDB;
 	if($setNots) {
 		$getNoGroups = " OR not_cons_uid=0";
 	} else {
 		$getNoGroups = "";
 	}
-	$notsq = q("SELECT * FROM " . $xoopsDB->prefix("formulize_notification_conditions") . " WHERE not_cons_fid=" . intval($fid) . " AND (not_cons_uid=" . intval($uid) . " $getNoGroups) ORDER BY not_cons_id");
+	$notsq = q("SELECT * FROM " . icms::$xoopsDB->prefix("formulize_notification_conditions") . " WHERE not_cons_fid=" . intval($fid) . " AND (not_cons_uid=" . intval($uid) . " $getNoGroups) ORDER BY not_cons_id");
 	return $notsq;
 }
 
 // THIS FUNCTION TAKES AN SQL STATEMENT THAT GETS ELE_ID, ELE_CAPTION AND ELE_COLHEAD FROM THE FORMULIZE TABLE, AND TURNS IT INTO AN ARRAY OF OPTIONS SUITABLE FOR DISPLAYING THE SELECTED ELEMENTS IN A DROPDOWN LIST
 function buildNotOptionList($sql, $type) {
-	global $xoopsDB;
-	$res = $xoopsDB->query($sql);
+	$res = icms::$xoopsDB->query($sql);
 	$options = array();
 	$noOptionText = $type == "elementuid" ? _formulize_DE_SETNOT_NOELEMENTOPTIONS : _formulize_DE_SETNOT_NOLINKCREATOROPTIONS;
 	if($res) {
-		while($array = $xoopsDB->fetchArray($res)) {
+		while($array = icms::$xoopsDB->fetchArray($res)) {
 			$options[$array['ele_id']] = $array['ele_colhead'] ? printSmart(trans($array['ele_colhead'])) : printSmart(trans($array['ele_caption']));
 		}
 		if(count($options) == 0) {
@@ -476,7 +472,6 @@ function buildNotOptionList($sql, $type) {
 // formulize can keep track of multiple notifications for each "event", since you can specify conditions on the events.  So if a user unsubs from new_entry, are we supposed to delete every single new entry condition that they created in Formulize?  Better to keep stuff active here, and if they unsub, they will get no nots, but as soon as they create a new not of that event here, then they will get all their old nots back.  They can delete nots from here if they don't want them any longer.
 /*
 function cleanupNots($fid, $uid, $mid) {
-	global $xoopsDB;
 	$notification_handler =& icms::handler('icms_data_notification');
 	$criteria = new icms_db_criteria_Compo();
 	$criteria->add(new icms_db_criteria_Item('not_modid', $mid));
@@ -486,8 +481,8 @@ function cleanupNots($fid, $uid, $mid) {
 	$user_nots = $notification_handler->getObjects($criteria, true); // true is use IDs as keys
 	$sub_ids = array_keys($user_nots);
 print_r($sub_ids);
-print "<br>SELECT * FROM " . $xoopsDB->prefix("formulize_notification_conditions") . " WHERE uid=" . intval($uid);
-	$user_fnots = q("SELECT * FROM " . $xoopsDB->prefix("formulize_notification_conditions") . " WHERE not_cons_uid=" . intval($uid));
+print "<br>SELECT * FROM " . icms::$xoopsDB->prefix("formulize_notification_conditions") . " WHERE uid=" . intval($uid);
+	$user_fnots = q("SELECT * FROM " . icms::$xoopsDB->prefix("formulize_notification_conditions") . " WHERE not_cons_uid=" . intval($uid));
 	$start = 1;
 print_r($user_fnots);
 	foreach($user_fnots as $thisnot) {
@@ -502,8 +497,8 @@ print "<br>".$thisnot['not_cons_sub_id']."<br>";
 		}
 	}
 	if(!$start) { // something was missing
-		$sql = "DELETE FROM " . $xoopsDB->prefix("formulize_notification_conditions") . " WHERE $delq";
-		if(!$result = $xoopsDB->queryF($sql)) {
+		$sql = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_notification_conditions") . " WHERE $delq";
+		if(!$result = icms::$xoopsDB->queryF($sql)) {
 			exit("Error:  could not remove unsubscribed notification info.  SQL:<br>$sql</br>");
 		}
 	}

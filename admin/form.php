@@ -30,7 +30,6 @@
 // this file gets all the data about applications, so we can display the Settings/forms/relationships tabs for applications
 
 include_once XOOPS_ROOT_PATH."/modules/formulize/include/functions.php";
-global $xoopsDB;
 
 // need to listen for $_GET['aid'] later so we can limit this to just the application that is requested
 $aid = intval($_GET['aid']);
@@ -160,7 +159,7 @@ if($_GET['fid'] != "new") {
   
   // get permission data for this form
   // get group lists
-  $groupListSQL = "SELECT gl_id, gl_name, gl_groups FROM ".$xoopsDB->prefix("group_lists")." ORDER BY gl_name";
+  $groupListSQL = "SELECT gl_id, gl_name, gl_groups FROM ". icms::$xoopsDB->prefix("group_lists")." ORDER BY gl_name";
   $grouplists = array();
   if(isset($_POST['grouplistname']) AND $_POST['grouplistname']) {
     $selectedGroupList = $_POST['grouplistname'];
@@ -174,8 +173,8 @@ if($_GET['fid'] != "new") {
   $grouplists[0]['id'] = 0;
   $grouplists[0]['name'] = "No group list selected";
   $grouplists[0]['selected'] = $selectedGroupList ? "" : " selected";
-  if($result = $xoopsDB->query($groupListSQL)) {
-    while($array = $xoopsDB->fetchArray($result)) {
+  if($result = icms::$xoopsDB->query($groupListSQL)) {
+  	while($array = icms::$xoopsDB->fetchArray($result)) {
       $grouplists[$array['gl_id']]['id'] = $array['gl_id'];
       $grouplists[$array['gl_id']]['name'] = $array['gl_name'];
       if((is_numeric($selectedGroupList) AND $array['gl_id'] == $selectedGroupList) OR $array['gl_name'] === $selectedGroupList) {

@@ -85,15 +85,15 @@ global $title2, $op, $data;
 
 //S�lection des formulizes
 
-	$sql="SELECT distinct desc_form, id_form, tableform, lockedform FROM ".$xoopsDB->prefix("formulize_id");
-	$res = $xoopsDB->query( $sql );
+	$sql="SELECT distinct desc_form, id_form, tableform, lockedform FROM ". icms::$xoopsDB->prefix("formulize_id");
+	$res = icms::$xoopsDB->query( $sql );
 
 $titlesForSort = array();
 $data = array();
 $tableforms = array();
 $lockedforms = array();
 if ( $res ) {
-  while ( $row = $xoopsDB->fetchRow( $res ) ) {
+	while ( $row = icms::$xoopsDB->fetchRow( $res ) ) {
     $data[$row[1]] = trans($row[0]);
 		$tableforms[$row[1]] = $row[2];
 		$lockedforms[$row[1]] = $row[3];
@@ -276,7 +276,6 @@ if( $op != 'addform' && $op != 'modform' && $op != 'renform' && $op != 'delform'
 // copy a form -- added June 17 2005
 function cloneFormulize($title, $clonedata) {
 	
-	global $xoopsDB;
 	
 	// procedure:
 	// get fid based on title
@@ -297,15 +296,15 @@ function cloneFormulize($title, $clonedata) {
       $titleCounter++;
       $titleSearchingFor = _FORM_MODCLONED_FORM." $titleCounter";
     }
-    $titleCheckSQL = "SELECT desc_form FROM " . $xoopsDB->prefix("formulize_id") . " WHERE desc_form = '$titleSearchingFor'";
-    $titleCheckResult = $xoopsDB->query($titleCheckSQL);
-    $foundTitle = $xoopsDB->getRowsNum($titleCheckResult);
+    $titleCheckSQL = "SELECT desc_form FROM " . icms::$xoopsDB->prefix("formulize_id") . " WHERE desc_form = '$titleSearchingFor'";
+    $titleCheckResult = icms::$xoopsDB->query($titleCheckSQL);
+    $foundTitle = icms::$xoopsDB->getRowsNum($titleCheckResult);
   }
   $newtitle = $titleSearchingFor;	// use whatever the last searched for title is (because it was not found)
 
-	$getrow = q("SELECT * FROM " . $xoopsDB->prefix("formulize_id") . " WHERE id_form = $fid");
+  $getrow = q("SELECT * FROM " . icms::$xoopsDB->prefix("formulize_id") . " WHERE id_form = $fid");
 
-	$insert_sql = "INSERT INTO " . $xoopsDB->prefix("formulize_id") . " (";
+  $insert_sql = "INSERT INTO " . icms::$xoopsDB->prefix("formulize_id") . " (";
 	$start = 1;
 	foreach($getrow[0] as $field=>$value) {
 		if(!$start) { $insert_sql .= ", "; }
@@ -323,16 +322,16 @@ function cloneFormulize($title, $clonedata) {
 		$insert_sql .= "\"$value\"";
 	}
 	$insert_sql .= ")";
-	if(!$result = $xoopsDB->queryF($insert_sql)) {
+	if(!$result = icms::$xoopsDB->queryF($insert_sql)) {
 		exit("error duplicating form: '$title'<br>SQL: $insert_sql<br>".icms::$xoopsDB->error());
 	}
 
-	$newfid = $xoopsDB->getInsertId();
+	$newfid = icms::$xoopsDB->getInsertId();
 
-	$getelements = q("SELECT * FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form = $fid");
+	$getelements = q("SELECT * FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form = $fid");
         $oldNewEleIdMap = array();
 	foreach($getelements as $ele) { // for each element in the form....
-                $insert_sql = "INSERT INTO " . $xoopsDB->prefix("formulize") . " (";
+		$insert_sql = "INSERT INTO " . icms::$xoopsDB->prefix("formulize") . " (";
                 $start = 1;
                 foreach($ele as $field=>$value) {
                 	if(!$start) { $insert_sql .= ", "; }
@@ -358,23 +357,23 @@ function cloneFormulize($title, $clonedata) {
                   $insert_sql .= "\"$value\"";
                 }
                 $insert_sql .= ")";
-                if(!$result = $xoopsDB->queryF($insert_sql)) {
-                  exit("error duplicating elements in form: '$title'<br>SQL: $insert_sql<br>".icms::$xoopsDB->error());
+                if(!$result = icms::$xoopsDB->queryF($insert_sql)) {
+                  exit("error duplicating elements in form: '$title'<br>SQL: $insert_sql<br>". icms::$xoopsDB->error());
                 }
                 if($oldNewEleIdMap[$ele['ele_handle']] == "replace_with_ele_id") {
-                  $oldNewEleIdMap[$ele['ele_handle']] = $xoopsDB->getInsertId();
+                	$oldNewEleIdMap[$ele['ele_handle']] = icms::$xoopsDB->getInsertId();
                 }
 	}
 
   // replace ele_id flags that need replacing
-  $replaceSQL = "UPDATE ". $xoopsDB->prefix("formulize") . " SET ele_handle=ele_id WHERE ele_handle=\"replace_with_ele_id\"";
-  if(!$result = $xoopsDB->queryF($replaceSQL)) {
-    exit("error setting the ele_handle values for the new form.<br>".icms::$xoopsDB->error());
+	$replaceSQL = "UPDATE ". icms::$xoopsDB->prefix("formulize") . " SET ele_handle=ele_id WHERE ele_handle=\"replace_with_ele_id\"";
+	if(!$result = icms::$xoopsDB->queryF($replaceSQL)) {
+    exit("error setting the ele_handle values for the new form.<br>". icms::$xoopsDB->error());
   }
 
-	$getmenu = q("SELECT * FROM " . $xoopsDB->prefix("formulize_menu") . " WHERE menuid=$fid");
+  $getmenu = q("SELECT * FROM " . icms::$xoopsDB->prefix("formulize_menu") . " WHERE menuid=$fid");
 	foreach($getmenu as $menu) {
-       	$insert_sql = "INSERT INTO " . $xoopsDB->prefix("formulize_menu") . " (";
+		$insert_sql = "INSERT INTO " . icms::$xoopsDB->prefix("formulize_menu") . " (";
        	$start = 1;
        	foreach($menu as $field=>$value) {
        		if(!$start) { $insert_sql .= ", "; }
@@ -392,24 +391,24 @@ function cloneFormulize($title, $clonedata) {
        		$insert_sql .= "\"$value\"";
        	}
        	$insert_sql .= ")";
-       	if(!$result = $xoopsDB->queryF($insert_sql)) {
-       		exit("error duplicating menu entry for form: '$title'<br>SQL: $insert_sql<br>".icms::$xoopsDB->error());
+       	if(!$result = icms::$xoopsDB->queryF($insert_sql)) {
+       		exit("error duplicating menu entry for form: '$title'<br>SQL: $insert_sql<br>". icms::$xoopsDB->error());
        	}
 	}
 
 	$getCat = getMenuCat($fid); // returns the id of the cat entry
 	if($getCat > 0) { // not in the general category, therefore write this form to the array for the cat it's in (general cat is not recorded)
-		$fid_array = q("SELECT id_form_array FROM " . $xoopsDB->prefix("formulize_menu_cats") . " WHERE cat_id=$getCat");
+		$fid_array = q("SELECT id_form_array FROM " . icms::$xoopsDB->prefix("formulize_menu_cats") . " WHERE cat_id=$getCat");
 		$new_fid_array = $fid_array[0]['id_form_array'] . $newfid . ","; // add a trailing comma, since there is a comma before and after each item even the first and last
-		if(!$result = $xoopsDB->queryF("UPDATE " . $xoopsDB->prefix("formulize_menu_cats") . " SET id_form_array=\"$new_fid_array\" WHERE cat_id=$getCat")) {
-			exit("error duplicating menu category for form: '$title'<br>SQL: $insert_sql<br>".icms::$xoopsDB->error());
+		if(!$result = icms::$xoopsDB->queryF("UPDATE " . icms::$xoopsDB->prefix("formulize_menu_cats") . " SET id_form_array=\"$new_fid_array\" WHERE cat_id=$getCat")) {
+			exit("error duplicating menu category for form: '$title'<br>SQL: $insert_sql<br>". icms::$xoopsDB->error());
 		}
 	}
     
         // Need to create the new data table now -- July 1 2007
         $formHandler =& icms_getModuleHandler('forms', 'formulize');
         if(!$tableCreationResult = $formHandler->createDataTable($newfid, $fid, $oldNewEleIdMap)) {
-                print "Error: could not make the necessary new datatable for form " . $newfid . ".  Please delete the cloned form and report this error to <a href=\"mailto:formulize@freeformsolutions.ca\">Freeform Solutions</a>.<br>".icms::$xoopsDB->error();
+                print "Error: could not make the necessary new datatable for form " . $newfid . ".  Please delete the cloned form and report this error to <a href=\"mailto:formulize@freeformsolutions.ca\">Freeform Solutions</a>.<br>". icms::$xoopsDB->error();
         }
         
           
@@ -422,7 +421,7 @@ function cloneFormulize($title, $clonedata) {
         include_once XOOPS_ROOT_PATH . "/modules/formulize/class/data.php"; // formulize data handler
         $dataHandler = new formulizeDataHandler($newfid);
         if(!$cloneResult = $dataHandler->cloneData($fid, $oldNewEleIdMap)) {
-                print "Error:  could not clone the data from the old form to the new form.  Please delete the cloned form and report this error to <a href=\"mailto:formulize@freeformsolutions.ca\">Freeform Solutions</a>.<br>".icms::$xoopsDB->error();
+                print "Error:  could not clone the data from the old form to the new form.  Please delete the cloned form and report this error to <a href=\"mailto:formulize@freeformsolutions.ca\">Freeform Solutions</a>.<br>". icms::$xoopsDB->error();
         }
     }
     
@@ -435,15 +434,15 @@ function cloneFormulize($title, $clonedata) {
     $oldFormPerms = $gperm_handler->getObjects($criteria);
     foreach($oldFormPerms as $thisOldPerm) {
       // do manual inserts, since addRight uses the xoopsDB query method, which won't do updates/inserts on GET requests
-      $sql = "INSERT INTO ".$xoopsDB->prefix("group_permission"). " (gperm_name, gperm_itemid, gperm_groupid, gperm_modid) VALUES ('".$thisOldPerm->getVar('gperm_name')."', $newfid, ".$thisOldPerm->getVar('gperm_groupid').", ".getFormulizeModId().")";
-      $res = $xoopsDB->queryF($sql);
+    	$sql = "INSERT INTO ". icms::$xoopsDB->prefix("group_permission"). " (gperm_name, gperm_itemid, gperm_groupid, gperm_modid) VALUES ('".$thisOldPerm->getVar('gperm_name')."', $newfid, ".$thisOldPerm->getVar('gperm_groupid').", ".getFormulizeModId().")";
+    	$res = icms::$xoopsDB->queryF($sql);
     }
     
 }
 
 function addform()
 {
-	global $xoopsDB, $_POST, $myts, $eh;
+	global $_POST, $myts, $eh;
 	$data[$title] = $myts->makeTboxData4Save($_POST["desc_form"]);
 	if (empty($data[$title])) {
 		redirect_header("formindex.php", 2, _MD_ERRORTITLE);
@@ -456,19 +455,19 @@ function addform()
 	$data[$title] = str_replace ('"', "`", $data[$title]);
 	$data[$title] = str_replace ('&', "_", $data[$title]);
 
-	$sql = sprintf("INSERT INTO %s (desc_form) VALUES ('%s')", $xoopsDB->prefix("formulize_id"), $data[$title]);
-	$xoopsDB->queryF($sql) or $eh->show("error insertion 1 dans addform");
+	$sql = sprintf("INSERT INTO %s (desc_form) VALUES ('%s')", icms::$xoopsDB->prefix("formulize_id"), $data[$title]);
+ icms::$xoopsDB->queryF($sql) or $eh->show("error insertion 1 dans addform");
 
-//	$sql2 = sprintf("INSERT INTO %s (itemname,itemurl) VALUES ('%s', '%s')", $xoopsDB->prefix("formulize_menu"), $title, XOOPS_URL.'/modules/formulize/index.php?title='.$data[$title].'');
-	$sql2 = sprintf("INSERT INTO %s (itemname,itemurl) VALUES ('%s', '%s')", $xoopsDB->prefix("formulize_menu"), $title, XOOPS_URL.'/modules/formulize/index.php?title='.$data[$title].'');
-	$xoopsDB->queryF($sql2) or $eh->show("error insertion 2 in addform");
+//	$sql2 = sprintf("INSERT INTO %s (itemname,itemurl) VALUES ('%s', '%s')", icms::$xoopsDB->prefix("formulize_menu"), $title, XOOPS_URL.'/modules/formulize/index.php?title='.$data[$title].'');
+	$sql2 = sprintf("INSERT INTO %s (itemname,itemurl) VALUES ('%s', '%s')", icms::$xoopsDB->prefix("formulize_menu"), $title, XOOPS_URL.'/modules/formulize/index.php?title='.$data[$title].'');
+	icms::$xoopsDB->queryF($sql2) or $eh->show("error insertion 2 in addform");
 
 	redirect_header("index.php?title=$data[$title]",1,_formulize_NEWFORMADDED);
 }
 
 function renform()
 {
-	global $xoopsDB, $_POST, $myts, $eh, $title, $title2, $data;
+	global $_POST, $myts, $eh, $title, $title2, $data;
 	$title2 = $myts->makeTboxData4Save($_POST["title2"]);
 	//$title3 = $myts->makeTboxData4Save($_POST["desc_form3"]);
 	if (empty($data[$title])) {
@@ -481,17 +480,17 @@ function renform()
 	$title2 = str_replace ('"', "`", $title2);
 	$title2 = str_replace ('&', "_", $title2);
 
-	$sql = sprintf("UPDATE %s SET desc_form='%s' WHERE desc_form='%s'", $xoopsDB->prefix("formulize_id"), $title2, $data[$title]);
-	$xoopsDB->queryF($sql) or $eh->show("error insertion 1 dans renform");
+	$sql = sprintf("UPDATE %s SET desc_form='%s' WHERE desc_form='%s'", icms::$xoopsDB->prefix("formulize_id"), $title2, $data[$title]);
+	icms::$xoopsDB->queryF($sql) or $eh->show("error insertion 1 dans renform");
 
-	$sql2 = sprintf("UPDATE %s SET itemname='%s',itemurl='%s' WHERE itemname='%s'", $xoopsDB->prefix("formulize_menu"), $title2, XOOPS_URL.'/modules/formulize/index.php?title='.$title2, $data[$title]);
-	$xoopsDB->query($sql2) or $eh->show("error insertion 2 dans renform");
+	$sql2 = sprintf("UPDATE %s SET itemname='%s',itemurl='%s' WHERE itemname='%s'", icms::$xoopsDB->prefix("formulize_menu"), $title2, XOOPS_URL.'/modules/formulize/index.php?title='.$title2, $data[$title]);
+	icms::$xoopsDB->query($sql2) or $eh->show("error insertion 2 dans renform");
 	redirect_header("formindex.php",1,_formulize_FORMMOD);
 }
 
 function modform($fid)
 {
-	global $xoopsDB, $_POST, $myts, $eh, $title, $data;
+	global $_POST, $myts, $eh, $title, $data;
 	//$title5 = $myts->makeTboxData4Save($_POST["desc_form5"]);
 	if (empty($data[$title])) {
 		redirect_header("formindex.php", 2, _MD_ERRORTITLE);
@@ -528,34 +527,34 @@ function delform()
 		redirect_header("formindex.php",3,_NO_PERM);
 	}
 
-	global $xoopsDB, $_POST, $myts, $eh, $title, $data;
+	global $_POST, $myts, $eh, $title, $data;
 	$module_id = icms::$module->getVar('mid'); // module ID added by JWE 10/11/04
 
 	//$title4 = $myts->makeTboxData4Save($_POST["desc_form4"]);
-	$sql=sprintf("SELECT id_form FROM ".$xoopsDB->prefix("formulize_id")." WHERE desc_form='%s'",$data[$title]);
-	$res = $xoopsDB->query ( $sql ) or die('Erreur SQL !<br>'.$requete.'<br>'.icms::$xoopsDB->error());
-	if ( $res ) {
-  	while ( $row = $xoopsDB->fetchRow ( $res ) ) {
+	$sql = sprintf("SELECT id_form FROM ". icms::$xoopsDB->prefix("formulize_id")." WHERE desc_form='%s'",$data[$title]);
+	$res = icms::$xoopsDB->query ( $sql ) or die('Erreur SQL !<br>'.$requete.'<br>'. icms::$xoopsDB->error());
+	if ($res) {
+		while ( $row = icms::$xoopsDB->fetchRow ( $res ) ) {
     	$id_form = $row[0];
   		}
 	}
         
         // NOW WE DROP THE DATA TABLE, INSTEAD OF DELETING FROM FORMULIZE FORM
 /*
-	$sql = sprintf("DELETE FROM %s WHERE id_form = '%u'", $xoopsDB->prefix("formulize_form"), $title);
-	$xoopsDB->queryF($sql) or $eh->show("error supression 4 dans delform");
+	$sql = sprintf("DELETE FROM %s WHERE id_form = '%u'", icms::$xoopsDB->prefix("formulize_form"), $title);
+ icms::$xoopsDB->queryF($sql) or $eh->show("error supression 4 dans delform");
 */
         $form_handler = icms_getModuleHandler('forms', 'formulize');
         $form_handler->dropDataTable($title);
         
-	$sql = sprintf("DELETE FROM %s WHERE desc_form = '%s'", $xoopsDB->prefix("formulize_id"), $data[$title]);
-	$xoopsDB->queryF($sql) or $eh->show("error supression 1 dans delform");
+        $sql = sprintf("DELETE FROM %s WHERE desc_form = '%s'", icms::$xoopsDB->prefix("formulize_id"), $data[$title]);
+        icms::$xoopsDB->queryF($sql) or $eh->show("error supression 1 dans delform");
 
-	$sql = sprintf("DELETE FROM %s WHERE id_form = '%u'", $xoopsDB->prefix("formulize"), $title);
-	$xoopsDB->queryF($sql) or $eh->show("error supression 2 dans delform");
+        $sql = sprintf("DELETE FROM %s WHERE id_form = '%u'", icms::$xoopsDB->prefix("formulize"), $title);
+        icms::$xoopsDB->queryF($sql) or $eh->show("error supression 2 dans delform");
 
-	$sql = sprintf("DELETE FROM %s WHERE itemname = '%s'", $xoopsDB->prefix("formulize_menu"), $data[$title]);
-	$xoopsDB->queryF($sql) or $eh->show("error supression 3 dans delform");
+        $sql = sprintf("DELETE FROM %s WHERE itemname = '%s'", icms::$xoopsDB->prefix("formulize_menu"), $data[$title]);
+        icms::$xoopsDB->queryF($sql) or $eh->show("error supression 3 dans delform");
 
 
 // PERMISSION DELETION NOT OPERATING PROPERLY RIGHT NOW
@@ -573,7 +572,6 @@ function delform()
 // TWO FUNCTIONS BELOW BORROWED FROM MULTI-GROUP PERM CODE
 function saveList()
 {
-    global $xoopsDB;
 
 
     $op = 'insert';
@@ -586,10 +584,10 @@ function saveList()
 	if($id > 0)
 	{
 		// Get exisitng name to see if we update, or create new.
-	    $result = $xoopsDB->query("SELECT gl_name FROM ".$xoopsDB->prefix("group_lists")." WHERE gl_id='".$id."'");
-	    if($xoopsDB->getRowsNum($result) > 0)
+		$result = icms::$xoopsDB->query("SELECT gl_name FROM ". icms::$xoopsDB->prefix("group_lists")." WHERE gl_id='".$id."'");
+		if(icms::$xoopsDB->getRowsNum($result) > 0)
 	    {
-	        $entry = $xoopsDB->fetchArray($result);
+	    	$entry = icms::$xoopsDB->fetchArray($result);
 
 			//echo $entry['gl_name'];
 			  
@@ -605,20 +603,20 @@ function saveList()
 	switch($op)
     {
 		case 'insert':
-	        $insert_query = "INSERT INTO ". $xoopsDB->prefix("group_lists") .
+			$insert_query = "INSERT INTO ". icms::$xoopsDB->prefix("group_lists") .
 	            " (gl_id, gl_name, gl_groups) VALUES ('', '" . $name . "', '" . $groups . "')";
 
-	        $insert_result = $xoopsDB->queryf($insert_query);
+			$insert_result = icms::$xoopsDB->queryf($insert_query);
 	        
-	        return $xoopsDB->getInsertId();
+			return icms::$xoopsDB->getInsertId();
 						   
 		case 'update':
-	        $update_query = "UPDATE ". $xoopsDB->prefix("group_lists") .
+			$update_query = "UPDATE ". icms::$xoopsDB->prefix("group_lists") .
 	            " SET gl_groups = '" . $groups . "' WHERE gl_id='" . $id . "'";
 
-	        $update_result = $xoopsDB->queryf($update_query);
+			$update_result = icms::$xoopsDB->queryf($update_query);
 			
-			//echo $update_result . "-----" . $xoopsDB->error();
+			//echo $update_result . "-----" . icms::$xoopsDB->error();
 	        
 	        return $id;
 	}
@@ -627,7 +625,6 @@ function saveList()
 
 function deleteList()
 {
-    global $xoopsDB;
 
 	$id = $_POST['list_id'];
     
@@ -636,18 +633,16 @@ function deleteList()
     
 	if($id)
     {
-	    $delete_query = "DELETE FROM ".$xoopsDB->prefix("group_lists") .
+    	$delete_query = "DELETE FROM ". icms::$xoopsDB->prefix("group_lists") .
 	        " WHERE gl_id='" . $id . "'";
 
-	    $delete_result = $xoopsDB->queryf($delete_query);
+    	$delete_result = icms::$xoopsDB->queryf($delete_query);
 	}
 }
 
 
 
 function drawGroupList($list_id="") {
-
-global $xoopsDB;
 
 $form = new icms_form_Theme (_formulize_MODFORM_TITLE, "groupform", "formindex.php?op=permsub");
 
@@ -674,10 +669,10 @@ if($list_op == 'select')
 {
 	if(isset($list_id))
 	{
-	    $saved_group_list_results = $xoopsDB->query("SELECT gl_groups FROM ".$xoopsDB->prefix("group_lists")." WHERE gl_id='" . $list_id . "'");
-	    if($xoopsDB->getRowsNum($saved_group_list_results) > 0)
+		$saved_group_list_results = icms::$xoopsDB->query("SELECT gl_groups FROM ". icms::$xoopsDB->prefix("group_lists")." WHERE gl_id='" . $list_id . "'");
+		if(icms::$xoopsDB->getRowsNum($saved_group_list_results) > 0)
 	    {
-	        $saved_group_list_rowset = $xoopsDB->fetchArray($saved_group_list_results);
+	    	$saved_group_list_rowset = icms::$xoopsDB->fetchArray($saved_group_list_results);
 	        //echo $saved_group_list_rowset['gl_groups'];
 	        $saved_group_list_ids = explode(",", $saved_group_list_rowset['gl_groups']);
 	        
@@ -743,10 +738,10 @@ if(isset($list_id))
 	$fs_select_lists->setValue($list_id);
 }
 
-$result = $xoopsDB->query("SELECT gl_id, gl_name FROM ".$xoopsDB->prefix("group_lists")." ORDER BY gl_name");
-if($xoopsDB->getRowsNum($result) > 0)
+$result = icms::$xoopsDB->query("SELECT gl_id, gl_name FROM ". icms::$xoopsDB->prefix("group_lists")." ORDER BY gl_name");
+if(icms::$xoopsDB->getRowsNum($result) > 0)
 {
-    while($group_list = $xoopsDB->fetchArray($result))
+	while($group_list = icms::$xoopsDB->fetchArray($result))
     {
         $fs_select_lists->addOption($group_list['gl_id'], $group_list['gl_name']);
     }
@@ -774,7 +769,7 @@ $form->addElement($list_id_hidden);
 // Form list goes here:
 
 	$form_list = new icms_form_elements_Select(_formulize_FORM_LIST, 'fs_forms', null, 10, true);
-	$sql="SELECT id_form,desc_form FROM ".$xoopsDB->prefix("formulize_id") . " ORDER BY desc_form";
+	$sql="SELECT id_form,desc_form FROM ". icms::$xoopsDB->prefix("formulize_id") . " ORDER BY desc_form";
 	$res = icms::$xoopsDB->queryF( $sql );
 	if ( $res ) {
 		$tab = array();
@@ -901,8 +896,6 @@ function newpermform($group_list="", $form_list="")
 	// carry on with drawing of the permissions list, if groups and forms are specified
 	if(is_array($group_list) AND is_array($form_list) AND (isset($_POST['groupsubmit']) OR isset($_POST['apply']) OR isset($_POST['addcon']))) {
 
-		global $xoopsDB;
-
 		$formulize_perms = getFormulizePerms();
 			//description of permissions added July 28/05
 			$perm_desc[0] = "view_form -- allows access to a form, and to your own entry or entries in it.";
@@ -943,8 +936,8 @@ function newpermform($group_list="", $form_list="")
 			foreach($group_list as $group_id) {
       			print "<input type=hidden name='hidden_group_" . $group_id . "' value='" . $group_id . "'>";
       			// get groupname
-      			$group_name = $xoopsDB->query("SELECT name, description FROM " . $xoopsDB->prefix("groups") . " WHERE groupid=$group_id");
-      			$gn = $xoopsDB->fetchArray($group_name);
+      			$group_name = icms::$xoopsDB->query("SELECT name, description FROM " . icms::$xoopsDB->prefix("groups") . " WHERE groupid=$group_id");
+      			$gn = icms::$xoopsDB->fetchArray($group_name);
 				print $gn['name'];
 				if($countgroups < count($group_list)) { print ", "; }
 				$countgroups++;
@@ -958,8 +951,8 @@ function newpermform($group_list="", $form_list="")
       		foreach($group_list as $group_id) {
       			print "<input type=hidden name='hidden_group_" . $group_id . "' value='" . $group_id . "'>";
       			// get groupname
-      			$group_name = $xoopsDB->query("SELECT name, description FROM " . $xoopsDB->prefix("groups") . " WHERE groupid=$group_id");
-      			$gn = $xoopsDB->fetchArray($group_name);
+      			$group_name = icms::$xoopsDB->query("SELECT name, description FROM " . icms::$xoopsDB->prefix("groups") . " WHERE groupid=$group_id");
+      			$gn = icms::$xoopsDB->fetchArray($group_name);
       			if($class == 'even') {
       				$class = 'odd';
       			} else {
@@ -985,7 +978,7 @@ function newpermform($group_list="", $form_list="")
 // THIS FUNCTION DRAWS IN THE FORM PERMISSION LISTS -- CALLED INTERNALLY FROM THE NEWPERMFORM FUNCTION
 function drawformperms($form_list, $formulize_perms, $perm_desc, $group_id="all", $class="even", $same=true, $hidden_once=0) {
 
-	global $xoopsDB, $module_id;
+	global $module_id;
 	$gperm_handler =& icms::handler('icms_member_groupperm');
 	$form_handler = icms_getModuleHandler('forms', 'formulize');
 	
@@ -1005,8 +998,8 @@ function drawformperms($form_list, $formulize_perms, $perm_desc, $group_id="all"
       		print "</tr><tr>";
       	}
       	// get formname
-      	$form_name = $xoopsDB->query("SELECT desc_form FROM " . $xoopsDB->prefix("formulize_id") . " WHERE id_form=$form_id");
-      	$fn = $xoopsDB->fetchArray($form_name);
+      	$form_name = icms::$xoopsDB->query("SELECT desc_form FROM " . icms::$xoopsDB->prefix("formulize_id") . " WHERE id_form=$form_id");
+      	$fn = icms::$xoopsDB->fetchArray($form_name);
       	$plistsize = count($formulize_perms);
       	print "<td valign=bottom class=$class><p><b>" . $fn['desc_form'] . "</b><br><select size=$plistsize multiple='multiple' name='" . $group_id . "-" . $form_id . "[]'>";
       	$i = 0;
@@ -1022,8 +1015,8 @@ function drawformperms($form_list, $formulize_perms, $perm_desc, $group_id="all"
 				
 				// now add in the grouplist selection box, which can optionally be used to force groupscope to be over certain other group(s).  If no groups selected, then the user's groups with view_form are used instead. -- added July 31 2009, jwe
 				if(!$same) {
-					$groupDataQueryResult = $xoopsDB->query("SELECT groupid, name FROM " .$xoopsDB->prefix("groups"));
-					$numGroups = $xoopsDB->getRowsNum($groupDataQueryResult);
+					$groupDataQueryResult = icms::$xoopsDB->query("SELECT groupid, name FROM " . icms::$xoopsDB->prefix("groups"));
+					$numGroups = icms::$xoopsDB->getRowsNum($groupDataQueryResult);
 					$glistsize = $numGroups < 10 ? $numGroups : 10;
 					include_once XOOPS_ROOT_PATH . "/modules/formulize/class/usersGroupsPerms.php";
 					if(!isset($$formulize_permHandler{$form_id})) {
@@ -1031,7 +1024,7 @@ function drawformperms($form_list, $formulize_perms, $perm_desc, $group_id="all"
 					}
 					$groupScopeGroupIds = $formulize_permHandler{$form_id}->getGroupScopeGroupIds($group_id);
 					print "<p><b>"._AM_FORCE_GROUPSCOPE_INTRO."</b><br><select size=$glistsize multiple='multiple' name='".$group_id."-".$form_id."-groupscope[]'>\n";
-					while($groupDataArray = $xoopsDB->fetchArray($groupDataQueryResult)) {
+					while($groupDataArray = icms::$xoopsDB->fetchArray($groupDataQueryResult)) {
 						$selectedGroup = in_array($groupDataArray['groupid'], $groupScopeGroupIds) ? " selected='selected'" : "";
 						print "<option value=".$groupDataArray['groupid'] . $selectedGroup . ">".$groupDataArray['name']."</option>\n";
 					}
@@ -1060,24 +1053,22 @@ function drawformperms($form_list, $formulize_perms, $perm_desc, $group_id="all"
 // FUNCTION DELETES AND ADDS PERMISSIONS FOR A FORM FOR A SPECIFIC GROUP
 // "Have to do this via DB since no method exists to do it for us" -- not true, could create xoopsgroupperm objects and then insert them in the DB using the insert method in the gperm handler
 function updatePermsDB($mid, $gid, $fid, $perm, $add="") {
-	global $xoopsDB;
 	if($add) {
 		// check if it exists
-		$result = $xoopsDB->query("SELECT * FROM  " . $xoopsDB->prefix("group_permission") . " WHERE gperm_groupid='$gid' AND gperm_itemid='$fid' AND gperm_modid='$mid' AND gperm_name='$perm'");
-		$res = $xoopsDB->getRowsNum($result);
+		$result = icms::$xoopsDB->query("SELECT * FROM  " . icms::$xoopsDB->prefix("group_permission") . " WHERE gperm_groupid='$gid' AND gperm_itemid='$fid' AND gperm_modid='$mid' AND gperm_name='$perm'");
+		$res = icms::$xoopsDB->getRowsNum($result);
 		if($res == 0) {
 			//print "Adding $perm<br>";
-			$res2 = $xoopsDB->query("INSERT INTO " . $xoopsDB->prefix("group_permission") . " (gperm_modid, gperm_groupid, gperm_itemid, gperm_name) VALUES (\"$mid\", \"$gid\", \"$fid\", \"$perm\")");
+			$res2 = icms::$xoopsDB->query("INSERT INTO " . icms::$xoopsDB->prefix("group_permission") . " (gperm_modid, gperm_groupid, gperm_itemid, gperm_name) VALUES (\"$mid\", \"$gid\", \"$fid\", \"$perm\")");
 		}
 	} else {
 		//print "Deleting $perm<br>";
-		$result = $xoopsDB->query("DELETE FROM " . $xoopsDB->prefix("group_permission") . " WHERE gperm_groupid='$gid' AND gperm_itemid='$fid' AND gperm_modid='$mid' AND gperm_name='$perm'");
+		$result = icms::$xoopsDB->query("DELETE FROM " . icms::$xoopsDB->prefix("group_permission") . " WHERE gperm_groupid='$gid' AND gperm_itemid='$fid' AND gperm_modid='$mid' AND gperm_name='$perm'");
 	}
 }
 
 function updateperms() {
 
-	global $xoopsDB;
 	$formulize_perms = getFormulizePerms();
 	$module_id = icms::$module->getVar('mid');
 	$gperm_handler = &icms::handler('icms_member_groupperm');
@@ -1167,13 +1158,12 @@ function updateperms() {
 function patch40() {
 	// CHECK THAT THEY ARE AT 3.1 LEVEL, IF NOT, LINK TO PATCH31
 	// Check for ele_handle being 255 in formulize table
-	global $xoopsDB;
-	$fieldStateSQL = "SHOW COLUMNS FROM " . $xoopsDB->prefix("formulize") ." LIKE 'ele_handle'"; // note very odd use of LIKE as a clause of its own in SHOW statements, very strange, but that's what MySQL does
-	if(!$fieldStateRes = $xoopsDB->queryF($fieldStateSQL)) {
+	$fieldStateSQL = "SHOW COLUMNS FROM " . icms::$xoopsDB->prefix("formulize") ." LIKE 'ele_handle'"; // note very odd use of LIKE as a clause of its own in SHOW statements, very strange, but that's what MySQL does
+	if(!$fieldStateRes = icms::$xoopsDB->queryF($fieldStateSQL)) {
 		print "Error: could not determine if your Formulize database structure is up to date.  Please contact <a href=\"mailto:formulize@freeformsolutions.ca\">Freeform Solutions</a> for assistance.<br>\n";
 		return false;
 	}
-	$fieldStateData = $xoopsDB->fetchArray($fieldStateRes);
+	$fieldStateData = icms::$xoopsDB->fetchArray($fieldStateRes);
 	$dataType = $fieldStateData['Type'];
 	if($dataType != "varchar(255)") {
 		print "<h1>Your database schema is out of date.  You must run \"patch31\" before running \"patch40\".</h1>\n";
@@ -1190,15 +1180,15 @@ function patch40() {
 		// PATCH LOGIC GOES HERE
 		
 		$testsql = "SHOW TABLES";
-		$resultst = $xoopsDB->query($testsql);
-		while($table = $xoopsDB->fetchRow($resultst)) {
+		$resultst = icms::$xoopsDB->query($testsql);
+		while($table = icms::$xoopsDB->fetchRow($resultst)) {
 			$existingTables[] = $table[0];
 		}
 
 		$sql = array();
 
-		if(!in_array($xoopsDB->prefix("formulize_groupscope_settings"), $existingTables)) {
-			$sql[] = "CREATE TABLE `".$xoopsDB->prefix("formulize_groupscope_settings")."` (
+		if(!in_array(icms::$xoopsDB->prefix("formulize_groupscope_settings"), $existingTables)) {
+			$sql[] = "CREATE TABLE `". icms::$xoopsDB->prefix("formulize_groupscope_settings")."` (
   `groupscope_id` int(11) NOT NULL auto_increment,
   `groupid` int(11) NOT NULL default 0,
 	`fid` int(11) NOT NULL default 0,
@@ -1210,8 +1200,8 @@ function patch40() {
 ) ENGINE=MyISAM;";
 		}
 		
-		if(!in_array($xoopsDB->prefix("formulize_group_filters"), $existingTables)) {
-			$sql[] = "CREATE TABLE `".$xoopsDB->prefix("formulize_group_filters")."` (
+		if(!in_array(icms::$xoopsDB->prefix("formulize_group_filters"), $existingTables)) {
+			$sql[] = "CREATE TABLE `". icms::$xoopsDB->prefix("formulize_group_filters")."` (
   `filterid` int(11) NOT NULL auto_increment,
   `fid` int(11) NOT NULL default 0,
   `groupid` int(11) NOT NULL default 0,
@@ -1222,8 +1212,8 @@ function patch40() {
 ) ENGINE=MyISAM;";
 		}
 	
-		if(!in_array($xoopsDB->prefix("formulize_applications"), $existingTables)) {
-			$sql[] = "CREATE TABLE `".$xoopsDB->prefix("formulize_applications")."` (
+		if(!in_array(icms::$xoopsDB->prefix("formulize_applications"), $existingTables)) {
+			$sql[] = "CREATE TABLE `". icms::$xoopsDB->prefix("formulize_applications")."` (
   `appid` int(11) NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
   `description` text NOT NULL,
@@ -1231,8 +1221,8 @@ function patch40() {
 ) ENGINE=MyISAM;";
 		}
 
-		if(!in_array($xoopsDB->prefix("formulize_application_form_link"), $existingTables)) {
-			$sql[] = "CREATE TABLE `".$xoopsDB->prefix("formulize_application_form_link")."` (
+		if(!in_array(icms::$xoopsDB->prefix("formulize_application_form_link"), $existingTables)) {
+			$sql[] = "CREATE TABLE `". icms::$xoopsDB->prefix("formulize_application_form_link")."` (
   `linkid` int(11) NOT NULL auto_increment,
   `appid` int(11) NOT NULL default 0,
   `fid` int(11) NOT NULL default 0,
@@ -1242,8 +1232,8 @@ function patch40() {
 ) ENGINE=MyISAM;";
 		}
 		
-		if(!in_array($xoopsDB->prefix("formulize_screen_form"), $existingTables)) {
-			$sql[] = "CREATE TABLE `".$xoopsDB->prefix("formulize_screen_form")."` (
+		if(!in_array(icms::$xoopsDB->prefix("formulize_screen_form"), $existingTables)) {
+			$sql[] = "CREATE TABLE `". icms::$xoopsDB->prefix("formulize_screen_form")."` (
   `formid` int(11) NOT NULL auto_increment,
   `sid` int(11) NOT NULL default 0,
   `donedest` varchar(255) NOT NULL default '',
@@ -1256,8 +1246,8 @@ function patch40() {
 ) ENGINE=MyISAM;";
 		}
 		
-		if(!in_array($xoopsDB->prefix("formulize_advanced_calculations"), $existingTables)) {
-			$sql[] = "CREATE TABLE `".$xoopsDB->prefix("formulize_advanced_calculations")."` (
+		if(!in_array(icms::$xoopsDB->prefix("formulize_advanced_calculations"), $existingTables)) {
+			$sql[] = "CREATE TABLE `". icms::$xoopsDB->prefix("formulize_advanced_calculations")."` (
   `acid` int(11) NOT NULL auto_increment,
   `fid` int(11) NOT NULL default '0',
   `name` varchar(255) NOT NULL default '',
@@ -1273,8 +1263,8 @@ function patch40() {
 ) ENGINE=MyISAM;";
 		}
 
-		if(!in_array($xoopsDB->prefix("formulize_procedure_logs"), $existingTables)) {
-			$sql[] = "CREATE TABLE `".$xoopsDB->prefix("formulize_procedure_logs")."` (
+		if(!in_array(icms::$xoopsDB->prefix("formulize_procedure_logs"), $existingTables)) {
+			$sql[] = "CREATE TABLE `". icms::$xoopsDB->prefix("formulize_procedure_logs")."` (
   `proc_log_id` int(11) unsigned NOT NULL auto_increment,
   `proc_id` int(11) NOT NULL,
   `proc_datetime` datetime NOT NULL,
@@ -1285,8 +1275,8 @@ function patch40() {
 ) ENGINE=MyISAM;";
 		}
 
-		if(!in_array($xoopsDB->prefix("formulize_procedure_logs_params"), $existingTables)) {
-			$sql[] = "CREATE TABLE `".$xoopsDB->prefix("formulize_procedure_logs_params")."` (
+		if(!in_array(icms::$xoopsDB->prefix("formulize_procedure_logs_params"), $existingTables)) {
+			$sql[] = "CREATE TABLE `". icms::$xoopsDB->prefix("formulize_procedure_logs_params")."` (
   `proc_log_param_id` int(11) unsigned NOT NULL auto_increment,
   `proc_log_id` int(11) unsigned NOT NULL,
   `proc_log_param` varchar(255),
@@ -1296,39 +1286,39 @@ function patch40() {
 ) ENGINE=MyISAM;";
 			}
 
-		$sql['add_encrypt'] = "ALTER TABLE " . $xoopsDB->prefix("formulize") . " ADD `ele_encrypt` tinyint(1) NOT NULL default '0'";
-		$sql['add_lockedform'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_id") . " ADD `lockedform` tinyint(1) NULL default NULL";
-		$sql['drop_from_formulize_id_admin'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_id") . " DROP `admin`";
-		$sql['drop_from_formulize_id_groupe'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_id") . " DROP `groupe`";
-		$sql['drop_from_formulize_id_email'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_id") . " DROP `email`";
-		$sql['drop_from_formulize_id_expe'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_id") . " DROP `expe`";
-		$sql['drop_from_formulize_id_maxentries'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_id") . " DROP `maxentries`";
-		$sql['drop_from_formulize_id_even'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_id") . " DROP `even`";
-		$sql['drop_from_formulize_id_odd'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_id") . " DROP `odd`";
-		$sql['drop_from_formulize_id_groupscope'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_id") . " DROP `groupscope`";
-		$sql['drop_from_formulize_id_showviewentries'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_id") . " DROP `showviewentries`";
-		$sql['add_filtersettings'] = "ALTER TABLE " . $xoopsDB->prefix("formulize") . " ADD `ele_filtersettings` text NOT NULL";
-		$sql['ele_type_100'] = "ALTER TABLE " . $xoopsDB->prefix("formulize") . " CHANGE `ele_type` `ele_type` varchar(100) NOT NULL default ''";
-		$sql['ele_disabled_text'] = "ALTER TABLE ". $xoopsDB->prefix("formulize") ." CHANGE `ele_disabled` `ele_disabled` text NOT NULL ";
-		$sql['ele_display_dropindex'] = "ALTER TABLE ". $xoopsDB->prefix("formulize") ." DROP INDEX `ele_display`";
-		$sql['ele_display_text'] = "ALTER TABLE ". $xoopsDB->prefix("formulize") ." CHANGE `ele_display` `ele_display` text NOT NULL ";
-		$sql['ele_display_addindex'] = "ALTER TABLE ". $xoopsDB->prefix("formulize") ." ADD INDEX `ele_display` ( `ele_display` ( 255 ) )";
-		$sql['sep_to_areamodif'] = "UPDATE ". $xoopsDB->prefix("formulize") ." SET ele_type='areamodif' WHERE ele_type='sep'";
-		$sql['add_defaultform'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_id") . " ADD `defaultform` int(11) NOT NULL default 0";
-		$sql['add_defaultlist'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_id") . " ADD `defaultlist` int(11) NOT NULL default 0";
-		$sql['add_menutext'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_id") . " ADD `menutext` varchar(255) default 'Use the form\'s title'";
-		$sql['add_useadvcalcs'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_screen_listofentries") . " ADD `useadvcalcs` varchar(255) NOT NULL default ''";
-		$sql['add_not_elementemail'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_notification_conditions") . " ADD `not_cons_elementemail` smallint(5) NOT NULL default 0";
-		$sql['add_form_handle'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_id") . " ADD `form_handle` varchar(255) NOT NULL";
-		$sql['id_form_to_form_handle'] = "UPDATE " . $xoopsDB->prefix("formulize_id") . " SET form_handle = id_form WHERE form_handle IS NULL OR form_handle = ''";
-		$sql['add_dedisplay'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_screen_listofentries") . " ADD `dedisplay` int(1) NOT NULL";
-		$sql['add_store_revisions'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_id") . " ADD `store_revisions` tinyint(1) NOT NULL default '0'";
-		$sql['add_finishisdone'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_screen_multipage") . " ADD `finishisdone` tinyint(1) NOT NULL default 0";
-		$sql['add_toptext'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_screen_multipage") . " ADD `toptemplate` text NOT NULL";
-		$sql['add_elementtext'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_screen_multipage") . " ADD `elementtemplate` text NOT NULL";
-		$sql['add_bottomtext'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_screen_multipage") . " ADD `bottomtemplate` text NOT NULL";
+			$sql['add_encrypt'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize") . " ADD `ele_encrypt` tinyint(1) NOT NULL default '0'";
+			$sql['add_lockedform'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_id") . " ADD `lockedform` tinyint(1) NULL default NULL";
+			$sql['drop_from_formulize_id_admin'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_id") . " DROP `admin`";
+			$sql['drop_from_formulize_id_groupe'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_id") . " DROP `groupe`";
+			$sql['drop_from_formulize_id_email'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_id") . " DROP `email`";
+			$sql['drop_from_formulize_id_expe'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_id") . " DROP `expe`";
+			$sql['drop_from_formulize_id_maxentries'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_id") . " DROP `maxentries`";
+			$sql['drop_from_formulize_id_even'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_id") . " DROP `even`";
+			$sql['drop_from_formulize_id_odd'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_id") . " DROP `odd`";
+			$sql['drop_from_formulize_id_groupscope'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_id") . " DROP `groupscope`";
+			$sql['drop_from_formulize_id_showviewentries'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_id") . " DROP `showviewentries`";
+			$sql['add_filtersettings'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize") . " ADD `ele_filtersettings` text NOT NULL";
+			$sql['ele_type_100'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize") . " CHANGE `ele_type` `ele_type` varchar(100) NOT NULL default ''";
+			$sql['ele_disabled_text'] = "ALTER TABLE ". icms::$xoopsDB->prefix("formulize") ." CHANGE `ele_disabled` `ele_disabled` text NOT NULL ";
+			$sql['ele_display_dropindex'] = "ALTER TABLE ". icms::$xoopsDB->prefix("formulize") ." DROP INDEX `ele_display`";
+			$sql['ele_display_text'] = "ALTER TABLE ". icms::$xoopsDB->prefix("formulize") ." CHANGE `ele_display` `ele_display` text NOT NULL ";
+			$sql['ele_display_addindex'] = "ALTER TABLE ". icms::$xoopsDB->prefix("formulize") ." ADD INDEX `ele_display` ( `ele_display` ( 255 ) )";
+			$sql['sep_to_areamodif'] = "UPDATE ". icms::$xoopsDB->prefix("formulize") ." SET ele_type='areamodif' WHERE ele_type='sep'";
+			$sql['add_defaultform'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_id") . " ADD `defaultform` int(11) NOT NULL default 0";
+			$sql['add_defaultlist'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_id") . " ADD `defaultlist` int(11) NOT NULL default 0";
+			$sql['add_menutext'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_id") . " ADD `menutext` varchar(255) default 'Use the form\'s title'";
+			$sql['add_useadvcalcs'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_screen_listofentries") . " ADD `useadvcalcs` varchar(255) NOT NULL default ''";
+			$sql['add_not_elementemail'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_notification_conditions") . " ADD `not_cons_elementemail` smallint(5) NOT NULL default 0";
+			$sql['add_form_handle'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_id") . " ADD `form_handle` varchar(255) NOT NULL";
+			$sql['id_form_to_form_handle'] = "UPDATE " . icms::$xoopsDB->prefix("formulize_id") . " SET form_handle = id_form WHERE form_handle IS NULL OR form_handle = ''";
+			$sql['add_dedisplay'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_screen_listofentries") . " ADD `dedisplay` int(1) NOT NULL";
+			$sql['add_store_revisions'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_id") . " ADD `store_revisions` tinyint(1) NOT NULL default '0'";
+			$sql['add_finishisdone'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_screen_multipage") . " ADD `finishisdone` tinyint(1) NOT NULL default 0";
+			$sql['add_toptext'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_screen_multipage") . " ADD `toptemplate` text NOT NULL";
+			$sql['add_elementtext'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_screen_multipage") . " ADD `elementtemplate` text NOT NULL";
+			$sql['add_bottomtext'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_screen_multipage") . " ADD `bottomtemplate` text NOT NULL";
 		foreach($sql as $key=>$thissql) {
-			if(!$result = $xoopsDB->query($thissql)) {
+			if(!$result = icms::$xoopsDB->query($thissql)) {
 				if($key === "add_encrypt") {
 					print "ele_encrypt field already added.  result: OK<br>";
 				} elseif($key === "add_lockedform") {
@@ -1362,27 +1352,27 @@ function patch40() {
 				} elseif(strstr($key, 'drop_from_formulize_id_')) {
 					continue;
 				} else {
-					exit("Error patching DB for Formulize 4.0. SQL dump:<br>" . $thissql . "<br>".icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
+					exit("Error patching DB for Formulize 4.0. SQL dump:<br>" . $thissql . "<br>". icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
 				}
 			}
 		}
 		
 		// if there is a framework handles table present, then we need to check for a few things to ensure the integrity of code and our ability to disambiguate inputs to the API
-		if(in_array($xoopsDB->prefix("formulize_framework_elements"), $existingTables)) {
+		if(in_array(icms::$xoopsDB->prefix("formulize_framework_elements"), $existingTables)) {
 			
 			// need to change rules...framework handles must now be globally unique, so we can disambiguate them from each other when we are passed just a framework handle
-			$uniqueSQL = "SELECT elements.ele_caption, elements.ele_id, elements.ele_handle, handles.fe_handle, handles.fe_frame_id FROM ".$xoopsDB->prefix("formulize")." as elements, ".$xoopsDB->prefix("formulize_framework_elements")." as handles WHERE EXISTS (SELECT 1 FROM ".$xoopsDB->prefix("formulize_framework_elements")." as checkhandles WHERE handles.fe_handle = checkhandles.fe_handle AND handles.fe_element_id != checkhandles.fe_element_id) AND handles.fe_element_id = elements.ele_id AND handles.fe_handle != \"\" ORDER BY handles.fe_handle";
-			$uniqueRes = $xoopsDB->query($uniqueSQL);
+			$uniqueSQL = "SELECT elements.ele_caption, elements.ele_id, elements.ele_handle, handles.fe_handle, handles.fe_frame_id FROM ". icms::$xoopsDB->prefix("formulize")." as elements, ". icms::$xoopsDB->prefix("formulize_framework_elements")." as handles WHERE EXISTS (SELECT 1 FROM ". icms::$xoopsDB->prefix("formulize_framework_elements")." as checkhandles WHERE handles.fe_handle = checkhandles.fe_handle AND handles.fe_element_id != checkhandles.fe_element_id) AND handles.fe_element_id = elements.ele_id AND handles.fe_handle != \"\" ORDER BY handles.fe_handle";
+			$uniqueRes = icms::$xoopsDB->query($uniqueSQL);
 			$haveWarning = false;
 			$warningIdentifier = array();
 			$warningContents = array();
-			if($xoopsDB->getRowsNum($uniqueRes)) {
+			if(icms::$xoopsDB->getRowsNum($uniqueRes)) {
 				$haveWarning = true;
 				$warningIdentifier[] = "<li>You have some \"framework handles\" which are the same between different frameworks.</li>";
 				ob_start();
 				print "<ul>";
 				$prevHandle = "";
-				while($uniqueArray = $xoopsDB->fetchArray($uniqueRes)) {
+				while($uniqueArray = icms::$xoopsDB->fetchArray($uniqueRes)) {
 					if($uniqueArray['fe_handle'] != $prevHandle) {
 						if($prevHandle != "") {
 							// need to finish previous set and print out what's missing
@@ -1406,14 +1396,14 @@ function patch40() {
 			// no framework handle can be identical to the text of any data handle, unless they refer to the same element
 			// So look up all the elements that have a data handle that matches a framework handle, which is not referring to the same element
 			
-			$handleSQL = "SELECT elements.ele_id, elements.ele_caption, elements.ele_handle, handles.fe_frame_id, handles.fe_handle, handles.fe_element_id, e2.ele_caption as handlecap, e2.ele_handle as newhandle FROM ".$xoopsDB->prefix("formulize")." AS elements, ".$xoopsDB->prefix("formulize_framework_elements")." AS handles, ".$xoopsDB->prefix("formulize")." AS e2 WHERE elements.ele_handle = handles.fe_handle AND handles.fe_element_id != elements.ele_id AND handles.fe_element_id = e2.ele_id ORDER BY elements.id_form, elements.ele_order";
-			$handleRes = $xoopsDB->query($handleSQL);
-			if($xoopsDB->getRowsNum($handleRes) > 0) {
+			$handleSQL = "SELECT elements.ele_id, elements.ele_caption, elements.ele_handle, handles.fe_frame_id, handles.fe_handle, handles.fe_element_id, e2.ele_caption as handlecap, e2.ele_handle as newhandle FROM ". icms::$xoopsDB->prefix("formulize")." AS elements, ". icms::$xoopsDB->prefix("formulize_framework_elements")." AS handles, ". icms::$xoopsDB->prefix("formulize")." AS e2 WHERE elements.ele_handle = handles.fe_handle AND handles.fe_element_id != elements.ele_id AND handles.fe_element_id = e2.ele_id ORDER BY elements.id_form, elements.ele_order";
+			$handleRes = icms::$xoopsDB->query($handleSQL);
+			if(icms::$xoopsDB->getRowsNum($handleRes) > 0) {
 				$haveWarning = true;
 				$warningIdentifier[] = "<li>You have some \"data handles\" which are identical to the \"framework handles\" of other elements.</li>";
 				ob_start();
 				print "<ul>";
-				while($handleArray = $xoopsDB->fetchArray($handleRes)) {
+				while($handleArray = icms::$xoopsDB->fetchArray($handleRes)) {
 					print "<li>".$handleArray['handlecap']." (element ".$handleArray['fe_element_id'].") &mdash framework handle: <b>".$handleArray['fe_handle']."</b> in framework ".$handleArray['fe_frame_id']."<br>";
 					print "&nbsp;&nbsp;&nbsp;&nbsp;Use the element's data handle instead: <b>".$handleArray['newhandle']."</b></li>";
 				}
@@ -1449,13 +1439,12 @@ function patch40() {
 // THE 4.0 SERIES WILL NEED A SEPARATE PATCH ROUTINE.  THERE IS TOO MUCH BAGGAGE IN HERE TO KEEP CARRYING IT AROUND.  ESPECIALLY THE DATATYPE CONVERSION STUFF.
 function patch31() {
 
-  global $xoopsDB;
   // check if the new table structure is in place, and don't run this patch if so!
   $patchCheckSql = "SHOW TABLES";
-	$resultPatchCheck = $xoopsDB->queryF($patchCheckSql);
+  $resultPatchCheck = icms::$xoopsDB->queryF($patchCheckSql);
   $entryOwnerGroupFound = false;
-	while($table = $xoopsDB->fetchRow($resultPatchCheck)) {
-    if($table[0] == $xoopsDB->prefix("formulize_entry_owner_groups")) {
+  while($table = icms::$xoopsDB->fetchRow($resultPatchCheck)) {
+  	if($table[0] == icms::$xoopsDB->prefix("formulize_entry_owner_groups")) {
       $entryOwnerGroupFound = true;
     }
   }
@@ -1473,16 +1462,16 @@ function patch31() {
       if($derivedResult = formulize_createDerivedValueFieldsInDB()) {
         print "Created derived value fields in database.  result: OK<br>\n";
         $sql = array();
-        $sql['ves_to_varchar'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_screen_listofentries") . " CHANGE `viewentryscreen` `viewentryscreen` varchar(10) NOT NULL DEFAULT ''";
-        $sql['handlelength'] = "ALTER TABLE " . $xoopsDB->prefix("formulize") . " CHANGE `ele_handle` `ele_handle` varchar(255) NOT NULL default ''";
-        /*$sql['copyTableForClean'] = "CREATE TABLE temp_entry_owner_groups like ".$xoopsDB->prefix("formulize_entry_owner_groups");
-        $sql['lockForClean'] = "LOCK TABLES ".$xoopsDB->prefix("formulize_entry_owner_groups") . " WRITE, temp_entry_owner_groups WRITE";
-        $sql['copyDataForClean'] = "INSERT INTO temp_entry_owner_groups SELECT * FROM ".$xoopsDB->prefix("formulize_entry_owner_groups");
-        $sql['cleanEntryOwnerGroups'] = "DELETE FROM ".$xoopsDB->prefix("formulize_entry_owner_groups") . " WHERE owner_id NOT IN (SELECT MIN(owner_id) FROM temp_entry_owner_groups GROUP BY fid, entry_id, groupid)";
+        $sql['ves_to_varchar'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_screen_listofentries") . " CHANGE `viewentryscreen` `viewentryscreen` varchar(10) NOT NULL DEFAULT ''";
+        $sql['handlelength'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize") . " CHANGE `ele_handle` `ele_handle` varchar(255) NOT NULL default ''";
+        /*$sql['copyTableForClean'] = "CREATE TABLE temp_entry_owner_groups like " icms::$xoopsDB->prefix("formulize_entry_owner_groups");
+        $sql['lockForClean'] = "LOCK TABLES " icms::$xoopsDB->prefix("formulize_entry_owner_groups") . " WRITE, temp_entry_owner_groups WRITE";
+        $sql['copyDataForClean'] = "INSERT INTO temp_entry_owner_groups SELECT * FROM " icms::$xoopsDB->prefix("formulize_entry_owner_groups");
+        $sql['cleanEntryOwnerGroups'] = "DELETE FROM " icms::$xoopsDB->prefix("formulize_entry_owner_groups") . " WHERE owner_id NOT IN (SELECT MIN(owner_id) FROM temp_entry_owner_groups GROUP BY fid, entry_id, groupid)";
         $sql['dropTempTable'] = "DROP TABLE temp_entry_owner_groups";
         $sql['unlockForClean'] = "UNLOCK TABLES";*/ // this cleaning routine may be too intensive to unleash on unsuspecting servers
         foreach($sql as $key=>$thissql) {
-          if(!$result = $xoopsDB->query($thissql)) {
+        	if(!$result = icms::$xoopsDB->query($thissql)) {
           	if($key === "ves_to_carchar") {
           		print "viewentryscreen param already converted to varchar.  result: OK<br>";
             } elseif($key === "handlelength") {
@@ -1504,14 +1493,14 @@ function patch31() {
 				$allFids = $form_handler->getAllForms(true); // true means get all elements, even ones that are not displayed to any groups
 				foreach($allFids as $thisFid) {
 					if($thisFid->getVar('tableform') != "") { continue; } // don't do table forms obviously!
-					$dataTableInfoSQL = "SHOW COLUMNS FROM ".$xoopsDB->prefix("formulize_".$thisFid->getVar('id_form'));
-					if($dataTableInfoResult = $xoopsDB->query($dataTableInfoSQL)) {
+					$dataTableInfoSQL = "SHOW COLUMNS FROM ". icms::$xoopsDB->prefix("formulize_".$thisFid->getVar('id_form'));
+					if($dataTableInfoResult = icms::$xoopsDB->query($dataTableInfoSQL)) {
 						$foundDateFields = array();
 						$thisFidElementHandles = $thisFid->getVar('elementHandles');
 						$thisFidElementTypes = $thisFid->getVar('elementTypes');
-						$alterTableSQL = "ALTER TABLE ".$xoopsDB->prefix("formulize_".$thisFid->getVar('id_form'));
+						$alterTableSQL = "ALTER TABLE ". icms::$xoopsDB->prefix("formulize_".$thisFid->getVar('id_form'));
 						$start = true;
-						while($thisFidDataTableInfo = $xoopsDB->fetchArray($dataTableInfoResult)) {
+						while($thisFidDataTableInfo = icms::$xoopsDB->fetchArray($dataTableInfoResult)) {
 							if($thisFidDataTableInfo['Field'] == "entry_id" OR $thisFidDataTableInfo['Field'] == "creation_datetime" OR $thisFidDataTableInfo['Field'] == "mod_datetime" OR $thisFidDataTableInfo['Field'] == "creaiton_uid" OR $thisFidDataTableInfo['Field'] == "mod_uid" OR $thisFidDataTableInfo['Type'] != "text") {
 								continue; // skip the metadata fields of course, and anything that has been manually changed from 'text'
 							}
@@ -1530,18 +1519,18 @@ function patch31() {
 							$alterTableSQL = ""; // blank it, so we don't actually do a query
 						}
 						if($alterTableSQL) {
-							if(!$alterTableResult = $xoopsDB->query($alterTableSQL)) {
-								exit("Error patching DB for Formulize 3.1. SQL dump:<br>" . $dataTableInfoSQL . "<br>".icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
+							if(!$alterTableResult = icms::$xoopsDB->query($alterTableSQL)) {
+								exit("Error patching DB for Formulize 3.1. SQL dump:<br>" . $dataTableInfoSQL . "<br>". icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
 							}
 						}
 						foreach($foundDateFields as $thisDateField) {
-							$dateCorrectionSQL = "UPDATE ".$xoopsDB->prefix("formulize_".$thisFid->getVar('id_form'))." SET `".$thisDateField."` = NULL WHERE `".$thisDateField."` = '0000-00-00'";
-							if(!$dateCorrectionResult = $xoopsDB->query($dateCorrectionSQL)) {
+							$dateCorrectionSQL = "UPDATE ". icms::$xoopsDB->prefix("formulize_".$thisFid->getVar('id_form'))." SET `".$thisDateField."` = NULL WHERE `".$thisDateField."` = '0000-00-00'";
+							if(!$dateCorrectionResult = icms::$xoopsDB->query($dateCorrectionSQL)) {
 								exit("Error patching DB for Formulize 3.1. SQL dump:<br>" . $dataTableInfoSQL . "<br>".icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
 							}
 						}
 					} else {
-						exit("Error patching DB for Formulize 3.1. SQL dump:<br>" . $dataTableInfoSQL . "<br>".icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
+						exit("Error patching DB for Formulize 3.1. SQL dump:<br>" . $dataTableInfoSQL . "<br>". icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
 					}
 				}
 				
@@ -1557,40 +1546,40 @@ function patch31() {
 
 		// check to see if form table exists
 		// need to put in check to make sure we're not finding the valid 'form' table from the Formulaire module
-		$checkFormulaire = "SELECT * FROM " . $xoopsDB->prefix("modules") . " WHERE dirname='formulaire'";
-		$cfresult = $xoopsDB->query($checkFormulaire);
-		$sql = "SELECT * FROM " . $xoopsDB->prefix("form") . " LIMIT 0,1";
-		$result = $xoopsDB->query($sql);
-		if($xoopsDB->getRowsNum($result) AND $xoopsDB->getRowsNum($cfresult) == 0) {
+    $checkFormulaire = "SELECT * FROM " . icms::$xoopsDB->prefix("modules") . " WHERE dirname='formulaire'";
+    $cfresult = icms::$xoopsDB->query($checkFormulaire);
+    $sql = "SELECT * FROM " . icms::$xoopsDB->prefix("form") . " LIMIT 0,1";
+    $result = icms::$xoopsDB->query($sql);
+    if(icms::$xoopsDB->getRowsNum($result) AND icms::$xoopsDB->getRowsNum($cfresult) == 0) {
                         
 			// check to see if ele_forcehidden is in the table or not
-			$sql = "SELECT * FROM " . $xoopsDB->prefix("form") . " LIMIT 0,1";
-			$result = $xoopsDB->query($sql);
+    	$sql = "SELECT * FROM " . icms::$xoopsDB->prefix("form") . " LIMIT 0,1";
+    	$result = icms::$xoopsDB->query($sql);
 			if(!$result) {
-				exit("Error patching DB for Formulize 3.1. SQL dump:<br>" . $sql . "<br>".icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
+				exit("Error patching DB for Formulize 3.1. SQL dump:<br>" . $sql . "<br>". icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
 			}
-			$array = $xoopsDB->fetchArray($result);
+			$array = icms::$xoopsDB->fetchArray($result);
 			unset($result);
 			if(!isset($array['ele_forcehidden'])) {
-				$sql = "ALTER TABLE " . $xoopsDB->prefix("form") . " ADD `ele_forcehidden` tinyint(1) NOT NULL default '0'";
-				if(!$result = $xoopsDB->query($sql)) {
-					exit("Error patching DB for Formulize 3.1. SQL dump:<br>" . $sql . "<br>".icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
+				$sql = "ALTER TABLE " . icms::$xoopsDB->prefix("form") . " ADD `ele_forcehidden` tinyint(1) NOT NULL default '0'";
+				if(!$result = icms::$xoopsDB->query($sql)) {
+					exit("Error patching DB for Formulize 3.1. SQL dump:<br>" . $sql . "<br>". icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
 				}
 			}
 			unset($sql);
 
-			$sql[] = "ALTER TABLE " . $xoopsDB->prefix("form") . " RENAME " . $xoopsDB->prefix("formulize");
-			$sql[] = "ALTER TABLE " . $xoopsDB->prefix("form_id") . " RENAME " . $xoopsDB->prefix("formulize_id");
-			$sql[] = "ALTER TABLE " . $xoopsDB->prefix("form_menu") . " RENAME " . $xoopsDB->prefix("formulize_menu");
-			$sql[] = "ALTER TABLE " . $xoopsDB->prefix("form_form") . " RENAME " . $xoopsDB->prefix("formulize_form");
-			$sql[] = "ALTER TABLE " . $xoopsDB->prefix("form_reports") . " RENAME " . $xoopsDB->prefix("formulize_reports");
-			$sql[] = "ALTER TABLE " . $xoopsDB->prefix("formulize") . " CHANGE `ele_display` `ele_display` varchar(255) NOT NULL default '1'";
-			$sql[] = "ALTER TABLE " . $xoopsDB->prefix("formulize_menu") . " CHANGE `itemname` `itemname` VARCHAR( 255 ) NOT NULL ";
-			$sql[] = "DROP TABLE " . $xoopsDB->prefix("form_max_entries");
-			$sql[] = "DROP TABLE " . $xoopsDB->prefix("form_chains");
-			$sql[] = "DROP TABLE " . $xoopsDB->prefix("form_chains_entries");
+			$sql[] = "ALTER TABLE " . icms::$xoopsDB->prefix("form") . " RENAME " . icms::$xoopsDB->prefix("formulize");
+			$sql[] = "ALTER TABLE " . icms::$xoopsDB->prefix("form_id") . " RENAME " . icms::$xoopsDB->prefix("formulize_id");
+			$sql[] = "ALTER TABLE " . icms::$xoopsDB->prefix("form_menu") . " RENAME " . icms::$xoopsDB->prefix("formulize_menu");
+			$sql[] = "ALTER TABLE " . icms::$xoopsDB->prefix("form_form") . " RENAME " . icms::$xoopsDB->prefix("formulize_form");
+			$sql[] = "ALTER TABLE " . icms::$xoopsDB->prefix("form_reports") . " RENAME " . icms::$xoopsDB->prefix("formulize_reports");
+			$sql[] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize") . " CHANGE `ele_display` `ele_display` varchar(255) NOT NULL default '1'";
+			$sql[] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_menu") . " CHANGE `itemname` `itemname` VARCHAR( 255 ) NOT NULL ";
+			$sql[] = "DROP TABLE " . icms::$xoopsDB->prefix("form_max_entries");
+			$sql[] = "DROP TABLE " . icms::$xoopsDB->prefix("form_chains");
+			$sql[] = "DROP TABLE " . icms::$xoopsDB->prefix("form_chains_entries");
 			foreach($sql as $thissql) {
-				if(!$result = $xoopsDB->query($thissql)) {
+				if(!$result = icms::$xoopsDB->query($thissql)) {
 					exit("Error patching DB for Formulize 3.1. SQL dump:<br>" . $thissql . "<br>".icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
 				}
 			}
@@ -1601,14 +1590,14 @@ function patch31() {
 
 
 		$testsql = "SHOW TABLES";
-		$resultst = $xoopsDB->query($testsql);
-		while($table = $xoopsDB->fetchRow($resultst)) {
+		$resultst = icms::$xoopsDB->query($testsql);
+		while($table = icms::$xoopsDB->fetchRow($resultst)) {
 			$existingTables[] = $table[0];
 		}
                 $need22DataChecks = false;
 		if(!in_array($xoopsDB->prefix("formulize_other"), $existingTables)) {
                         $need22DataChecks = true; // assume that if the formulize_other table is not present, then we have not patched up to 2.2 level yet
-			$sql[] = "CREATE TABLE " . $xoopsDB->prefix("formulize_other") . " (
+			$sql[] = "CREATE TABLE " . icms::$xoopsDB->prefix("formulize_other") . " (
   other_id smallint(5) NOT NULL auto_increment,
   id_req smallint(5),
   ele_id int(5),
@@ -1620,7 +1609,7 @@ function patch31() {
 		}
 
 		if(!in_array($xoopsDB->prefix("formulize_notification_conditions"), $existingTables)) {
-			$sql[] = "CREATE TABLE " . $xoopsDB->prefix("formulize_notification_conditions") . " (
+			$sql[] = "CREATE TABLE " . icms::$xoopsDB->prefix("formulize_notification_conditions") . " (
   not_cons_id smallint(5) NOT NULL auto_increment,
   not_cons_fid smallint(5) NOT NULL default 0,
   not_cons_event varchar(25) default '',
@@ -1639,7 +1628,7 @@ function patch31() {
 		}
 
 		if(!in_array($xoopsDB->prefix("formulize_valid_imports"), $existingTables)) {
-			$sql[] = "CREATE TABLE " . $xoopsDB->prefix("formulize_valid_imports") . " (
+			$sql[] = "CREATE TABLE " . icms::$xoopsDB->prefix("formulize_valid_imports") . " (
   import_id smallint(5) NOT NULL auto_increment,
   file varchar(255) NOT NULL default '',
   id_reqs text NOT NULL,
@@ -1648,7 +1637,7 @@ function patch31() {
 		}
                 
                 if(!in_array($xoopsDB->prefix("formulize_screen_listofentries"), $existingTables)) {
-                        $sql[] = "CREATE TABLE " . $xoopsDB->prefix("formulize_screen_listofentries") . " (
+                        $sql[] = "CREATE TABLE " . icms::$xoopsDB->prefix("formulize_screen_listofentries") . " (
   listofentriesid int(11) NOT NULL auto_increment,
   sid int(11) NOT NULL default 0,
   useworkingmsg tinyint(1) NOT NULL,
@@ -1695,7 +1684,7 @@ function patch31() {
                 }
                 
                 if(!in_array($xoopsDB->prefix("formulize_screen_multipage"), $existingTables)) {
-                        $sql[] = "CREATE TABLE " . $xoopsDB->prefix("formulize_screen_multipage") . " (
+                        $sql[] = "CREATE TABLE " . icms::$xoopsDB->prefix("formulize_screen_multipage") . " (
   multipageid int(11) NOT NULL auto_increment,
   sid int(11) NOT NULL default 0,
   introtext text NOT NULL,
@@ -1712,7 +1701,7 @@ function patch31() {
                 }
                 
                 if(!in_array($xoopsDB->prefix("formulize_screen"), $existingTables)) {
-                        $sql[] = "CREATE TABLE " . $xoopsDB->prefix("formulize_screen") . " (
+                        $sql[] = "CREATE TABLE " . icms::$xoopsDB->prefix("formulize_screen") . " (
   sid int(11) NOT NULL auto_increment,
   title varchar(255) NOT NULL default '',
   fid int(11) NOT NULL default 0,
@@ -1723,7 +1712,7 @@ function patch31() {
                 }
 
 if(!in_array($xoopsDB->prefix("formulize_entry_owner_groups"), $existingTables)) {
-	$sql[] = "CREATE TABLE ".$xoopsDB->prefix("formulize_entry_owner_groups")." (
+	$sql[] = "CREATE TABLE " . icms::$xoopsDB->prefix("formulize_entry_owner_groups")." (
   owner_id int(5) unsigned NOT NULL auto_increment,
   fid int(5) NOT NULL default '0',
   entry_id int(7) NOT NULL default '0',
@@ -1736,71 +1725,71 @@ if(!in_array($xoopsDB->prefix("formulize_entry_owner_groups"), $existingTables))
 }
 
 		// check about altered fields
-		$testsql = "SELECT * FROM " .  $xoopsDB->prefix("formulize") . " LIMIT 0,1";
-		$result1 = $xoopsDB->query($testsql);
+		$testsql = "SELECT * FROM " .  icms::$xoopsDB->prefix("formulize") . " LIMIT 0,1";
+		$result1 = icms::$xoopsDB->query($testsql);
                 if($xoopsDB->getRowsNum($result1) == 0) {
                         exit("Error patching DB for Formulize 3.1.<br>No forms exist in the database.<br>".icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
                 }
-		$array1 = $xoopsDB->fetchArray($result1); // for 2.1 we were checking explicitly whether we needed to add these fields.  But for 2.2 we just ran the SQL and caught the error appropriately in the condition below (ie: looked for failure for 'commonvalue' and ignored it) -- although ele_disabled was added this way...clearly we're not consistent about the patch approach!
+		$array1 = icms::$xoopsDB->fetchArray($result1); // for 2.1 we were checking explicitly whether we needed to add these fields.  But for 2.2 we just ran the SQL and caught the error appropriately in the condition below (ie: looked for failure for 'commonvalue' and ignored it) -- although ele_disabled was added this way...clearly we're not consistent about the patch approach!
 		
 		if(!array_key_exists('ele_desc',$array1)) {
-			$sql[] = "ALTER TABLE " . $xoopsDB->prefix("formulize") . " ADD `ele_desc` text NULL";
+			$sql[] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize") . " ADD `ele_desc` text NULL";
 		}
 		if(!array_key_exists('ele_delim',$array1)) {
-			$sql[] = "ALTER TABLE " . $xoopsDB->prefix("formulize") . " ADD `ele_delim` varchar(255) NOT NULL default ''";
+			$sql[] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize") . " ADD `ele_delim` varchar(255) NOT NULL default ''";
 		}
 		if(!array_key_exists('ele_colhead',$array1)) {
-			$sql[] = "ALTER TABLE " . $xoopsDB->prefix("formulize") . " ADD `ele_colhead` varchar(255) NULL default ''";
+			$sql[] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize") . " ADD `ele_colhead` varchar(255) NULL default ''";
 		}
 		if(!array_key_exists('ele_private',$array1)) {
-			$sql[] = "ALTER TABLE " . $xoopsDB->prefix("formulize") . " ADD `ele_private` tinyint(1) NOT NULL default '0'";
+			$sql[] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize") . " ADD `ele_private` tinyint(1) NOT NULL default '0'";
 		}
                 if(!array_key_exists('ele_disabled',$array1)) {
-			$sql[] = "ALTER TABLE " . $xoopsDB->prefix("formulize") . " ADD `ele_disabled` varchar(255) NOT NULL default '0'";
+			$sql[] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize") . " ADD `ele_disabled` varchar(255) NOT NULL default '0'";
 		}
 		if(!array_key_exists('ele_uitext',$array1)) {
-			$sql[] = "ALTER TABLE " . $xoopsDB->prefix("formulize") . " ADD `ele_uitext` text NOT NULL";
+			$sql[] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize") . " ADD `ele_uitext` text NOT NULL";
 		}
     
                 // these commands can be run more than once, so no need to check them
-                $sql['entriesperpage'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_screen_listofentries") . " ADD `entriesperpage` int(1) NOT NULL"; // part of 2.3, but dev sites will not have it, so they must be patched up to include this
-                $sql['hiddencolumns'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_screen_listofentries") . " ADD `hiddencolumns` text NOT NULL"; // part of 2.3, but dev sites will not have it, so they must be patched up to include this
-								$sql['tableforms'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_id") . " ADD `tableform` varchar(255) default NULL"; // part of 2.3, but dev sites will not have it, so they must be patched up to include this
-		$sql['commonvalue'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_framework_links") . " ADD `fl_common_value` tinyint(1) NOT NULL default '0'";
-		$sql['dropindex'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_form") . " DROP INDEX `ele_id`";
-		$sql['deleteyyyy'] = "DELETE FROM " . $xoopsDB->prefix("formulize_form") . " WHERE ele_value =\"YYYY-mm-dd\" AND ele_type=\"date\"";
+                $sql['entriesperpage'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_screen_listofentries") . " ADD `entriesperpage` int(1) NOT NULL"; // part of 2.3, but dev sites will not have it, so they must be patched up to include this
+                $sql['hiddencolumns'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_screen_listofentries") . " ADD `hiddencolumns` text NOT NULL"; // part of 2.3, but dev sites will not have it, so they must be patched up to include this
+								$sql['tableforms'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_id") . " ADD `tableform` varchar(255) default NULL"; // part of 2.3, but dev sites will not have it, so they must be patched up to include this
+		$sql['commonvalue'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_framework_links") . " ADD `fl_common_value` tinyint(1) NOT NULL default '0'";
+		$sql['dropindex'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_form") . " DROP INDEX `ele_id`";
+		$sql['deleteyyyy'] = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_form") . " WHERE ele_value =\"YYYY-mm-dd\" AND ele_type=\"date\"";
                 // change alterations not checked for success below, since they can be repeated
-		$sql['headerlist'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_id") .  " CHANGE `headerlist` `headerlist` text default NULL";
-		$sql['grouplist'] = "ALTER TABLE " . $xoopsDB->prefix("group_lists") .  " CHANGE `gl_groups` `gl_groups` text NOT NULL";
-                $sql['importidreqs'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_valid_imports") . " CHANGE `id_reqs` `id_reqs` text NOT NULL";
-                $sql['sv_asearch'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_saved_views") . " CHANGE `sv_asearch` `sv_asearch` text default NULL";
-                $sql['sv_oldcols'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_saved_views") . " CHANGE `sv_oldcols` `sv_oldcols` text default NULL";
-                $sql['sv_currentview'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_saved_views") . " CHANGE `sv_currentview` `sv_currentview` text default NULL";
-                $sql['sv_calc_cols'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_saved_views") . " CHANGE `sv_calc_cols` `sv_calc_cols` text default NULL";
-                $sql['sv_calc_calcs'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_saved_views") . " CHANGE `sv_calc_calcs` `sv_calc_calcs` text default NULL";
-                $sql['sv_calc_blanks'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_saved_views") . " CHANGE `sv_calc_blanks` `sv_calc_blanks` text default NULL";
-                $sql['sv_calc_grouping'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_saved_views") . " CHANGE `sv_calc_grouping` `sv_calc_grouping` text default NULL";
-                $sql['sv_quicksearches'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_saved_views") . " CHANGE `sv_quicksearches` `sv_quicksearches` text default NULL";
-								$sql['fixlsbapos'] = "UPDATE " . $xoopsDB->prefix("formulize_form") . " SET `ele_value` = REPLACE(`ele_value`, '&#039;', '\'') WHERE `ele_type` = 'select' AND `ele_value` LIKE '%#*=:*%'"; // during the 2.2 patch, some apostrophes in the ele_value field would have been converted to html chars incorrectly
-		$sql['sv_pubgroups'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_saved_views") . " CHANGE `sv_pubgroups` `sv_pubgroups` text default NULL";
-                $sql['id_req_int'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_form") . " CHANGE `id_req` `id_req` int(7)";
-								$sql['import_fid'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_valid_imports") . " ADD `fid` int(5)";
-                $sql['useToken'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_screen") . " ADD `useToken` tinyint(1) NOT NULL";
-                $sql['notCreator'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_notification_conditions") . " ADD `not_cons_creator` tinyint(1)";
-                $sql['notElementUids'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_notification_conditions") . " ADD `not_cons_elementuids` smallint(5) NOT NULL default 0";
-                $sql['notLinkCreator'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_notification_conditions") . " ADD `not_cons_linkcreator` smallint(5) NOT NULL default 0";
-                $sql['printAll'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_screen_multipage") . " ADD `printall` TINYINT( 1 ) NOT NULL";
-                $sql['pageTitles'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_screen_multipage") . " ADD `pagetitles` TEXT NOT NULL AFTER `pages`";
-								$sql['paraentryform'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_screen_multipage") . " ADD `paraentryform` int(11) NOT NULL default 0";
-								$sql['paraentryrel'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_screen_multipage") . " ADD `paraentryrelationship` tinyint(1) NOT NULL default 0";
-                $sql['ele_handle'] = "ALTER TABLE " . $xoopsDB->prefix("formulize") . " ADD `ele_handle` varchar(255) NOT NULL default ''";
-                $sql['viewentryscreen'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_screen_listofentries") . " ADD `viewentryscreen` varchar(10) NOT NULL DEFAULT ''";
-                $sql['otherint1'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_other") . " CHANGE `other_id` `other_id` INT(5) NOT NULL AUTO_INCREMENT";
-                $sql['otherint2'] = "ALTER TABLE " . $xoopsDB->prefix("formulize_other") . " CHANGE `id_req` `id_req` INT(5)";
-                $sql['ele_caption_text'] = "ALTER TABLE " . $xoopsDB->prefix("formulize") . " CHANGE `ele_caption` `ele_caption` text NOT NULL default ''";
+		$sql['headerlist'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_id") .  " CHANGE `headerlist` `headerlist` text default NULL";
+		$sql['grouplist'] = "ALTER TABLE " . icms::$xoopsDB->prefix("group_lists") .  " CHANGE `gl_groups` `gl_groups` text NOT NULL";
+                $sql['importidreqs'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_valid_imports") . " CHANGE `id_reqs` `id_reqs` text NOT NULL";
+                $sql['sv_asearch'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_saved_views") . " CHANGE `sv_asearch` `sv_asearch` text default NULL";
+                $sql['sv_oldcols'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_saved_views") . " CHANGE `sv_oldcols` `sv_oldcols` text default NULL";
+                $sql['sv_currentview'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_saved_views") . " CHANGE `sv_currentview` `sv_currentview` text default NULL";
+                $sql['sv_calc_cols'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_saved_views") . " CHANGE `sv_calc_cols` `sv_calc_cols` text default NULL";
+                $sql['sv_calc_calcs'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_saved_views") . " CHANGE `sv_calc_calcs` `sv_calc_calcs` text default NULL";
+                $sql['sv_calc_blanks'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_saved_views") . " CHANGE `sv_calc_blanks` `sv_calc_blanks` text default NULL";
+                $sql['sv_calc_grouping'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_saved_views") . " CHANGE `sv_calc_grouping` `sv_calc_grouping` text default NULL";
+                $sql['sv_quicksearches'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_saved_views") . " CHANGE `sv_quicksearches` `sv_quicksearches` text default NULL";
+								$sql['fixlsbapos'] = "UPDATE " . icms::$xoopsDB->prefix("formulize_form") . " SET `ele_value` = REPLACE(`ele_value`, '&#039;', '\'') WHERE `ele_type` = 'select' AND `ele_value` LIKE '%#*=:*%'"; // during the 2.2 patch, some apostrophes in the ele_value field would have been converted to html chars incorrectly
+		$sql['sv_pubgroups'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_saved_views") . " CHANGE `sv_pubgroups` `sv_pubgroups` text default NULL";
+                $sql['id_req_int'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_form") . " CHANGE `id_req` `id_req` int(7)";
+								$sql['import_fid'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_valid_imports") . " ADD `fid` int(5)";
+                $sql['useToken'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_screen") . " ADD `useToken` tinyint(1) NOT NULL";
+                $sql['notCreator'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_notification_conditions") . " ADD `not_cons_creator` tinyint(1)";
+                $sql['notElementUids'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_notification_conditions") . " ADD `not_cons_elementuids` smallint(5) NOT NULL default 0";
+                $sql['notLinkCreator'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_notification_conditions") . " ADD `not_cons_linkcreator` smallint(5) NOT NULL default 0";
+                $sql['printAll'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_screen_multipage") . " ADD `printall` TINYINT( 1 ) NOT NULL";
+                $sql['pageTitles'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_screen_multipage") . " ADD `pagetitles` TEXT NOT NULL AFTER `pages`";
+								$sql['paraentryform'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_screen_multipage") . " ADD `paraentryform` int(11) NOT NULL default 0";
+								$sql['paraentryrel'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_screen_multipage") . " ADD `paraentryrelationship` tinyint(1) NOT NULL default 0";
+                $sql['ele_handle'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize") . " ADD `ele_handle` varchar(255) NOT NULL default ''";
+                $sql['viewentryscreen'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_screen_listofentries") . " ADD `viewentryscreen` varchar(10) NOT NULL DEFAULT ''";
+                $sql['otherint1'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_other") . " CHANGE `other_id` `other_id` INT(5) NOT NULL AUTO_INCREMENT";
+                $sql['otherint2'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize_other") . " CHANGE `id_req` `id_req` INT(5)";
+                $sql['ele_caption_text'] = "ALTER TABLE " . icms::$xoopsDB->prefix("formulize") . " CHANGE `ele_caption` `ele_caption` text NOT NULL default ''";
 								
 		foreach($sql as $key=>$thissql) {
-			if(!$result = $xoopsDB->query($thissql)) {
+			if(!$result = icms::$xoopsDB->query($thissql)) {
 				if($key === "dropindex") {
 					print "Ele_id Index already dropped.  result: OK<br>";
 				} elseif($key === "tableforms") {
@@ -1833,17 +1822,17 @@ if(!in_array($xoopsDB->prefix("formulize_entry_owner_groups"), $existingTables))
 					print "Form id field already added to the import table.  result: OK<br>";
 				} elseif($key === "ele_handle") {
 					// assume it has already been added
-					if($secondaryResult = $xoopsDB->query("ALTER TABLE " . $xoopsDB->prefix("formulize") . " CHANGE `ele_handle` `ele_handle` varchar(255) NOT NULL default ''")) {
+					if($secondaryResult = icms::$xoopsDB->query("ALTER TABLE " . icms::$xoopsDB->prefix("formulize") . " CHANGE `ele_handle` `ele_handle` varchar(255) NOT NULL default ''")) {
 						print "Element handle field already added.  result: OK<br>";
 					} else {
-						exit("Error patching DB for Formulize 3.1. SQL dump:<br>ALTER TABLE " . $xoopsDB->prefix("formulize") . " CHANGE `ele_handle` `ele_handle` varchar(255) NOT NULL default ''<br>".icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
+						exit("Error patching DB for Formulize 3.1. SQL dump:<br>ALTER TABLE " . icms::$xoopsDB->prefix("formulize") . " CHANGE `ele_handle` `ele_handle` varchar(255) NOT NULL default ''<br>".icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
 					}
 				} elseif($key === "viewentryscreen") {
 					// assume it has already been added
-					if($secondaryResult = $xoopsDB->query("ALTER TABLE " . $xoopsDB->prefix("formulize_screen_listofentries") . " CHANGE `viewentryscreen` `viewentryscreen` varchar(10) NOT NULL DEFAULT ''")) {
+					if($secondaryResult = icms::$xoopsDB->query("ALTER TABLE " . icms::$xoopsDB->prefix("formulize_screen_listofentries") . " CHANGE `viewentryscreen` `viewentryscreen` varchar(10) NOT NULL DEFAULT ''")) {
 						print "viewentryscreen field already added.  result: OK<br>";
 					} else {
-						exit("Error patching DB for Formulize 3.1. SQL dump:<br>ALTER TABLE " . $xoopsDB->prefix("formulize_screen_listofentries") . " CHANGE `viewentryscreen` `viewentryscreen` varchar(10) NOT NULL DEFAULT ''<br>".icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
+						exit("Error patching DB for Formulize 3.1. SQL dump:<br>ALTER TABLE " . icms::$xoopsDB->prefix("formulize_screen_listofentries") . " CHANGE `viewentryscreen` `viewentryscreen` varchar(10) NOT NULL DEFAULT ''<br>".icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
 					}
 				}else {
 					exit("Error patching DB for Formulize 3.1. SQL dump:<br>" . $thissql . "<br>".icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
@@ -1851,8 +1840,8 @@ if(!in_array($xoopsDB->prefix("formulize_entry_owner_groups"), $existingTables))
 			} elseif($key === "ele_handle") { // we just added the ele_handle field
 				
 				// use element id number for the initial element handles
-				$eh_eleid_sql = "UPDATE " . $xoopsDB->prefix("formulize") . " SET ele_handle = ele_id WHERE ele_handle = ''";
-				if(!$eh_eleid_res = $xoopsDB->query($eh_eleid_sql)) {
+				$eh_eleid_sql = "UPDATE " . icms::$xoopsDB->prefix("formulize") . " SET ele_handle = ele_id WHERE ele_handle = ''";
+				if(!$eh_eleid_res = icms::$xoopsDB->query($eh_eleid_sql)) {
 					exit("Error patching DB for Formulize 3.1.  SQL dump:<br>" . $eh_check_sql . "<br>".icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
 				}
 				
@@ -1861,30 +1850,30 @@ if(!in_array($xoopsDB->prefix("formulize_entry_owner_groups"), $existingTables))
 
                 if($need22DataChecks) {
                         // lock formulize_form
-                        $xoopsDB->query("LOCK TABLES " . $xoopsDB->prefix("formulize_form") . " WRITE, " . $xoopsDB->prefix("formulize_form") . " AS t1 READ, " . $xoopsDB->prefix("formulize_form") . " AS t2 READ");
+                        icms::$xoopsDB->query("LOCK TABLES " . icms::$xoopsDB->prefix("formulize_form") . " WRITE, " . icms::$xoopsDB->prefix("formulize_form") . " AS t1 READ, " . icms::$xoopsDB->prefix("formulize_form") . " AS t2 READ");
         
                         // check for ambiguous id_reqs
                         print "Searching for ambiguous id_reqs.  Please be patient.  This may take a few minutes on a large database.<br>";
-                        $findSql = "SELECT distinct(t1.id_req) FROM " . $xoopsDB->prefix("formulize_form") . " AS t1, " . $xoopsDB->prefix("formulize_form") . " AS t2 WHERE t1.uid != t2.uid AND t1.id_req = t2.id_req";
-                        if(!$findRes = $xoopsDB->query($findSql)) { print "None found.<br>"; }
+                        $findSql = "SELECT distinct(t1.id_req) FROM " . icms::$xoopsDB->prefix("formulize_form") . " AS t1, " . icms::$xoopsDB->prefix("formulize_form") . " AS t2 WHERE t1.uid != t2.uid AND t1.id_req = t2.id_req";
+                        if(!$findRes = icms::$xoopsDB->query($findSql)) { print "None found.<br>"; }
                         // loop through all ambiguous id_reqs and fix them
         
-                        while($find = $xoopsDB->fetchArray($findRes)) {
+                        while($find = icms::$xoopsDB->fetchArray($findRes)) {
                                 print "Found ambiguous id_req: " . $find['id_req'] . "<br>";
                                 include_once XOOPS_ROOT_PATH . "/modules/formulize/include/functions.php";
                                 $maxIdReq = getMaxIdReq();
-                                $uidSql = "SELECT distinct(uid) FROM " . $xoopsDB->prefix("formulize_form") . " WHERE id_req='" . $find['id_req'] . "'";
-                                $uidRes = $xoopsDB->query($uidSql);
+                                $uidSql = "SELECT distinct(uid) FROM " . icms::$xoopsDB->prefix("formulize_form") . " WHERE id_req='" . $find['id_req'] . "'";
+                                $uidRes = icms::$xoopsDB->query($uidSql);
                                 $start = 1;
-                                while($uid = $xoopsDB->fetchArray($uidRes)) {
+                                while($uid = icms::$xoopsDB->fetchArray($uidRes)) {
                                         // ignore the first one, since one of the entries can keep the current id_req
                                         if($start) {
                                                 print "Uid " . $uid['uid'] . " unchanged<br>";
                                                 $start = 0;
                                                 continue;
                                         }
-                                        $fixSql = "UPDATE " . $xoopsDB->prefix("formulize_form") . " SET id_req='$maxIdReq' WHERE id_req='" . $find['id_req'] . "' AND uid='" . $uid['uid'] . "'";
-                                        if(!$fixRes = $xoopsDB->query($fixSql)) {
+                                        $fixSql = "UPDATE " . icms::$xoopsDB->prefix("formulize_form") . " SET id_req='$maxIdReq' WHERE id_req='" . $find['id_req'] . "' AND uid='" . $uid['uid'] . "'";
+                                        if(!$fixRes = icms::$xoopsDB->query($fixSql)) {
                                                 exit("Error patching DB for Formulize 3.1. SQL dump:<br>" . $fixsql . "<br>".icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
                                         }
                                         print "Uid " . $uid['uid'] . " now using id_req $maxIdReq<br>";
@@ -1897,24 +1886,24 @@ if(!in_array($xoopsDB->prefix("formulize_entry_owner_groups"), $existingTables))
                         print "Finished checking for ambiguous id_reqs.<br>";
         
                         // unlock tables
-                        $xoopsDB->query("UNLOCK TABLES");
+                        icms::$xoopsDB->query("UNLOCK TABLES");
         
                         // check for old data
                         print "Checking for old data left over from deleted form elements.  This may take a few minutes on a large database<br>";
-                        $formsSql = "SELECT ele_caption, id_form FROM " . $xoopsDB->prefix("formulize");
-                        $formsRes = $xoopsDB->query($formsSql);
-                        while($formArray = $xoopsDB->fetchArray($formsRes)) {
+                        $formsSql = "SELECT ele_caption, id_form FROM " . icms::$xoopsDB->prefix("formulize");
+                        $formsRes = icms::$xoopsDB->query($formsSql);
+                        while($formArray = icms::$xoopsDB->fetchArray($formsRes)) {
                                 $newcap = str_replace("'", "`", $formArray['ele_caption']);
                                 $newcap = str_replace("&quot;", "`", $newcap);
                                 $newcap = str_replace("&#039;", "`", $newcap);
                                 $formCaptions[$formArray['id_form']][$newcap] = 1;
                         }
-                        $dataSql = "SELECT id_form, ele_caption FROM " . $xoopsDB->prefix("formulize_form");
-                        $dataRes = $xoopsDB->query($dataSql);
-                        while($dataArray = $xoopsDB->fetchArray($dataRes)) {
+                        $dataSql = "SELECT id_form, ele_caption FROM " . icms::$xoopsDB->prefix("formulize_form");
+                        $dataRes = icms::$xoopsDB->query($dataSql);
+                        while($dataArray = icms::$xoopsDB->fetchArray($dataRes)) {
                                 if(!isset($formCaptions[$dataArray['id_form']][$dataArray['ele_caption']])) {
-                                	$deleteSql = "DELETE FROM " . $xoopsDB->prefix("formulize_form") . " WHERE id_form=".$dataArray['id_form']." AND ele_caption=\"".icms::$xoopsDB->escape($dataArray['ele_caption'])."\"";
-                                        if(!$result = $xoopsDB->query($deleteSql)) {
+                                	$deleteSql = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_form") . " WHERE id_form=".$dataArray['id_form']." AND ele_caption=\"".icms::$xoopsDB->escape($dataArray['ele_caption'])."\"";
+                                        if(!$result = icms::$xoopsDB->query($deleteSql)) {
                                                 exit("Error patching DB for Formulize 3.1. SQL dump:<br>" . $deletesql . "<br>".icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
                                         }
                                 }
@@ -1928,12 +1917,12 @@ if(!in_array($xoopsDB->prefix("formulize_entry_owner_groups"), $existingTables))
     // check for ambiguous id_reqs
     // only necessary if 22 checks were not done, since 22 check now includes this function call too
     if(!$need22DataChecks) {
-      $xoopsDB->query("LOCK TABLES " . $xoopsDB->prefix("formulize_form") . " WRITE, " . $xoopsDB->prefix("formulize_form") . " AS t1 READ, " . $xoopsDB->prefix("formulize_form") . " AS t2 READ");
+      icms::$xoopsDB->query("LOCK TABLES " . icms::$xoopsDB->prefix("formulize_form") . " WRITE, " . icms::$xoopsDB->prefix("formulize_form") . " AS t1 READ, " . icms::$xoopsDB->prefix("formulize_form") . " AS t2 READ");
       print "Searching for duplicate entry ids in use on two or more forms.  Please be patient.  This may take a few minutes on a large database.<br>";
       correctAmbiguousIdReqsBasedOnFormIds();
       print "Finished checking for duplicate entry ids.<br>";
       // unlock tables
-      $xoopsDB->query("UNLOCK TABLES");
+      icms::$xoopsDB->query("UNLOCK TABLES");
     }
     
 
@@ -1946,20 +1935,19 @@ function formulize_createDerivedValueFieldsInDB() {
   
   // 1. gather a list of all the derived elements, including their form ids (so we can reference the tables), and handles (so we know what the field should be called)
   // 2. foreach table, get a list of columns, and if the field name is not represented, then create it
-  global $xoopsDB;
   $form_handler =& icms_getModuleHandler('forms', 'formulize');
   $element_handler =& icms_getModuleHandler('elements', 'formulize');
-  $sql = "SELECT id_form, ele_handle, ele_id FROM ".$xoopsDB->prefix("formulize")." WHERE ele_type = 'derived' ORDER BY id_form";
-  if($result = $xoopsDB->query($sql)) {
+  $sql = "SELECT id_form, ele_handle, ele_id FROM " . icms::$xoopsDB->prefix("formulize")." WHERE ele_type = 'derived' ORDER BY id_form";
+  if($result = icms::$xoopsDB->query($sql)) {
     $fieldMap = array();
-    while($array = $xoopsDB->fetchArray($result)) {
+    while($array = icms::$xoopsDB->fetchArray($result)) {
       $fieldMap[$array['id_form']][] = array(0=>$array['ele_handle'], 1=>$array['ele_id']);
     }
     foreach($fieldMap as $fid=>$fields) {
-      $sql2 = "SHOW COLUMNS FROM ".$xoopsDB->prefix("formulize_".$fid);
-      if($result2 = $xoopsDB->query($sql2)) {
+      $sql2 = "SHOW COLUMNS FROM " . icms::$xoopsDB->prefix("formulize_".$fid);
+      if($result2 = icms::$xoopsDB->query($sql2)) {
         $existingFields = array();
-        while($array2 = $xoopsDB->fetchArray($result2)) {
+        while($array2 = icms::$xoopsDB->fetchArray($result2)) {
           $existingFields[] = $array2['Field']; // show columns returns Field Type Null Key Default Extra
         }
       } else {
@@ -1987,27 +1975,26 @@ function formulize_createDerivedValueFieldsInDB() {
 // this function handles the checking for ambiguous id_reqs based on the form id
 function correctAmbiguousIdReqsBasedOnFormIds($uidFocus = false) {
 
-  global $xoopsDB;
-  $findSql = "SELECT distinct(t1.id_req) FROM " . $xoopsDB->prefix("formulize_form") . " AS t1, " . $xoopsDB->prefix("formulize_form") . " AS t2 WHERE t1.id_form != t2.id_form AND t1.id_req = t2.id_req";
-  if(!$findRes = $xoopsDB->query($findSql)) { print "None found.<br>"; }
+  $findSql = "SELECT distinct(t1.id_req) FROM " . icms::$xoopsDB->prefix("formulize_form") . " AS t1, " . icms::$xoopsDB->prefix("formulize_form") . " AS t2 WHERE t1.id_form != t2.id_form AND t1.id_req = t2.id_req";
+  if(!$findRes = icms::$xoopsDB->query($findSql)) { print "None found.<br>"; }
   // loop through all ambiguous id_reqs and fix them
 
-  while($find = $xoopsDB->fetchArray($findRes)) {
+  while($find = icms::$xoopsDB->fetchArray($findRes)) {
           print "Found ambiguous id_req: " . $find['id_req'] . "<br>";
           include_once XOOPS_ROOT_PATH . "/modules/formulize/include/functions.php";
           $maxIdReq = getMaxIdReq();
-          $fidSql = "SELECT distinct(id_form) FROM " . $xoopsDB->prefix("formulize_form") . " WHERE id_req='" . $find['id_req'] . "' ORDER BY id_form";
-          $fidRes = $xoopsDB->query($fidSql);
+          $fidSql = "SELECT distinct(id_form) FROM " . icms::$xoopsDB->prefix("formulize_form") . " WHERE id_req='" . $find['id_req'] . "' ORDER BY id_form";
+          $fidRes = icms::$xoopsDB->query($fidSql);
           $start = 1;
-          while($id_form = $xoopsDB->fetchArray($fidRes)) {
+          while($id_form = icms::$xoopsDB->fetchArray($fidRes)) {
             // ignore the first one, since one of the entries can keep the current id_req
             if($start) {
               print "Form id " . $id_form['id_form'] . " unchanged<br>";
               $start = 0;
               continue;
             }
-            $fixSql = "UPDATE " . $xoopsDB->prefix("formulize_form") . " SET id_req='$maxIdReq' WHERE id_req='" . $find['id_req'] . "' AND id_form='" . $id_form['id_form'] . "'";
-            if(!$fixRes = $xoopsDB->query($fixSql)) {
+            $fixSql = "UPDATE " . icms::$xoopsDB->prefix("formulize_form") . " SET id_req='$maxIdReq' WHERE id_req='" . $find['id_req'] . "' AND id_form='" . $id_form['id_form'] . "'";
+            if(!$fixRes = icms::$xoopsDB->query($fixSql)) {
               exit("Error patching DB for Formulize 3.1. SQL dump:<br>" . $fixsql . "<br>".icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
             }
             print "Form id " . $id_form['id_form'] . " now using id_req $maxIdReq<br>";
@@ -2025,21 +2012,20 @@ function correctAmbiguousIdReqsBasedOnFormIds($uidFocus = false) {
 // the search logic in the extract.php file has been modified as well to run htmlspecialchars on search terms so that matches are found properly
 function patch22convertdata() {
 
-  global $xoopsDB;
   $patchCheckSql = "SHOW TABLES";
-	$resultPatchCheck = $xoopsDB->queryF($patchCheckSql);
+	$resultPatchCheck = icms::$xoopsDB->queryF($patchCheckSql);
   $formulizeFormFound = false;
   $newStructureFound = false;
   $entryOwnerGroupFound = false;
-	while($table = $xoopsDB->fetchRow($resultPatchCheck)) {
+	while($table = icms::$xoopsDB->fetchRow($resultPatchCheck)) {
     $secondPart = substr($table[0], strlen($xoopsDB->prefix("formulize_")));
     if(is_numeric($secondPart) AND strstr($table[0], "formulize_")) {
       $newStructureFound = true;
     }
-    if($table[0] == $xoopsDB->prefix("formulize_form")) {
+    if($table[0] == icms::$xoopsDB->prefix("formulize_form")) {
       $formulizeFormFound = true;
     }
-    if($table[0] == $xoopsDB->prefix("formulize_entry_owner_groups")) {
+    if($table[0] == icms::$xoopsDB->prefix("formulize_entry_owner_groups")) {
       $entryOwnerGroupFound = true;
     }
 	}
@@ -2059,8 +2045,8 @@ function patch22convertdata() {
 	if(!isset($_POST['patch22convertdata'])) {
 
 		// detect name of Formulize table
-		$sql = "SELECT * FROM " . $xoopsDB->prefix("formulize_form") . " LIMIT 0,1";
-		if($res = $xoopsDB->query($sql)) {
+		$sql = "SELECT * FROM " . icms::$xoopsDB->prefix("formulize_form") . " LIMIT 0,1";
+		if($res = icms::$xoopsDB->query($sql)) {
 
 			print "<form action=\"formindex.php?op=patch22convertdata\" method=post>";
 			print "<h1>Warning: this patch changes the formatting of data in your database, primarily to address security issues in how data is being stored.  Backup your database prior to applying this patch!</h1>";
@@ -2081,14 +2067,14 @@ function patch22convertdata() {
 		global $myts;
 		if(!$myts) { $myts =& icms_core_Textsanitizer::getInstance(); }
 
-		$sansql = "SELECT ele_id, ele_value FROM " . $xoopsDB->prefix("formulize_form") . " WHERE ele_type != \"date\" AND  ele_type != \"yn\" AND ele_type != \"areamodif\"";
-		if(!$sanres = $xoopsDB->query($sansql)) { exit("Error patching DB for Formulize 2.2. SQL dump:<br>" . $sansql . "<br>".icms::$xoopsDB->error()."<br>Could not collect all data for sanitizing.  Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance."); }
-		while($sanArray = $xoopsDB->fetchArray($sanres)) {
+		$sansql = "SELECT ele_id, ele_value FROM " . icms::$xoopsDB->prefix("formulize_form") . " WHERE ele_type != \"date\" AND  ele_type != \"yn\" AND ele_type != \"areamodif\"";
+		if(!$sanres = icms::$xoopsDB->query($sansql)) { exit("Error patching DB for Formulize 2.2. SQL dump:<br>" . $sansql . "<br>".icms::$xoopsDB->error()."<br>Could not collect all data for sanitizing.  Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance."); }
+		while($sanArray = icms::$xoopsDB->fetchArray($sanres)) {
 			$origvalue = $sanArray['ele_value'];
 			$newvalue = icms_core_DataFilter::htmlSpecialChars($sanArray['ele_value']);
 			if($newvalue != $origvalue) {
-				$newsql = "UPDATE " . $xoopsDB->prefix("formulize_form") . " SET ele_value = \"" . icms::$xoopsDB->escape($newvalue) . "\" WHERE ele_id = " . $sanArray['ele_id'];
-				if(!$newres = $xoopsDB->query($newsql)) {
+				$newsql = "UPDATE " . icms::$xoopsDB->prefix("formulize_form") . " SET ele_value = \"" . icms::$xoopsDB->escape($newvalue) . "\" WHERE ele_id = " . $sanArray['ele_id'];
+				if(!$newres = icms::$xoopsDB->query($newsql)) {
 					exit("Error patching DB for Formulize 2.2. SQL dump:<br>" . $sansql . "<br>".icms::$xoopsDB->error()."<br>Could not write data for sanitizing.  Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
 				}
 			}
@@ -2102,24 +2088,23 @@ function patch22convertdata() {
 // this should have been done three years ago!
 function patch30DataStructure($auto = false) {
         
-        global $xoopsDB;
         // check for new data structure and don't run this patch if it already has been!
         // check that patch30 has been run and don't run this patch unless it already has been!
         // check that formulize_form table exists, or else don't run the patch
         $patchCheckSql = "SHOW TABLES";
-        $resultPatchCheck = $xoopsDB->queryF($patchCheckSql);
+        $resultPatchCheck = icms::$xoopsDB->queryF($patchCheckSql);
         $entryOwnerGroupFound = false;
         $formulizeFormFound = false;
         $newStructureFound = false;
-        while($table = $xoopsDB->fetchRow($resultPatchCheck)) {
+        while($table = icms::$xoopsDB->fetchRow($resultPatchCheck)) {
           $secondPart = substr($table[0], strlen($xoopsDB->prefix("formulize_")));
-          if(is_numeric($secondPart) AND strstr($table[0], $xoopsDB->prefix("formulize_"))) { // there will be a part after "formulize_" that is numeric in the new data structure
+          if(is_numeric($secondPart) AND strstr($table[0], icms::$xoopsDB->prefix("formulize_"))) { // there will be a part after "formulize_" that is numeric in the new data structure
             $newStructureFound = true;
           }
-          if($table[0] == $xoopsDB->prefix("formulize_entry_owner_groups")) {
+          if($table[0] == icms::$xoopsDB->prefix("formulize_entry_owner_groups")) {
             $entryOwnerGroupFound = true;
           }
-          if($table[0] == $xoopsDB->prefix("formulize_form")) {
+          if($table[0] == icms::$xoopsDB->prefix("formulize_form")) {
             $formulizeFormFound = true;
           }
         }
@@ -2177,20 +2162,20 @@ function patch30DataStructure($auto = false) {
                         // 2. get all the data organized by id_req
                         // 3. insert the data
                         
-                        $captionPlusHandlesSQL = "SELECT ele_caption, ele_handle FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form = " . $thisFormObject->getVar('id_form');
-                        $captionPlusHandlesRes = $xoopsDB->query($captionPlusHandlesSQL);
+                        $captionPlusHandlesSQL = "SELECT ele_caption, ele_handle FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form = " . $thisFormObject->getVar('id_form');
+                        $captionPlusHandlesRes = icms::$xoopsDB->query($captionPlusHandlesSQL);
                         $captionHandleIndex = array();
-                        while($captionPlusHandlesArray = $xoopsDB->fetchArray($captionPlusHandlesRes)) {
+                        while($captionPlusHandlesArray = icms::$xoopsDB->fetchArray($captionPlusHandlesRes)) {
                                 $captionHandleIndex[str_replace("'", "`", $captionPlusHandlesArray['ele_caption'])] = $captionPlusHandlesArray['ele_handle'];
                         }
                                                 
-                        $dataSQL = "SELECT id_req, ele_caption, ele_value, ele_type FROM " .$xoopsDB->prefix("formulize_form") . " WHERE id_form = " . $thisFormObject->getVar('id_form') . " AND ele_type != \"areamodif\" AND ele_type != \"sep\" ORDER BY id_req"; // for some reason areamodif and sep are stored in some really old data
-                        $dataRes = $xoopsDB->query($dataSQL);
+                        $dataSQL = "SELECT id_req, ele_caption, ele_value, ele_type FROM " . icms::$xoopsDB->prefix("formulize_form") . " WHERE id_form = " . $thisFormObject->getVar('id_form') . " AND ele_type != \"areamodif\" AND ele_type != \"sep\" ORDER BY id_req"; // for some reason areamodif and sep are stored in some really old data
+                        $dataRes = icms::$xoopsDB->query($dataSQL);
                         $prevIdReq = "";
                         $insertSQL = "";
                         unset($foundCaptions);
                         $foundCaptions = array();
-                        while($dataArray = $xoopsDB->fetchArray($dataRes)) {
+                        while($dataArray = icms::$xoopsDB->fetchArray($dataRes)) {
                                 if(!isset($captionHandleIndex[$dataArray['ele_caption']])) {
 																	if($dataArray['ele_caption'] === '') {
 																		print "Warning: you have data saved, with no caption specified, for entry number ". $dataArray['id_req'] . " (id_req) in form ".$thisFormObject->getVar('id_form'). ".  This data will be ignored.  Please contact <a href=\"mailto:formulize@freeformsolutions.ca\">Freeform Solutions</a> if you would like assistance cleaning this up.  This will NOT affect the upgrade to version 3.<br>";
@@ -2206,13 +2191,13 @@ function patch30DataStructure($auto = false) {
                                         $prevIdReq = $dataArray['id_req'];
                                         // write whatever we just finished working on
                                         if($insertSQL) {
-                                                if(!$insertRes = $xoopsDB->query($insertSQL)) {
+                                                if(!$insertRes = icms::$xoopsDB->query($insertSQL)) {
                                                         exit("Error: could not write data to the new table structure with this SQL: $insertSQL.<br>".icms::$xoopsDB->error()."<br>Please report this error to <a href=\"mailto:formulize@freeformsolutions.ca\">Freeform Solutions</a>.");
                                                 }
                                                 $insertSQL = "";
                                         }
                                         // build the SQL for inserting this entry
-                                        $insertSQL = "INSERT INTO " . $xoopsDB->prefix("formulize_" . $thisFormObject->getVar('id_form')) . " SET entry_id = \"" . $dataArray['id_req'] . "\"";
+                                        $insertSQL = "INSERT INTO " . icms::$xoopsDB->prefix("formulize_" . $thisFormObject->getVar('id_form')) . " SET entry_id = \"" . $dataArray['id_req'] . "\"";
                                         $metaData = getMetaData($dataArray['id_req'], "", "", true); // special last param necessary because we need to use the old meta process when doing this patch!
                                         $creation_uid = $metaData['created_by_uid'];
                                         $mod_uid = $metaData['last_update_by_uid'];
@@ -2234,8 +2219,8 @@ function patch30DataStructure($auto = false) {
 																					$ownerGroups[] = XOOPS_GROUP_ANONYMOUS;
 																				}
 																				foreach($ownerGroups as $thisGroup) {
-																					$ownerInsertSQL = "INSERT INTO " . $xoopsDB->prefix("formulize_entry_owner_groups") . " (`fid`, `entry_id`, `groupid`) VALUES ('". intval($thisFormObject->getVar('id_form')) . "', '". intval($dataArray['id_req']) . "', '". intval($thisGroup) . "')";
-																					if(!$ownerInsertRes = $xoopsDB->query($ownerInsertSQL)) {
+																					$ownerInsertSQL = "INSERT INTO " . icms::$xoopsDB->prefix("formulize_entry_owner_groups") . " (`fid`, `entry_id`, `groupid`) VALUES ('". intval($thisFormObject->getVar('id_form')) . "', '". intval($dataArray['id_req']) . "', '". intval($thisGroup) . "')";
+																					if(!$ownerInsertRes = icms::$xoopsDB->query($ownerInsertSQL)) {
 																						print "Error: could not write owner information to new data structure, using this SQL:<br>$ownerInsertSQL<br>".icms::$xoopsDB->error()."<br>Please report this error to <a href=\"mailto:formulize@freeformsolutions.ca\">Freeform Solutions</a>.";
 																					}
 																				}
@@ -2255,10 +2240,10 @@ function patch30DataStructure($auto = false) {
                                         $boxproperties = explode("#*=:*", $dataArray['ele_value']);
                                         $source_ele_ids = explode("[=*9*:", $boxproperties[2]);
                                         // get the id_reqs of the source ele_ids
-                                        $sourceIdReqSQL = "SELECT id_req FROM " . $xoopsDB->prefix("formulize_form") . " WHERE ele_id = " . implode(" OR ele_id = ", $source_ele_ids) . " ORDER BY id_req";
-                                        $sourceIdReqRes = $xoopsDB->query($sourceIdReqSQL);
+                                        $sourceIdReqSQL = "SELECT id_req FROM " . icms::$xoopsDB->prefix("formulize_form") . " WHERE ele_id = " . implode(" OR ele_id = ", $source_ele_ids) . " ORDER BY id_req";
+                                        $sourceIdReqRes = icms::$xoopsDB->query($sourceIdReqSQL);
                                         $dataArray['ele_value'] = "";
-                                        while($sourceIdReqArray = $xoopsDB->fetchArray($sourceIdReqRes)) {
+                                        while($sourceIdReqArray = icms::$xoopsDB->fetchArray($sourceIdReqRes)) {
                                                 $dataArray['ele_value'] .=  "," . $sourceIdReqArray['id_req'];
                                         }
                                         if($dataArray['ele_value']) {
@@ -2272,7 +2257,7 @@ function patch30DataStructure($auto = false) {
 																$insertSQL .= ", `" . $captionHandleIndex[$dataArray['ele_caption']] . "`=\"" . icms::$xoopsDB->escape($dataArray['ele_value']) . "\"";
                         }
                         if($insertSQL) {
-                                if(!$insertRes = $xoopsDB->query($insertSQL)) {
+                                if(!$insertRes = icms::$xoopsDB->query($insertSQL)) {
                                         exit("Error: could not write data to the new table structure with this SQL: $insertSQL.<br>".icms::$xoopsDB->error()."<br>Please report this error to <a href=\"mailto:formulize@freeformsolutions.ca\">Freeform Solutions</a>.");
                                 }
                         }
@@ -2292,21 +2277,21 @@ function patch30DataStructure($auto = false) {
       // 3. get the handle corresponding to that caption
       // 4. rewrite the ele_value[2] with the handle instead of caption
       // 5. reinsert that value into the DB
-      $sql = "SELECT ele_id FROM " . $xoopsDB->prefix("formulize") . " WHERE ele_value LIKE '%#*=:*%'";
-      if(!$res = $xoopsDB->query($sql)) {
+      $sql = "SELECT ele_id FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE ele_value LIKE '%#*=:*%'";
+      if(!$res = icms::$xoopsDB->query($sql)) {
         exit("Error: cound not get the element ids of the linked selectboxes.  SQL: $sql<br>".icms::$xoopsDB->error()."<br>Please report this error to <a href=\"mailto:formulize@freeformsolutions.ca\">Freeform Solutions</a>.");
       }
       $element_handler =& icms_getModuleHandler('elements', 'formulize');
-      while($array = $xoopsDB->fetchArray($res)) {
+      while($array = icms::$xoopsDB->fetchArray($res)) {
         $elementObject = $element_handler->get($array['ele_id']);
         $ele_value = $elementObject->getVar('ele_value');
         $parts = explode("#*=:*", $ele_value[2]);
-        $sql2 = "SELECT ele_handle FROM " . $xoopsDB->prefix("formulize") . " WHERE ele_caption = '". icms::$xoopsDB->escape($parts[1]) . "' AND id_form=". $parts[0];
+        $sql2 = "SELECT ele_handle FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE ele_caption = '". icms::$xoopsDB->escape($parts[1]) . "' AND id_form=". $parts[0];
 				//print "$sql2<br>";
-        if(!$res2 = $xoopsDB->query($sql2)) {
+        if(!$res2 = icms::$xoopsDB->query($sql2)) {
           exit("Error: could not get the handle for a linked selectbox source.  SQL: $sql2<br>".icms::$xoopsDB->error()."<br>Please report this error to <a href=\"mailto:formulize@freeformsolutions.ca\">Freeform Solutions</a>.");
         }
-        $array2 = $xoopsDB->fetchArray($res2);
+        $array2 = icms::$xoopsDB->fetchArray($res2);
         if($array2['ele_handle'] == "") {
           print "Warning: a handle could not be identified for this caption: '".$parts[1]."', in form ".$parts[0]."  This breaks linked selectboxes for element number ".$array['ele_id'].".  This is most likely caused by an old caption that was changed for the element, in an old version of Formulize.<br>Please report this error to <a href=\"mailto:formulize@freeformsolutions.ca\">Freeform Solutions</a>.<br>";
         }

@@ -50,20 +50,20 @@ if(!is_numeric($_GET['title'])) {
 		$title = $_POST['title'];
 	}
 
-	$sql=sprintf("SELECT id_form FROM ".$xoopsDB->prefix("formulize_id")." WHERE desc_form='%s'",$title);
+	$sql=sprintf("SELECT id_form FROM " . icms::$xoopsDB->prefix("formulize_id")." WHERE desc_form='%s'",$title);
 	$res = icms::$xoopsDB->queryF( $sql ) or die('Erreur SQL !<br>'.$requete.'<br>'.icms::$xoopsDB->error());
 
 	if ( $res ) {
-		  while ( $row = $xoopsDB->fetchRow ( $res ) ) {
+		  while ( $row = icms::$xoopsDB->fetchRow ( $res ) ) {
 		    $id_form = $row[0];
   		}
 	}
 } else {
 	$id_form = $_GET['title'];
 	$title = $_GET['title'];
-	$rtsql = "SELECT desc_form FROM " . $xoopsDB->prefix("formulize_id") . " WHERE id_form=$id_form";
-	$rtres = $xoopsDB->query($rtsql);
-	$rtarray = $xoopsDB->fetchArray($rtres);
+	$rtsql = "SELECT desc_form FROM " . icms::$xoopsDB->prefix("formulize_id") . " WHERE id_form=$id_form";
+	$rtres = icms::$xoopsDB->query($rtsql);
+	$rtarray = icms::$xoopsDB->fetchArray($rtres);
 	$realtitle = $rtarray['desc_form'];
 }
 
@@ -109,8 +109,8 @@ if( $_POST['op'] != 'save' ){
 	<th><center>'._AM_ELE_CREATE.'</center></th>
 	<tr><td class="even"><li><a href="elements.php?title='.$title.'&op=edit&amp;ele_type=text">'._AM_ELE_TEXT.'</a></td></tr>
 	<tr><td class="even"><li><a href="elements.php?title='.$title.'&op=edit&amp;ele_type=textarea">'._AM_ELE_TAREA.'</a></td></tr>
-	<tr><td class="even"><li><a href="elements.php?title='.$title.'&op=edit&amp;ele_type=areamodif">'._AM_ELE_MODIF.'</a></td></tr> 
-	<tr><td class="even"><li><a href="elements.php?title='.$title.'&op=edit&amp;ele_type=ib">'._AM_ELE_MODIF_ONE.'</a></td></tr> 
+	<tr><td class="even"><li><a href="elements.php?title='.$title.'&op=edit&amp;ele_type=areamodif">'._AM_ELE_MODIF.'</a></td></tr>
+	<tr><td class="even"><li><a href="elements.php?title='.$title.'&op=edit&amp;ele_type=ib">'._AM_ELE_MODIF_ONE.'</a></td></tr>
 	<tr><td class="even"><li><a href="elements.php?title='.$title.'&op=edit&amp;ele_type=select">'._AM_ELE_SELECT.'</a></td></tr>
 	<tr><td class="even"><li><a href="elements.php?title='.$title.'&op=edit&amp;ele_type=checkbox">'._AM_ELE_CHECK.'</a></td></tr>
 	<tr><td class="even"><li><a href="elements.php?title='.$title.'&op=edit&amp;ele_type=radio">'._AM_ELE_RADIO.'</a></td></tr>
@@ -162,7 +162,7 @@ if( $_POST['op'] != 'save' ){
 		$check_priv = new icms_form_elements_Checkbox('', 'ele_private['.$id.']', $priv);
 		$check_priv->addOption(1, ' ');
 		//if( $ele_type == 'checkbox' || $ele_type == 'radio' || $ele_type == 'yn' || $ele_type == 'select' || $ele_type == 'date' || $ele_type== 'areamodif' || $ele_type == 'upload' || $ele_type == 'areamodif' || $ele_type == 'sep'){
-			$check_req->setExtra('disabled="disabled"'); 
+			$check_req->setExtra('disabled="disabled"');
 		//}
 		$order = $i->getVar('ele_order');
 		$text_order = new icms_form_elements_Text('', 'ele_order['.$id.']', 4, 4, $order); // switched to 3 wide, jwe 01/06/05 -- switched to 4 wide, September 4 2006
@@ -194,11 +194,11 @@ if( $_POST['op'] != 'save' ){
 					} else {
 						$check_display .= "???";
 					}
-				}                               
+				}
             }
 
-            $check_display = '<a class=info href="" onclick="return false;" alt="' . 
-            	$check_display . '" title="' . $check_display . '">' . 
+            $check_display = '<a class=info href="" onclick="return false;" alt="' .
+            	$check_display . '" title="' . $check_display . '">' .
                 _AM_FORM_DISPLAY_MULTIPLE . '</a>';
         }
         else
@@ -252,7 +252,7 @@ if( $_POST['op'] != 'save' ){
 		} elseif($i->getVar('ele_type') == "radio") {
 			echo '<td class="'.$class.'" align="center"><a href="elements.php?title='.$title.'&op=convert&amp;ele_id='.$id.'" onclick="javascript:return confirmConvert(\'radio\');" title="'._AM_CONVERTRADIO_HELP.'" alt="'._AM_CONVERTRADIO_HELP.'">'._AM_CONVERTRADIO.'</a></td>';
 		} elseif($i->getVar('ele_type') == "checkbox") {
-      echo '<td class="'.$class.'" align="center"><a href="elements.php?title='.$title.'&op=convert&amp;ele_id='.$id.'" onclick="javascript:return confirmConvert(\'checkbox\');" title="'._AM_CONVERTCHECKBOX_HELP.'" alt="'._AM_CONVERTCHECKBOX_HELP.'">'._AM_CONVERTCHECKBOX.'</a></td>';			
+      echo '<td class="'.$class.'" align="center"><a href="elements.php?title='.$title.'&op=convert&amp;ele_id='.$id.'" onclick="javascript:return confirmConvert(\'checkbox\');" title="'._AM_CONVERTCHECKBOX_HELP.'" alt="'._AM_CONVERTCHECKBOX_HELP.'">'._AM_CONVERTCHECKBOX.'</a></td>';
 		} else {
 			echo '<td class="'.$class.'" align="center">&nbsp;</td>';
 		}
@@ -311,7 +311,7 @@ if( $_POST['op'] != 'save' ){
 	echo '<td valign=top><center><a href="../admin/mailindex.php?title='.$title.'">' . _AM_GOTO_PARAMS . ' <br><img src="../images/xfmail.png"></a></center></td>';
 	echo '</tr></table></center>';
 
-	//echo '<br><br>lien a ins�rer : &lt;a href&nbsp;="'.XOOPS_URL.'/modules/formulize/index.php?fid='.$title.'">'.$realtitle.'&lt;/a><br><br>';   
+	//echo '<br><br>lien a ins�rer : &lt;a href&nbsp;="'.XOOPS_URL.'/modules/formulize/index.php?fid='.$title.'">'.$realtitle.'&lt;/a><br><br>';
 
 
 include 'footer.php';

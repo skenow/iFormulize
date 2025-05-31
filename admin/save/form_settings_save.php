@@ -57,8 +57,8 @@ if(!$gperm_handler->checkRight("edit_form", $fid, $groups, $mid) AND $_POST['for
 }
 
 if(($_POST['new_app_yes_no'] == "yes" AND $_POST['applications-name'])) {
-  $newAppObject = $application_handler->create();  
-} 
+  $newAppObject = $application_handler->create();
+}
 
 // get all the existing applcations that this form object was assigned to
 if(isset($_POST['apps']) AND count($_POST['apps']) > 0) {
@@ -78,14 +78,13 @@ foreach($processedValues['forms'] as $property=>$value) {
   $formObject->setVar($property, $value);
 }
 if(!$form_handler->insert($formObject)) {
-  print "Error: could not save the form properly: ".icms::$xoopsDB->error();
+  print "Error: could not save the form properly: ". icms::$xoopsDB->error();
 }
 $fid = $formObject->getVar('id_form');
 if($_POST['formulize_admin_key'] == "new") {
   if(!$tableCreateRes = $form_handler->createDataTable($fid)) {
     print "Error: could not create data table for new form";
   }
-  global $xoopsDB;
   // create the default screens for this form
   $formScreenHandler = icms_getModuleHandler('formScreen', 'formulize');
   $defaultFormScreen = $formScreenHandler->create();
@@ -151,7 +150,7 @@ if($_POST['formulize_admin_key'] == "new") {
   $formObject->setVar('defaultform', $defaultFormScreenId);
   $formObject->setVar('defaultlist', $defaultListScreenId);
   if(!$form_handler->insert($formObject)) {
-    print "Error: could not update form object with default screen ids: ".icms::$xoopsDB->error();
+    print "Error: could not update form object with default screen ids: ". icms::$xoopsDB->error();
   }
   // add edit permissions for the selected groups
   $gperm_handler = icms::handler('icms_member_groupperm');
@@ -175,7 +174,7 @@ if($newAppObject) {
     $newAppObject->setVar($property, $value);
   }
   if(!$application_handler->insert($newAppObject)) {
-    print "Error: could not save the new application properly: ".icms::$xoopsDB->error();
+    print "Error: could not save the new application properly: ". icms::$xoopsDB->error();
   }
   $selectedAppIds[] = $newAppObject->getVar('appid');
 }
@@ -191,7 +190,7 @@ foreach($selectedAppObjects as $thisAppObject) {
     $thisAppForms[] = $fid;
     $thisAppObject->setVar('forms', serialize($thisAppForms));
     if(!$application_handler->insert($thisAppObject)) {
-      print "Error: could not add the form to one of the applications properly: ".icms::$xoopsDB->error();
+      print "Error: could not add the form to one of the applications properly: ". icms::$xoopsDB->error();
     }
   }
 }
@@ -221,7 +220,7 @@ if(isset($_POST['forms-tableform'])) {
 // if the revision history flag was on, then create the revisions history table, if it doesn't exist already
 if(isset($_POST['forms-store_revisions']) AND $_POST['forms-store_revisions'] AND !$form_handler->revisionsTableExists($formObject)) {
   if(!$form_handler->createDataTable($fid, 0, false, true)) { // 0 is the id of a form we're cloning, false is the map of old elements to new elements when cloning so n/a here, true is the flag for making a revisions table
-    print "Error: could not create the revision history table for the form";  
+    print "Error: could not create the revision history table for the form";
   }
 }
 

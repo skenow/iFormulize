@@ -34,7 +34,6 @@ if(!isset($processedValues)) {
   return;
 }
 
-global $xoopsDB;
 $ele_type = $_POST['element_type'];
 
 // invoke the necessary objects
@@ -83,7 +82,7 @@ foreach($processedValues['elements'] as $property=>$value) {
 						} else {
 									$value = $value . "_copy";
 						}
-			}			
+			}
 		}
     $ele_handle = $value;
   }
@@ -98,8 +97,8 @@ if($original_handle) { // rewrite references in other elements to this handle (l
 	if($ele_handle != $original_handle) {
     $ele_handle_len = strlen($ele_handle) + 5 + strlen($fid);
     $orig_handle_len = strlen($original_handle) + 5 + strlen($fid);
-    $lsbHandleFormDefSQL = "UPDATE " . $xoopsDB->prefix("formulize") . " SET ele_value = REPLACE(ele_value, 's:$orig_handle_len:\"$fid#*=:*$original_handle', 's:$ele_handle_len:\"$fid#*=:*$ele_handle') WHERE ele_value LIKE '%$fid#*=:*$original_handle%'"; // must include the cap lengths or else the unserialization of this info won't work right later, since ele_value is a serialized array!
-		if(!$res = $xoopsDB->query($lsbHandleFormDefSQL)) {
+    $lsbHandleFormDefSQL = "UPDATE " . icms::$xoopsDB->prefix("formulize") . " SET ele_value = REPLACE(ele_value, 's:$orig_handle_len:\"$fid#*=:*$original_handle', 's:$ele_handle_len:\"$fid#*=:*$ele_handle') WHERE ele_value LIKE '%$fid#*=:*$original_handle%'"; // must include the cap lengths or else the unserialization of this info won't work right later, since ele_value is a serialized array!
+    if(!$res = icms::$xoopsDB->query($lsbHandleFormDefSQL)) {
 			print "Error:  update of linked selectbox element definitions failed.";
 		}
 	}
@@ -111,31 +110,30 @@ if($_POST['reload_names_page'] OR $isNew) {
   if($isNew) {
     $url = XOOPS_URL . "/modules/formulize/admin/ui.php?page=element&fid=$fid&aid=".intval($_POST['aid'])."&ele_id=$ele_id";
     $ele_id_to_send = $ele_id;
-  } 
+  }
   print "/* evalnow */ ele_id = $ele_id_to_send; redirect = \"reloadWithScrollPosition('$url');\";";
 }
 
 function figureOutOrder($orderChoice, $oldOrder, $fid) {
-	global $xoopsDB;
 	if($orderChoice === "bottom") {
-		$sql = "SELECT max(ele_order) as new_order FROM ".$xoopsDB->prefix("formulize")." WHERE id_form = $fid";
-	  $res = $xoopsDB->query($sql);
-	  $array = $xoopsDB->fetchArray($res);
+		$sql = "SELECT max(ele_order) as new_order FROM ".icms::$xoopsDB->prefix("formulize")." WHERE id_form = $fid";
+		$res = icms::$xoopsDB->query($sql);
+		$array = icms::$xoopsDB->fetchArray($res);
 		$orderChoice = $array['new_order'] + 1;
 	} elseif($orderChoice === "top") {
 		$orderChoice = 0;
 	} else {
 		// convert the orderpref from the element ID to the order
-		$sql = "SELECT ele_order FROM ".$xoopsDB->prefix("formulize")." WHERE ele_id = $orderChoice AND id_form = $fid";
-		$res = $xoopsDB->query($sql);
-	  $array = $xoopsDB->fetchArray($res);
+		$sql = "SELECT ele_order FROM ".icms::$xoopsDB->prefix("formulize")." WHERE ele_id = $orderChoice AND id_form = $fid";
+		$res = icms::$xoopsDB->query($sql);
+		$array = icms::$xoopsDB->fetchArray($res);
 		$orderChoice = $array['ele_order'];
 	}
 	$orderValue = $orderChoice + 1;
 	if($oldOrder != $orderValue) {
 		// and we need to reorder all the elements equal to and higher than the current element
-		$sql = "UPDATE ".$xoopsDB->prefix("formulize")." SET ele_order = ele_order + 1 WHERE ele_order >= $orderValue AND id_form = $fid";
-		$res = $xoopsDB->query($sql);
+		$sql = "UPDATE ".icms::$xoopsDB->prefix("formulize")." SET ele_order = ele_order + 1 WHERE ele_order >= $orderValue AND id_form = $fid";
+		$res = icms::$xoopsDB->query($sql);
 	}
 	return $orderValue;
 }

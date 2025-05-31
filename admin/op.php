@@ -46,19 +46,19 @@ function deleteForm($fid) {
 		return;
 	}
 
-	global $xoopsDB, $myts, $eh;
+	global $myts, $eh;
         
   $form_handler = icms_getModuleHandler('forms', 'formulize');
   $form_handler->dropDataTable($fid);
         
-	$sql = sprintf("DELETE FROM %s WHERE id_form = '%s'", $xoopsDB->prefix("formulize_id"), $fid);
-	$xoopsDB->queryF($sql) or $eh->show("error supression 1 dans delform");
+	$sql = sprintf("DELETE FROM %s WHERE id_form = '%s'", icms::$xoopsDB->prefix("formulize_id"), $fid);
+ icms::$xoopsDB->queryF($sql) or $eh->show("error supression 1 dans delform");
 
-	$sql = sprintf("DELETE FROM %s WHERE id_form = '%u'", $xoopsDB->prefix("formulize"), $fid);
-	$xoopsDB->queryF($sql) or $eh->show("error supression 2 dans delform");
+	$sql = sprintf("DELETE FROM %s WHERE id_form = '%u'", icms::$xoopsDB->prefix("formulize"), $fid);
+ icms::$xoopsDB->queryF($sql) or $eh->show("error supression 2 dans delform");
 
-	$sql = sprintf("DELETE FROM %s WHERE itemname = '%s'", $xoopsDB->prefix("formulize_menu"), $fid);
-	$xoopsDB->queryF($sql) or $eh->show("error supression 3 dans delform");
+	$sql = sprintf("DELETE FROM %s WHERE itemname = '%s'", icms::$xoopsDB->prefix("formulize_menu"), $fid);
+ icms::$xoopsDB->queryF($sql) or $eh->show("error supression 3 dans delform");
 
 
 // PERMISSION DELETION NOT OPERATING PROPERLY RIGHT NOW

@@ -66,8 +66,7 @@ class formulizeElementRenderer{
 		// added July 6 2005.
 		if(!$xoopsModuleConfig['delimeter']) {
 			// assume that we're accessing a form from outside the Formulize module, therefore the Formulize delimiter setting is not available, so we have to query for it directly.
-			global $xoopsDB;
-			$delimq = q("SELECT conf_value FROM " . $xoopsDB->prefix("config") . ", " . $xoopsDB->prefix("modules") . " WHERE " . $xoopsDB->prefix("modules") . ".mid=" . $xoopsDB->prefix("config") . ".conf_modid AND " . $xoopsDB->prefix("modules") . ".dirname=\"formulize\" AND " . $xoopsDB->prefix("config") . ".conf_name=\"delimeter\"");
+			$delimq = q("SELECT conf_value FROM " . icms::$xoopsDB->prefix("config") . ", " . icms::$xoopsDB->prefix("modules") . " WHERE " . icms::$xoopsDB->prefix("modules") . ".mid=" . icms::$xoopsDB->prefix("config") . ".conf_modid AND " . icms::$xoopsDB->prefix("modules") . ".dirname=\"formulize\" AND " . icms::$xoopsDB->prefix("config") . ".conf_name=\"delimeter\"");
 			$delimSetting = $delimq[0]['conf_value'];
 		} else {
 			$delimSetting = $xoopsModuleConfig['delimeter'];
@@ -252,7 +251,6 @@ class formulizeElementRenderer{
 					}
 					$module_id = getFormulizeModId();
 					
-					global $xoopsDB;
 					
 					$pgroups = array();
 					// handle new linkscope option -- August 30 2006
@@ -281,7 +279,7 @@ class formulizeElementRenderer{
 								}
 							} else { // all groups should be used
 								unset($pgroups);
-								$allgroupsq = q("SELECT groupid FROM " . $xoopsDB->prefix("groups")); //  . " WHERE groupid != " . XOOPS_GROUP_USERS); // use all groups now, if all groups are picked, with no restrictions on membership or anything, then use all groups
+								$allgroupsq = q("SELECT groupid FROM " . icms::$xoopsDB->prefix("groups")); //  . " WHERE groupid != " . XOOPS_GROUP_USERS); // use all groups now, if all groups are picked, with no restrictions on membership or anything, then use all groups
 								foreach($allgroupsq as $thisgid) {
 									$pgroups[] = $thisgid['groupid'];
 								}
@@ -298,7 +296,7 @@ class formulizeElementRenderer{
 						$start = true;
 						foreach($pgroups as $thisPgroup) {
 							if(!$start) { $pgroupsfilter .= " AND "; }
-							$pgroupsfilter .= "EXISTS(SELECT 1 FROM ".$xoopsDB->prefix("formulize_entry_owner_groups")." AS t2 WHERE t2.groupid=$thisPgroup AND t2.fid=$sourceFid AND t2.entry_id=t1.entry_id)";
+							$pgroupsfilter .= "EXISTS(SELECT 1 FROM " . icms::$xoopsDB->prefix("formulize_entry_owner_groups")." AS t2 WHERE t2.groupid=$thisPgroup AND t2.fid=$sourceFid AND t2.entry_id=t1.entry_id)";
 							$start = false;
 						}
 						$pgroupsfilter .= ")";
@@ -317,10 +315,10 @@ class formulizeElementRenderer{
 					if($ele_value[9]) {
 						$restrictSQL = " AND (
 						NOT EXISTS (
-						SELECT 1 FROM ".$xoopsDB->prefix("formulize_".$formObject->getVar('form_handle'))." AS t4 WHERE t4.`".$this->_ele->getVar('ele_handle')."` LIKE CONCAT( '%,', t1.`entry_id` , ',%' ) AND t4.entry_id != ".intval($entry);
+						SELECT 1 FROM ". icms::$xoopsDB->prefix("formulize_".$formObject->getVar('form_handle'))." AS t4 WHERE t4.`".$this->_ele->getVar('ele_handle')."` LIKE CONCAT( '%,', t1.`entry_id` , ',%' ) AND t4.entry_id != ".intval($entry);
 						$restrictSQL .= $this->addEntryRestrictionSQL($ele_value[9], $id_form, $groups); // pass in the flag about restriction scope, and the form id, and the groups
 						$restrictSQL .= " ) OR EXISTS (
-						SELECT 1 FROM ".$xoopsDB->prefix("formulize_".$formObject->getVar('form_handle'))." AS t4 WHERE t4.`".$this->_ele->getVar('ele_handle')."` LIKE CONCAT( '%,', t1.`entry_id` , ',%' ) AND t4.entry_id = ".intval($entry);
+						SELECT 1 FROM ". icms::$xoopsDB->prefix("formulize_".$formObject->getVar('form_handle'))." AS t4 WHERE t4.`".$this->_ele->getVar('ele_handle')."` LIKE CONCAT( '%,', t1.`entry_id` , ',%' ) AND t4.entry_id = ".intval($entry);
 						$restrictSQL .= $this->addEntryRestrictionSQL($ele_value[9], $id_form, $groups);
 						$restrictSQL .= ") )";
 					}
@@ -339,9 +337,9 @@ class formulizeElementRenderer{
 					}
 
 					if($pgroupsfilter) { // if there is a groups filter, then join to the group ownership table
-						$sourceValuesQ = "SELECT t1.entry_id, t1.`".$sourceHandle."` FROM ".$xoopsDB->prefix("formulize_".$sourceFormObject->getVar('form_handle'))." AS t1, ".$xoopsDB->prefix("formulize_entry_owner_groups")." AS t2 $parentFormFrom WHERE $pgroupsfilter $conditionsfilter $conditionsfilter_oom $restrictSQL GROUP BY t1.entry_id $sortOrderClause";
+						$sourceValuesQ = "SELECT t1.entry_id, t1.`".$sourceHandle."` FROM " . icms::$xoopsDB->prefix("formulize_".$sourceFormObject->getVar('form_handle'))." AS t1, " . icms::$xoopsDB->prefix("formulize_entry_owner_groups")." AS t2 $parentFormFrom WHERE $pgroupsfilter $conditionsfilter $conditionsfilter_oom $restrictSQL GROUP BY t1.entry_id $sortOrderClause";
 					} else { // otherwise just query the source table
-						$sourceValuesQ = "SELECT t1.entry_id, t1.`".$sourceHandle."` FROM ".$xoopsDB->prefix("formulize_".$sourceFormObject->getVar('form_handle'))." AS t1 $parentFormFrom WHERE t1.entry_id>0 $conditionsfilter $conditionsfilter_oom $restrictSQL GROUP BY t1.entry_id $sortOrderClause";
+						$sourceValuesQ = "SELECT t1.entry_id, t1.`".$sourceHandle."` FROM " . icms::$xoopsDB->prefix("formulize_".$sourceFormObject->getVar('form_handle'))." AS t1 $parentFormFrom WHERE t1.entry_id>0 $conditionsfilter $conditionsfilter_oom $restrictSQL GROUP BY t1.entry_id $sortOrderClause";
 					}
 					//print "$sourceValuesQ<br><br>";
 					if(!$isDisabled) {
@@ -373,9 +371,9 @@ class formulizeElementRenderer{
 							include_once XOOPS_ROOT_PATH . "/modules/formulize/class/data.php";
 							$data_handler = new formulizeDataHandler($originalSource[0]);
 						}
-						$reslinkedvaluesq = $xoopsDB->query($sourceValuesQ);
+						$reslinkedvaluesq = icms::$xoopsDB->query($sourceValuesQ);
 						if($reslinkedvaluesq) {
-							while($rowlinkedvaluesq = $xoopsDB->fetchRow($reslinkedvaluesq)) {
+							while($rowlinkedvaluesq = icms::$xoopsDB->fetchRow($reslinkedvaluesq)) {
 								if($rowlinkedvaluesq[1]==="") { continue; }
 								if($sourceElementObject->isLinked) {
 									$rowlinkedvaluesq[1] = $data_handler->getElementValueInEntry(trim($rowlinkedvaluesq[1], ","), $originalSource[1]);
@@ -519,8 +517,7 @@ class formulizeElementRenderer{
 								} else { // use all
 									if(!$ele_value[4]) { // really use all (otherwise, we're just going with all user's groups, so existing value of $groups will be okay
 										unset($groups);
-										global $xoopsDB;
-										$allgroupsq = q("SELECT groupid FROM " . $xoopsDB->prefix("groups")); //  . " WHERE groupid != " . XOOPS_GROUP_USERS); // removed exclusion of registered users group March 18 2009, since it doesn't make sense in this situation.  All groups should mean everyone, period.
+										$allgroupsq = q("SELECT groupid FROM " . icms::$xoopsDB->prefix("groups")); //  . " WHERE groupid != " . XOOPS_GROUP_USERS); // removed exclusion of registered users group March 18 2009, since it doesn't make sense in this situation.  All groups should mean everyone, period.
 										foreach($allgroupsq as $thisgid) {
 											$groups[] = $thisgid['groupid'];
 										}
@@ -1071,7 +1068,7 @@ class formulizeElementRenderer{
 				$gperm_handler =& icms::handler('icms_member_groupperm');
 				$groupsThatCanView = $gperm_handler->getGroupIds("view_form", $id_form, getFormulizeModId());
 				$groupsToLimitBy = array_intersect($groups, $groupsThatCanView);
-				$sql .= " AND EXISTS(SELECT 1 FROM ".$xoopsDB->prefix("formulize_entry_owner_groups")." AS t5 WHERE t5.groupid IN (".implode(", ",$groupsToLimitBy).") AND t5.fid=$id_form AND t5.entry_id=t4.entry_id) ";
+				$sql .= " AND EXISTS(SELECT 1 FROM " . icms::$xoopsDB->prefix("formulize_entry_owner_groups")." AS t5 WHERE t5.groupid IN (".implode(", ",$groupsToLimitBy).") AND t5.fid=$id_form AND t5.entry_id=t4.entry_id) ";
 				break;
 		}
 		return $sql;
@@ -1081,7 +1078,7 @@ class formulizeElementRenderer{
 	// THIS FUNCTION COPIED FROM LIASE 1.26, onchange control added
 	// JWE -- JUNE 1 2006
 	function optOther($s='', $id, $entry, $counter, $checkbox=false){
-		global $xoopsModuleConfig, $xoopsDB;
+		global $xoopsModuleConfig;
 		if( !preg_match('/\{OTHER\|+[0-9]+\}/', $s) ){
 			return false;
 		}
@@ -1100,7 +1097,7 @@ class formulizeElementRenderer{
 		// gather the current value if there is one
 		$other_text = "";
 		if(is_numeric($entry)) {
-			$otherq = q("SELECT other_text FROM " . $xoopsDB->prefix("formulize_other") . " WHERE id_req='$entry' AND ele_id='$ele_id' LIMIT 0,1");
+			$otherq = q("SELECT other_text FROM " . icms::$xoopsDB->prefix("formulize_other") . " WHERE id_req='$entry' AND ele_id='$ele_id' LIMIT 0,1");
 			$other_text = $otherq[0]['other_text'];
 		}
 		$s = explode('|', preg_replace('/[\{\}]/', '', $s));

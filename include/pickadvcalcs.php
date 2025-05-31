@@ -33,7 +33,7 @@
 
 require_once "../../../mainfile.php";
 
-global $xoopsConfig, $xoopsDB;
+global $xoopsConfig;
 
 
 // load the formulize language constants if they haven't been loaded already

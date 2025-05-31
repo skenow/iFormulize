@@ -256,7 +256,6 @@ global $xoopsConfig;
 	}
 
 
-global $xoopsDB;
 include_once XOOPS_ROOT_PATH.'/modules/formulize/include/functions.php';
 
 	// Set some required variables
@@ -425,7 +424,7 @@ foreach($returned['rc'] as $hidden) {
 			$colname = _formulize_DE_CALC_CREATOR_EMAIL;
 			break;
 		default:
-			$temp_cap = q("SELECT ele_caption FROM " . $xoopsDB->prefix("formulize") . " WHERE ele_id = '" . $hidden['column'] . "'");
+			$temp_cap = q("SELECT ele_caption FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE ele_id = '" . $hidden['column'] . "'");
 			$colname = trans($temp_cap[0]['ele_caption']);
 	}
 	$pickcalc->addElement(new icms_form_elements_Button($colname, "delete_" . $hidden['column'], _formulize_DE_REMOVECALC, 'submit'));

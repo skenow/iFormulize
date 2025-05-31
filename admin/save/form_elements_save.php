@@ -118,7 +118,7 @@ if($_POST['convertelement']) {
 			$element->setVar('ele_type', "textarea");
       if( !$element_handler->insert($element)) {
 				print "Error: could not complete conversion of the element";
-			} 
+			}
 		} elseif($ele_type=="textarea") {
 			$ele_value = $element->getVar('ele_value');
 			$new_ele_value[0] = $ele_value[2]; // cols become width
@@ -130,7 +130,7 @@ if($_POST['convertelement']) {
 			$element->setVar('ele_type', "text");
 			if( !$element_handler->insert($element)) {
 				print "Error: could not complete conversion of the element";
-			} 
+			}
 		} elseif($ele_type=="radio") {
 			$element->setVar('ele_type', "checkbox"); // just need to change type, ele_value format is the same
 			if( !$element_handler->insert($element)) {
@@ -140,7 +140,7 @@ if($_POST['convertelement']) {
 				$data_handler = new formulizeDataHandler($element->getVar('id_form'));
 				if(!$data_handler->convertRadioDataToCheckbox($element)) {
 					print "Error: ". _AM_ELE_CHECKBOX_DATA_NOT_READY;
-				} 
+				}
 			}
 		} elseif($ele_type=="checkbox") {
 			$element->setVar('ele_type', "radio");  // just need to change type, ele_value format is the same
@@ -151,7 +151,7 @@ if($_POST['convertelement']) {
 				$data_handler = new formulizeDataHandler($element->getVar('id_form'));
 				if(!$data_handler->convertCheckboxDataToRadio($element)) {
 					print "Error: "._AM_ELE_RADIO_DATA_NOT_READY;
-				} 
+				}
 			}
 		}
 }
@@ -161,20 +161,19 @@ if($_POST['deleteelement']) {
   $ele_type = $element->getVar('ele_type');
 	$element_handler->delete($element);
   if($ele_type != "areamodif" AND $ele_type != "ib" AND $ele_type != "sep" AND $ele_type != "subform" AND $ele_type != "grid") {
-    $element_handler->deleteData($element); //added aug 14 2005 by jwe  
+    $element_handler->deleteData($element); //added aug 14 2005 by jwe
   }
 }
 
 if($_POST['cloneelement']) {
-  global $xoopsDB;
   // create a new element, and then direct them to the page for editing that element
   $thisElementObject = $element_handler->get($_POST['cloneelement']);
   $oldHandle = $thisElementObject->getVar('ele_handle');
   $thisElementObject->setVar('ele_id', 0);
   $thisElementObject->setVar('ele_handle', "");
-  $sql = "SELECT max(ele_order) as new_order FROM ".$xoopsDB->prefix("formulize")." WHERE id_form = $fid";
-  $res = $xoopsDB->query($sql);
-  $array = $xoopsDB->fetchArray($res);
+  $sql = "SELECT max(ele_order) as new_order FROM ".icms::$xoopsDB->prefix("formulize")." WHERE id_form = $fid";
+  $res = icms::$xoopsDB->query($sql);
+  $array = icms::$xoopsDB->fetchArray($res);
   $thisElementObject->setVar('ele_order', $array['new_order'] + 1);
   $ele_caption = $thisElementObject->getVar('ele_caption');
   $ele_colhead = $thisElementObject->getVar('ele_colhead');
@@ -184,14 +183,14 @@ if($_POST['cloneelement']) {
   }
   $element_handler->insert($thisElementObject);
   $ele_id = $thisElementObject->getVar('ele_id');
-  $fieldStateSQL = "SHOW COLUMNS FROM " . $xoopsDB->prefix("formulize_" . $thisElementObject->getVar('form_handle')) ." LIKE '$oldHandle'"; // note very odd use of LIKE as a clause of its own in SHOW statements, very strange, but that's what MySQL does
-  	if(!$fieldStateRes = $xoopsDB->query($fieldStateSQL)) {
+  $fieldStateSQL = "SHOW COLUMNS FROM " . icms::$xoopsDB->prefix("formulize_" . $thisElementObject->getVar('form_handle')) ." LIKE '$oldHandle'"; // note very odd use of LIKE as a clause of its own in SHOW statements, very strange, but that's what MySQL does
+  if(!$fieldStateRes = icms::$xoopsDB->query($fieldStateSQL)) {
 		$dataType = "text";
 	} else {
-		$fieldStateData = $xoopsDB->fetchArray($fieldStateRes);
+		$fieldStateData = icms::$xoopsDB->fetchArray($fieldStateRes);
 		$dataType = $fieldStateData['Type'];
 	}
-  $form_handler->insertElementField($thisElementObject, $dataType); 
+  $form_handler->insertElementField($thisElementObject, $dataType);
   print "/* eval */ window.location = '".XOOPS_URL."/modules/formulize/admin/ui.php?page=element&ele_id=$ele_id&aid=".intval($_POST['aid'])."';";
 }
 

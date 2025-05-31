@@ -84,7 +84,6 @@ global $xoopsConfig;
 	}
 
 
-global $xoopsDB;
 include_once XOOPS_ROOT_PATH.'/modules/formulize/include/functions.php';
 
 	// Set some required variables

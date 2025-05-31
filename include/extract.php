@@ -49,11 +49,10 @@ function connect($host, $username, $password, $db) {
 // WARNING:  HIGHLY INEFFICIENT IN TERMS OF MEMORY USAGE!
 // returns a multidimensioned array where the first index is the row of the result and the second index is the field name in that row
 function go($query, $keyfield="") {
-	global $xoopsDB;
 	//print "$query"; // debug code
 	$result = array();
-	if($res = $xoopsDB->query($query)) { // appears to work OK inside Drupal.  Is this because there is always a previous query to the XOOPS DB before we get to this stage, and so it is pointing to the right place when this fires?  Maybe this should be rewritten to explicitly check for the pressence of $xoopsDB, and use that if it is found.
-		while ($array = $xoopsDB->fetchBoth($res)) {
+	if($res = icms::$xoopsDB->query($query)) { // appears to work OK inside Drupal.  Is this because there is always a previous query to the XOOPS DB before we get to this stage, and so it is pointing to the right place when this fires?  Maybe this should be rewritten to explicitly check for the pressence of icms::$xoopsDB, and use that if it is found.
+		while ($array = icms::$xoopsDB->fetchBoth($res)) {
 			if($keyfield) {
 				$result[$array[$keyfield]] = $array;
 			} else {
@@ -93,8 +92,6 @@ function extract_makeUidFilter($users) {
 // id_req and ffcaption only used for converting 'other' values
 function prepvalues($value, $field, $entry_id) {
 
-  global $xoopsDB;
-
   // return metadata values without putting them in an array
   if($field == "creation_uid" OR $field == "mod_uid" OR $field == "creation_datetime" OR $field == "mod_datetime" OR $field=="email" OR $field=="user_viewemail") {
      return $value;
@@ -118,8 +115,8 @@ function prepvalues($value, $field, $entry_id) {
   // decrypt encrypted values...pretty inefficient to do this here, one query in the DB per value to decrypt them....but we'd need proper select statements with field names specified in them, instead of *, in order to be able to swap in the AES DECRYPT at the time the data is retrieved in the master query
 	if($elementArray['ele_encrypt']) {
 		 $decryptSQL = "SELECT AES_DECRYPT('".icms::$xoopsDB->escape($value)."', '".getAESPassword()."')";
-		 if($decryptResult = $xoopsDB->query($decryptSQL)) {
-					$decryptRow = $xoopsDB->fetchRow($decryptResult);
+		 if($decryptResult = icms::$xoopsDB->query($decryptSQL)) {
+					$decryptRow = icms::$xoopsDB->fetchRow($decryptResult);
 					return $decryptRow[0];
 		 } else {
 					return "";
@@ -152,11 +149,11 @@ function prepvalues($value, $field, $entry_id) {
 					} else {
 							 $sql = "SELECT `".$sourceMeta[1]."` FROM ".DBPRE."formulize_".$sourceFormObject->getVar('form_handle')." WHERE entry_id IN (".trim($value, ",").") ORDER BY entry_id";
 					}
-          if(!$res = $xoopsDB->query($sql)) {
+          if(!$res = icms::$xoopsDB->query($sql)) {
                print "Error: could not retrieve the source values for a linked selectbox during data extraction for entry number $entry_id.  SQL:<br>$sql<br>";
           } else {
                $value = "";
-               while($row = $xoopsDB->fetchRow($res)) {
+               while($row = icms::$xoopsDB->fetchRow($res)) {
                     $value .= "*=+*:" . $row[0];
                }
           }
@@ -240,8 +237,6 @@ function getData($framework, $form, $filter="", $andor="AND", $scope="", $limitS
      
      if(!$cacheKey) { return getDataCached($framework, $form, $filter, $andor, $scope, $limitStart, $limitSize, $sortField, $sortOrder, $forceQuery, $mainFormOnly, $includeArchived, $dbTableUidField, $id_reqsOnly, $resultOnly, $filterElements); }
 
-     global $xoopsDB;
-
      if(substr($filter, 0, 7) == "SELECT ") { // a proper SQL statement has been passed in so use that instead of constructing one...initially added for the new export feature
 	  $result = dataExtraction(intval($framework), intval($form), $filter);
 	  return $result;
@@ -264,8 +259,8 @@ function getData($framework, $form, $filter="", $andor="AND", $scope="", $limitS
      // check to see if this form is a "tableform", ie: a reference to plain db table
      $isTableForm = false;
      if(is_numeric($form)) {
-          $checkTableForm = $xoopsDB->query("SELECT tableform, desc_form FROM ".DBPRE."formulize_id WHERE id_form=$form");
-          $tableFormRow = $xoopsDB->fetchRow($checkTableForm);
+          $checkTableForm = icms::$xoopsDB->query("SELECT tableform, desc_form FROM ".DBPRE."formulize_id WHERE id_form=$form");
+          $tableFormRow = icms::$xoopsDB->fetchRow($checkTableForm);
           $isTableForm = $tableFormRow[0] == "" ? false : true;
      }
      
@@ -300,7 +295,6 @@ function getDataCached($framework, $form, $filter="", $andor="AND", $scope="", $
 
 
 function dataExtraction($frame="", $form, $filter, $andor, $scope, $limitStart, $limitSize, $sortField, $sortOrder, $forceQuery, $mainFormOnly, $includeArchived=false, $id_reqsOnly=false, $resultOnly=false, $filterElements=null) {
-     global $xoopsDB;
      
      $limitStart = intval($limitStart);
      $limitSize = intval($limitSize);
@@ -502,7 +496,6 @@ function dataExtraction($frame="", $form, $filter, $andor, $scope, $limitStart, 
 	       }
 	       
 	       // create the per-group filters, if any, that apply to this user...only available when all XOOPS is invoked, not available when extract.php is being direct included
-					global $xoopsDB;
 					$perGroupFilter = "";
 					$perGroupFiltersPerForms = array(); // used with exists clauses and other per-form situations
 					if($xoopsDB) {
@@ -625,8 +618,8 @@ function dataExtraction($frame="", $form, $filter, $andor, $scope, $limitStart, 
 	       $countMasterResults .= "$userJoinText $otherPerGroupFilterJoins WHERE main.entry_id>0 $mainFormWhereClause $scopeFilter $otherPerGroupFilterWhereClause ";
          $countMasterResults .= $existsJoinText ? " AND ($existsJoinText) " : "";
 				 $countMasterResults .= isset($perGroupFiltersPerForms[$fid]) ? $perGroupFiltersPerForms[$fid] : "";
-	       if($countMasterResultsRes = $xoopsDB->query($countMasterResults)) {
-           $countMasterResultsRow = $xoopsDB->fetchRow($countMasterResultsRes);
+	       if($countMasterResultsRes = icms::$xoopsDB->query($countMasterResults)) {
+           $countMasterResultsRow = icms::$xoopsDB->fetchRow($countMasterResultsRes);
            if($countMasterResultsRow[0] > $formulize_LOE_limit AND $formulize_LOE_limit > 0 AND !$forceQuery AND !$limitClause) {
              return $countMasterResultsRow[0];
            } else {
@@ -638,7 +631,7 @@ function dataExtraction($frame="", $form, $filter, $andor, $scope, $limitStart, 
 						 }
            }
 	       } else {
-		       exit("Error: could not count master results.<br>".$xoopsDB->error()."<br>SQL:$countMasterResults<br>");
+		       exit("Error: could not count master results.<br>" . icms::$xoopsDB->error()."<br>SQL:$countMasterResults<br>");
 	       }
          
          // now, if there's framework in effect, get the entry ids of the entries in the main form that match the criteria, so we can use a specific query for them instead of the order clause in the master query
@@ -662,9 +655,9 @@ function dataExtraction($frame="", $form, $filter, $andor, $scope, $limitStart, 
                  $thisOrderByClause = $orderByClause;
               }
               $entryIdQuery .= " $thisOrderByClause $limitClause";
-	       $entryIdResult = $xoopsDB->query($entryIdQuery);
+	       $entryIdResult = icms::$xoopsDB->query($entryIdQuery);
 	       $start = true;
-	       while($entryIdValue = $xoopsDB->fetchArray($entryIdResult)) {
+	       while($entryIdValue = icms::$xoopsDB->fetchArray($entryIdResult)) {
 		     $limitByEntryId .= !$start ? " OR " : "";
 		     $limitByEntryId .= "main.entry_id = " . $entryIdValue['main_entry_id'];
 		     $start = false;
@@ -782,7 +775,7 @@ function dataExtraction($frame="", $form, $filter, $andor, $scope, $limitStart, 
      if(count($linkformids)>1) { // AND $dummy=="never") { // when there is more than 1 joined form, we can get an exponential explosion of records returned, because SQL will give you all combinations of the joins, so we create a series of queries that will each handle the main form plus one of the linked forms, then we put all the data together into a single result set below
 	  
          if($resultOnly) {
-	       $masterQueryRes = $xoopsDB->query($masterQuerySQL);
+	       $masterQueryRes = icms::$xoopsDB->query($masterQuerySQL);
 	 } else {
 	         $timestamp = str_replace(".","",microtime(true));
 		 if(!$sortIsOnMain) {
@@ -790,13 +783,13 @@ function dataExtraction($frame="", $form, $filter, $andor, $scope, $limitStart, 
 		 } else {
 		    $creatTableSQL = "CREATE TABLE ".DBPRE."formulize_temp_extract_$timestamp ( `mastersort` BIGINT(11), `entry_id` BIGINT(11), PRIMARY KEY (`mastersort`), INDEX i_entry_id (`entry_id`) ) ENGINE=MyISAM;";
 		 }
-		 $createTableRes = $xoopsDB->queryF($creatTableSQL);
-		 $gatherIdsRes = $xoopsDB->queryF(str_replace("REPLACEWITHTIMESTAMP",$timestamp,$masterQuerySQL));
+		 $createTableRes = icms::$xoopsDB->queryF($creatTableSQL);
+		 $gatherIdsRes = icms::$xoopsDB->queryF(str_replace("REPLACEWITHTIMESTAMP",$timestamp,$masterQuerySQL));
 		 $linkQueryRes = array();
 	         if(isset($exportOverrideQueries[2])) {
 		    for($i=2;$i<count($exportOverrideQueries);$i++) {
 			 $sql = str_replace("REPLACEWITHTIMESTAMP",$timestamp,$exportOverrideQueries[$i]);
-			 $linkQueryRes[] = $xoopsDB->query($sql);
+			 $linkQueryRes[] = icms::$xoopsDB->query($sql);
 		    }
 		 } else {
 		    // FURTHER OPTIMIZATIONS ARE POSSIBLE HERE...WE COULD NOT INCLUDE THE MAIN FORM AGAIN IN ALL THE SELECTS, THAT WOULD IMPROVE THE PROCESSING TIME A BIT, BUT WE WOULD HAVE TO CAREFULLY REFACTOR MORE OF THE LOOPING CODE BELOW THAT PARSES THE ENTRIES, BECAUSE RIGHT NOW IT'S ASSUMING THE FULL MAIN ENTRY IS PRESENT.  AT LEAST THE MAIN ENTRY ID WOULD NEED TO STILL BE USED, SINCE WE USE THAT TO SYNCH UP ALL THE ENTRIES FROM THE OTHER FORMS.
@@ -820,15 +813,15 @@ function dataExtraction($frame="", $form, $filter, $andor, $scope, $limitStart, 
 			      }
 			 }
 			 $linkQuery .= " ORDER BY sort_and_limit_table.mastersort";
-			  $linkQueryRes[] = $xoopsDB->query(str_replace("REPLACEWITHTIMESTAMP",$timestamp,$linkQuery));
+			  $linkQueryRes[] = icms::$xoopsDB->query(str_replace("REPLACEWITHTIMESTAMP",$timestamp,$linkQuery));
 			  $GLOBALS['formulize_queryForExport'] .= " -- SEPARATOR FOR EXPORT QUERIES -- ".$linkQuery;
 		    }
 		 }
-	         $dropRes = $xoopsDB->queryF("DROP TABLE ".DBPRE."formulize_temp_extract_$timestamp");
+	         $dropRes = icms::$xoopsDB->queryF("DROP TABLE ".DBPRE."formulize_temp_extract_$timestamp");
 		 
 	 }
      } else {
-         $masterQueryRes = $xoopsDB->query($masterQuerySQL);
+         $masterQueryRes = icms::$xoopsDB->query($masterQuerySQL);
      }
 
     if($resultOnly) {
@@ -856,10 +849,10 @@ function dataExtraction($frame="", $form, $filter, $andor, $scope, $limitStart, 
      $sql = "SELECT t1.ele_value, t2.desc_form, t1.ele_handle, t2.id_form FROM ".DBPRE."formulize as t1, ".DBPRE."formulize_id as t2 WHERE t1.ele_type='derived' AND (t1.id_form='$fid' $linkFormIdsFilter ) AND t1.id_form=t2.id_form ORDER BY t1.ele_order";
      
      $derivedFieldMetadata = array();
-     if($res = $xoopsDB->query($sql)) {
+     if($res = icms::$xoopsDB->query($sql)) {
           if($xoopsDB->getRowsNum($res)>0) {
                $multipleIndexer = array();
-               while($row = $xoopsDB->fetchRow($res)) {
+               while($row = icms::$xoopsDB->fetchRow($res)) {
                     $ele_value = unserialize($row[0]); // derived fields have ele_value as an array with only one element (that was done to future proof the data model, so we could add other things to ele_value if necessary)
                     if(!isset($multipleIndexer[$row[1]])) { $multipleIndexer[$row[1]] = 0; }
                     $derivedFieldMetadata[$row[1]][$multipleIndexer[$row[1]]]['formula'] = $ele_value[0]; // use row[1] (the form handle) as the key, so we can eliminate some looping later on
@@ -895,7 +888,7 @@ function dataExtraction($frame="", $form, $filter, $andor, $scope, $limitStart, 
 	       $prevFormAlias = "";
 	       $prevMainId = "";
 
-	       while($masterQueryArray = $xoopsDB->fetchArray($thisRes)) {
+	       while($masterQueryArray = icms::$xoopsDB->fetchArray($thisRes)) {
 		    
 		    foreach($masterQueryArray as $field=>$value) {
 			 if($field == "entry_id" OR $field == "creation_uid" OR $field == "mod_uid" OR $field == "creation_datetime" OR $field == "mod_datetime" OR $field == "main_email" OR $field == "main_user_viewemail") { continue; } // ignore those plain fields, since we can only work with the ones that are properly aliased to their respective tables.  More details....Must refer to metadata fields by aliases only!  since * is included in SQL syntax, fetch_assoc will return plain column names from all forms with the values from those columns.....Also want to ignore the email fields, since the fact they're prefixed with "main" can throwoff the calculation of which entry we're currently writing
@@ -1008,7 +1001,7 @@ function dataExtraction($frame="", $form, $filter, $andor, $scope, $limitStart, 
 	  $prevFormAlias = "";
 	  $prevMainId = "";
 		      //formulize_benchmark("About to prepare results.");
-	  while($masterQueryArray = $xoopsDB->fetchArray($masterQueryRes)) {
+	  while($masterQueryArray = icms::$xoopsDB->fetchArray($masterQueryRes)) {
 	     //formulize_benchmark("Starting to process one entry.");
 	       foreach($masterQueryArray as $field=>$value) {
 		    //formulize_benchmark("Starting to process one value");
@@ -1139,7 +1132,6 @@ function formulize_getFormIdFromName($nameHandle) {
 // THIS FUNCTION BREAKS DOWN THE FILTER STRING INTO ITS COMPONENTS.  TAKES EVERYTHING UP TO THE TOP LEVEL ARRAY SYNTAX.
 // $linkfids is the linked fids in order that they appear in the SQL query
 function formulize_parseFilter($filtertemp, $andor, $linkfids, $fid, $frid) {
-     global $xoopsDB;
      if($filtertemp == "") { return array(0=>array(), "", ""); }
      
      $formFieldFilterMap = array();
@@ -1296,7 +1288,6 @@ function formulize_parseFilter($filtertemp, $andor, $linkfids, $fid, $frid) {
 			      $sourceFormObject = $form_handler->get($sourceMeta[0]);
 			      if($ifParts[1] == "PERGROUPFILTER") {
 				 // invoke the per group filter that applies to the form that we are pointing to...if XOOPS is in effect (ie: we're not included directly in other code as per Formulize 1)
-				 global $xoopsDB;
 				 if($xoopsDB) {
 				   $form_handler = icms_getModuleHandler('forms', 'formulize');
 				   $otherpgfCount = count($otherPerGroupFilterJoins) + 1;
@@ -1318,10 +1309,10 @@ function formulize_parseFilter($filtertemp, $andor, $linkfids, $fid, $frid) {
                          } else {
                               $preSearch = "SELECT uid FROM " . DBPRE . "users WHERE uid ".$operator.$quotes.$likebits.$ifParts[1].$likebits.$quotes;
                          }
-                         $preSearchResult = $xoopsDB->query($preSearch);
+                         $preSearchResult = icms::$xoopsDB->query($preSearch);
                          if($xoopsDB->getRowsNum($preSearchResult)>0) {
 															$nameSearchStart = true;
-                              while($preSearchArray = $xoopsDB->fetchArray($preSearchResult)) {
+                              while($preSearchArray = icms::$xoopsDB->fetchArray($preSearchResult)) {
 																	 if(!$nameSearchStart) {
 																				$newWhereClause .= "OR";
 																	 } else {
@@ -1421,7 +1412,6 @@ function prepareElementMetaData($frid, $fid, $linkfids, $ifPartsZero, $formField
 // THIS FUNCTION TAKES AN ELEMENT AND COMPILES THE FORM, ELEMENT MAP, NECESSARY FOR KNOWING ALL WE NEED TO KNOW ABOUT THE ELEMENT
 // needs work...?  if we can pass in the element_id, it should be OK
 function formulize_mapFormFieldFilter($element_id, $formFieldFilterMap) {
-     global $xoopsDB;
      $foundForm = false;
      foreach($formFieldFilterMap as $fid=>$formData) { // check if the element has already been mapped and if so, what is the form
           if(isset($formData[$element_id])) {
@@ -1430,8 +1420,8 @@ function formulize_mapFormFieldFilter($element_id, $formFieldFilterMap) {
      }
      if(!$foundForm) {
           //$sql = "SELECT id_form, ele_value, ele_type FROM " . DBPRE . "formulize WHERE ele_id = " . intval($element_id);
-          //$res = $xoopsDB->query($sql);
-          //$array = $xoopsDB->fetchArray($res);
+          //$res = icms::$xoopsDB->query($sql);
+          //$array = icms::$xoopsDB->fetchArray($res);
           $array = formulize_getElementMetaData($element_id);
           if(strstr($array['ele_value'], "#*=:*")) {
                $ele_value = unserialize($array['ele_value']);
@@ -1522,7 +1512,6 @@ function formulize_getJoinHandles($elementArrays) {
 // first param is the id or handle being asked for, second param is a flag showing whether the first param should be interpretted as an id or a handle
 // fid param is only used when this function is called near the start of the extraction layer, when we initialize the cachedElement map for each form that is in use
 function formulize_getElementMetaData($elementOrHandle, $isHandle=false, $fid=0) {
-     global $xoopsDB;
      static $cachedElements = array();
      $cacheType = $isHandle ? 'handles' : 'ids';
      if(!isset($cachedElements[$cacheType][$elementOrHandle])) {
@@ -1532,8 +1521,8 @@ function formulize_getElementMetaData($elementOrHandle, $isHandle=false, $fid=0)
                $whereClause = $isHandle ? "ele_handle = '".icms::$xoopsDB->escape($elementOrHandle)."'" : "ele_id = ".intval($elementOrHandle);
           }
           $elementValueQ = "SELECT ele_value, ele_type, ele_id, ele_handle, id_form, ele_uitext, ele_caption, ele_colhead, ele_encrypt FROM " . DBPRE . "formulize WHERE $whereClause";
-          $evqRes = $xoopsDB->query($elementValueQ);
-          while($evqRow = $xoopsDB->fetchArray($evqRes)) {
+          $evqRes = icms::$xoopsDB->query($elementValueQ);
+          while($evqRow = icms::$xoopsDB->fetchArray($evqRes)) {
                $cachedElements['handles'][$evqRow['ele_handle']] = $evqRow; // cached the element according to handle and id, so we don't repeat the same query later just because we're asking for info about the same element in a different way
                $cachedElements['ids'][$evqRow['ele_id']] = $evqRow;
           }
@@ -1547,7 +1536,6 @@ function formulize_getElementMetaData($elementOrHandle, $isHandle=false, $fid=0)
 // Odd results may occur when a derived column is inside a subform in a framework!
 // Derived values should always be in the mainform only?
 function formulize_calcDerivedColumns($entry, $metadata, $frid, $fid) {
-     global $xoopsDB; // just used as a cue to see if XOOPS is active
      static $parsedFormulas = array();
      foreach($entry as $formHandle=>$record) {
 	  $formHandle = htmlspecialchars_decode($formHandle, ENT_QUOTES);
@@ -1639,14 +1627,13 @@ function formulize_convertCapOrColHeadToHandle($frid, $fid, $term) {
      // check first for a match in the colhead field, then in the caption field
      // once a match is found return the handle
      
-		 global $xoopsDB; // just used to check if XOOPS is in effect or not (in which case extract.php is being included directly)
      static $results_array = array();
      static $framework_results = array();
 		 static $formNames = array();
      $handle = "";
      $term = trim($term, "\"");
      
-		 if(strstr($term, "\$formName") AND $xoopsDB) { 		 // setup the name of the form and replace that value in the term, only when $xoopsDB is in effect, ie: full XOOPS stack
+		 if(strstr($term, "\$formName") AND icms::$xoopsDB) { 		 // setup the name of the form and replace that value in the term, only when icms::$xoopsDB is in effect, ie: full XOOPS stack
 					if(!isset($formNames[$fid])) {
 					  $form_handler = icms_getModuleHandler('forms', 'formulize');
 					  $formObject = $form_handler->get($fid);
@@ -1718,15 +1705,13 @@ function formulize_convertCapOrColHeadToHandle($frid, $fid, $term) {
 // SUPERSEDED BY THE "TABLEFORM" FEATURE
 function dataExtractionDB($table, $filter, $andor, $scope, $uidField) {
 
-	global $xoopsDB;
-
 	// numeric filters are assumed to be queries on the primary key
 	// string filters are assumed to be WHERE clauses -- note the obvious security issues with that!
 	$describe_query = "DESCRIBE $table";
-	$res = $xoopsDB->query($describe_query);
+	$res = icms::$xoopsDB->query($describe_query);
 	if($res) {
 
-		while($array = $xoopsDB->fetchArray($res)) {
+		while($array = icms::$xoopsDB->fetchArray($res)) {
 			if($array['Key'] == "PRI") {
 				$primary_field = $array['Field'];
 				$break;
@@ -1745,10 +1730,10 @@ function dataExtractionDB($table, $filter, $andor, $scope, $uidField) {
 	}
 
 	$sql = "SELECT * FROM $table $where_clause";
-	$res = $xoopsDB->query($sql);
+	$res = icms::$xoopsDB->query($sql);
 	if($res) {
 		$indexer = 0;
-		while($array = $xoopsDB->fetchArray($res)) {
+		while($array = icms::$xoopsDB->fetchArray($res)) {
 			foreach($array as $field=>$value) {
 				if(is_numeric($field)) { continue; }
 				$masterresult[$indexer][$table][$array[$primary_field]][$field] = $value;
@@ -1764,8 +1749,6 @@ function dataExtractionDB($table, $filter, $andor, $scope, $uidField) {
 // THIS FUNCTION DOES A SIMPLE QUERY AGAINST A TABLE IN THE DATABASE AND RETURNS THE RESULT IN STANDARD "GETDATA" FORMAT
 function dataExtractionTableForm($tablename, $formname, $fid, $filter, $andor, $limitStart, $limitSize, $sortField, $sortOrder) {
 
-     global $xoopsDB;
-
      // 2. parse the filter
      // 3. construct the where clause based on the filter and andor
      // 4. do the query
@@ -1774,11 +1757,11 @@ function dataExtractionTableForm($tablename, $formname, $fid, $filter, $andor, $
 
      // setup a translation table for the formulize records of the fields, so we can use that lower down in several places
      $sql = "SELECT ele_id, ele_caption FROM ".DBPRE."formulize WHERE id_form=".intval($fid);
-     $res = $xoopsDB->query($sql);
+     $res = icms::$xoopsDB->query($sql);
      $elementsById = array();
      $elementsByCaption = array();
      $elementsByField = array();
-     while($array = $xoopsDB->fetchArray($res)) {
+     while($array = icms::$xoopsDB->fetchArray($res)) {
           $field = str_replace(" " , "_", str_replace("`", "'", $array['ele_caption']));
           $id = $array['ele_id'];
           $caption = $array['ele_caption'];
@@ -1827,13 +1810,13 @@ function dataExtractionTableForm($tablename, $formname, $fid, $filter, $andor, $
 					$sql .= " LIMIT $limitStart,$limitSize ";
 		 }
      //print "<br>$sql<br>";
-     $res = $xoopsDB->query($sql);
+     $res = icms::$xoopsDB->query($sql);
      $result = array();
      $indexer = 0;
      // result syntax is:
      // [id][title of form][primary id -- meaningless in tableforms, until we need to edit entries][formulize element id][value id]
      // package up data in the format we need it
-     while($array = $xoopsDB->fetchArray($res)) {
+     while($array = icms::$xoopsDB->fetchArray($res)) {
           foreach($elementsByField as $field=>$fieldDetails) {
                $result[$indexer][$formname][$indexer][$elementsByField[$field]['id']][] = $array[$field];
           }
@@ -1842,8 +1825,8 @@ function dataExtractionTableForm($tablename, $formname, $fid, $filter, $andor, $
 		 
 		 // count master results
 		 $countSQL = str_replace("SELECT * FROM", "SELECT count(*) FROM", $basesql);
-		 $countRes = $xoopsDB->query($countSQL);
-		 $countRow = $xoopsDB->fetchRow($countRes);
+		 $countRes = icms::$xoopsDB->query($countSQL);
+		 $countRow = icms::$xoopsDB->fetchRow($countRes);
 		 $GLOBALS['formulize_countMasterResults'] = $countRow[0];
 		 if(isset($GLOBALS['formulize_getCountForPageNumbers'])) {
 					$GLOBALS['formulize_countMasterResultsForPageNumbers'] = $countRow[0];
@@ -2101,13 +2084,12 @@ function internalRecordIds($entry, $formhandle="", $id="NULL", $fidAsKeys = fals
 
 // this function takes a formhandle and if it's numeric, returns the title for that form
 function _parseInternalRecordIdsFormHandle($formhandle) {
-     global $xoopsDB;
      if(!is_numeric($formhandle)) { return $formhandle; }
      static $cachedDescForm = array();
      if(!isset($cachedDescForm[$formhandle])) {
           $sql = "SELECT desc_form FROM ".DBPRE."formulize_id WHERE id_form=".intval($formhandle);
-          $res = $xoopsDB->query($sql);
-          $array = $xoopsDB->fetchArray($res);
+          $res = icms::$xoopsDB->query($sql);
+          $array = icms::$xoopsDB->fetchArray($res);
           $cachedDescForm[$formhandle] = $array['desc_form'];
      }
      return $cachedDescForm[$formhandle];
@@ -2200,9 +2182,9 @@ function countHits($entry, $handle, $word) {
 // if XOOPS has not already connected to the database, then connect to it now using user defined constants that are set in another file
 // the idea is to include this file from another one
 
-global $xoopsDB, $myts;
+global $myts;
 
-if(!$xoopsDB) {
+if(!icms::$xoopsDB) {
 	// SET DB PREFIX -- must be done for each installation if the installation uses a prefix other than "xoops_"
 	define("DBPRE", "xoops_");
 	connect(DBHOST, DBUSER, DBPASS, DBNAME);
@@ -2230,7 +2212,7 @@ if(!$xoopsDB) {
 	define('XOOPS_ROOT_PATH', str_replace("modules\formulize\include\extract.php", "", $basePath));
 	
 } else {
-	define("DBPRE", $xoopsDB->prefix('') . "_");
+	define("DBPRE", icms::$xoopsDB->prefix('') . "_");
 	if(!defined("_formulize_OPT_OTHER")) {
 		global $xoopsConfig;
 		switch($xoopsConfig['language']) {

@@ -67,7 +67,6 @@ function displayGrid($fid, $entry="", $rowcaps, $colcaps, $title="", $orientatio
 	include_once XOOPS_ROOT_PATH.'/modules/formulize/include/functions.php';
 	include_once XOOPS_ROOT_PATH.'/modules/formulize/include/elementdisplay.php';
 	include_once XOOPS_ROOT_PATH.'/modules/formulize/class/data.php';
-	global $xoopsDB;
 	$numcols = count($colcaps);
 	if(is_array($finalCell)) {
 		$numcols = $numcols+2;
@@ -105,15 +104,15 @@ function displayGrid($fid, $entry="", $rowcaps, $colcaps, $title="", $orientatio
 	if(!$entry) { $entry = "new"; }
 	// figure out where we are supposed to start in the form
 	if(!is_numeric($startID) AND $startID !== "first") {
-		$order_query = q("SELECT ele_order FROM " . $xoopsDB->prefix("formulize") . " WHERE ele_caption = \"$startID\" AND id_form=\"$fid\"");
+		$order_query = q("SELECT ele_order FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE ele_caption = \"$startID\" AND id_form=\"$fid\"");
 	} elseif($startID === "first") { // get the ele_id of the element with the lowest weight
-		$order_query = q("SELECT ele_order FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form=\"$fid\" ORDER BY ele_order LIMIT 0,1");
+		$order_query = q("SELECT ele_order FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form=\"$fid\" ORDER BY ele_order LIMIT 0,1");
 	} else {
-		$order_query = q("SELECT ele_order FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form=\"$fid\" AND ele_id =\"$startID\"");
+		$order_query = q("SELECT ele_order FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form=\"$fid\" AND ele_id =\"$startID\"");
 	}
 	$starting_order = $order_query[0]['ele_order'];
 	// gather the element IDs that are to be displayed, in order (include to the end of the form, whereas we actually only will display until we run out of cells)
-	$element_ids_query = q("SELECT ele_id FROM " . $xoopsDB->prefix("formulize") . " WHERE ele_order >= '$starting_order' AND id_form='$fid' AND ele_type != 'subform' ORDER BY ele_order");
+	$element_ids_query = q("SELECT ele_id FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE ele_order >= '$starting_order' AND id_form='$fid' AND ele_type != 'subform' ORDER BY ele_order");
 
 	// initialize form
 	if(!$calledInternal) {

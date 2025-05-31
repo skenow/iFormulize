@@ -44,10 +44,10 @@ if($aid == 0) {
 $elements = array();
 
 // retrieve the names and ids of all forms, and create the form options for the Add Form section
-	$formsq = "SELECT id_form, desc_form FROM " . $xoopsDB->prefix("formulize_id") . " ORDER BY desc_form";
-	$res = $xoopsDB->query($formsq);
+	$formsq = "SELECT id_form, desc_form FROM " . icms::$xoopsDB->prefix("formulize_id") . " ORDER BY desc_form";
+	$res = icms::$xoopsDB->query($formsq);
   $i = 0;
-	while($array = $xoopsDB->fetchArray($res)) {
+	while($array = icms::$xoopsDB->fetchArray($res)) {
 		$common['formoptions'][$i]['value'] = $array['id_form'];
 		$common['formoptions'][$i]['name'] = $array['desc_form'];
     $i++;
@@ -69,10 +69,10 @@ if($_GET['frid'] != "new") {
 	$formulize_mgr =& icms_getModuleHandler('elements');
 
 	// get a list of all the linked select boxes since we need to know if any fields in these two forms are the source for any links
-	$getlinksq = "SELECT id_form, ele_caption, ele_id, ele_handle FROM " . $xoopsDB->prefix("formulize") . " WHERE ele_type=\"select\" AND ele_value LIKE '%#*=:*%' ORDER BY id_form";
+	$getlinksq = "SELECT id_form, ele_caption, ele_id, ele_handle FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE ele_type=\"select\" AND ele_value LIKE '%#*=:*%' ORDER BY id_form";
 	// print "$getlinksq<br>";
-	$resgetlinksq = $xoopsDB->query($getlinksq);
-	while ($rowlinksq = $xoopsDB->fetchRow($resgetlinksq))
+	$resgetlinksq = icms::$xoopsDB->query($getlinksq);
+	while ($rowlinksq = icms::$xoopsDB->fetchRow($resgetlinksq))
 	{
 		//print_r($rowlinksq);
 		//print "<br>";
@@ -93,9 +93,9 @@ if($_GET['frid'] != "new") {
 				$source_form_ids[] = $details[0];
 
 				//get the element ID for the source we've just found
-				$sourceq = "SELECT ele_id, ele_caption FROM " . $xoopsDB->prefix("formulize") . " WHERE ele_handle = '" . icms::$xoopsDB->escape($details[1]) . "' AND id_form = '$details[0]'";
-				if($ressourceq = $xoopsDB->query($sourceq)) {
-					$rowsourceq = $xoopsDB->fetchRow($ressourceq);
+				$sourceq = "SELECT ele_id, ele_caption FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE ele_handle = '" . icms::$xoopsDB->escape($details[1]) . "' AND id_form = '$details[0]'";
+				if($ressourceq = icms::$xoopsDB->query($sourceq)) {
+					$rowsourceq = icms::$xoopsDB->fetchRow($ressourceq);
 					$source_ele_ids[] = $rowsourceq[0];
 					$source_captions[] = $rowsourceq[1];
 				} else {
@@ -131,13 +131,13 @@ if($_GET['frid'] != "new") {
     $links[$li]['form1_id'] = printSmart($relationshipLink->getVar('form1'));
     $links[$li]['form2_id'] = printSmart($relationshipLink->getVar('form2'));
     // get names of forms in the link
-    $name1q = "SELECT desc_form FROM " . $xoopsDB->prefix("formulize_id") . " WHERE id_form = '" . $links[$li]['form1_id'] . "'";
-    $res = $xoopsDB->query($name1q);
-    $row = $xoopsDB->fetchRow($res);
+    $name1q = "SELECT desc_form FROM " . icms::$xoopsDB->prefix("formulize_id") . " WHERE id_form = '" . $links[$li]['form1_id'] . "'";
+    $res = icms::$xoopsDB->query($name1q);
+    $row = icms::$xoopsDB->fetchRow($res);
     $form1 = $row[0];
-    $name2q = "SELECT desc_form FROM " . $xoopsDB->prefix("formulize_id") . " WHERE id_form = '" . $links[$li]['form2_id'] . "'";
-    $res = $xoopsDB->query($name2q);
-    $row = $xoopsDB->fetchRow($res);
+    $name2q = "SELECT desc_form FROM " . icms::$xoopsDB->prefix("formulize_id") . " WHERE id_form = '" . $links[$li]['form2_id'] . "'";
+    $res = icms::$xoopsDB->query($name2q);
+    $row = icms::$xoopsDB->fetchRow($res);
     $form2 = $row[0];
     $links[$li]['form1'] = printSmart($form1);
     $links[$li]['form2'] = printSmart($form2);

@@ -65,7 +65,7 @@ if($formObject->getVar('lockedform')) {
 	redirect_header("formindex.php",3,_NO_PERM);
 }
 
-	$sql="SELECT desc_form FROM ".$xoopsDB->prefix("formulize_id")." WHERE id_form = ".$title;
+	$sql="SELECT desc_form FROM " . icms::$xoopsDB->prefix("formulize_id")." WHERE id_form = ".$title;
 	$res = icms::$xoopsDB->queryF( $sql );
 
 if ( $res ) {
@@ -100,7 +100,7 @@ if ($op != 1) {
 
 else
 {
-	global $xoopsDB, $_POST, $myts, $eh, $desc_form, $title2;
+	global $_POST, $myts, $eh, $desc_form, $title2;
 	$title2 = $myts->makeTboxData4Save($_POST["title2"]);
 	//$title3 = $myts->makeTboxData4Save($_POST["desc_form3"]);
 	if (empty($title)) {
@@ -108,10 +108,10 @@ else
 	}
 	$title2 = icms::$xoopsDB->escape($title2);
 		
-	$sql = sprintf("UPDATE %s SET desc_form='%s' WHERE id_form='%s'", $xoopsDB->prefix("formulize_id"),$title2, intval($title));
-	$xoopsDB->queryF($sql) or $eh->show("error insertion 1 dans renform");
+	$sql = sprintf("UPDATE %s SET desc_form='%s' WHERE id_form='%s'", icms::$xoopsDB->prefix("formulize_id"),$title2, intval($title));
+ icms::$xoopsDB->queryF($sql) or $eh->show("error insertion 1 dans renform");
 	
-	$sql2 = sprintf("UPDATE %s SET itemname='%s',itemurl='%s' WHERE itemname='%s'", $xoopsDB->prefix("formulize_menu"), $title2, XOOPS_URL.'/modules/formulize/index.php?title='.$title2, icms::$xoopsDB->escape($desc_form));
-	$xoopsDB->query($sql2) or $eh->show("error insertion 2 dans renform");
+	$sql2 = sprintf("UPDATE %s SET itemname='%s',itemurl='%s' WHERE itemname='%s'", icms::$xoopsDB->prefix("formulize_menu"), $title2, XOOPS_URL.'/modules/formulize/index.php?title='.$title2, icms::$xoopsDB->escape($desc_form));
+ icms::$xoopsDB->query($sql2) or $eh->show("error insertion 2 dans renform");
 	redirect_header("formindex.php",1,_formulize_FORMMOD);
 }

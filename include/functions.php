@@ -32,20 +32,20 @@
 
 // Added Oct. 16 2006
 // setup flag for whether the Freeform Solutions user archiving patch has been applied to the core
-global $xoopsDB, $xoopsConfig, $icmsConfig;
-$sql = "SELECT * FROM " . $xoopsDB->prefix("users") . " LIMIT 0,1";
-if($res = $xoopsDB->query($sql)) {
-  $resarray = $xoopsDB->fetchArray($res);
+global $xoopsConfig, $icmsConfig;
+$sql = "SELECT * FROM " . icms::$xoopsDB->prefix("users") . " LIMIT 0,1";
+if($res = icms::$xoopsDB->query($sql)) {
+  $resarray = icms::$xoopsDB->fetchArray($res);
   $GLOBALS['formulize_archived_available'] = isset($resarray['archived']) ? true : false;
 } else {
   $GLOBALS['formulize_archived_available'] = false;
 }
 
 $testsql = "SHOW TABLES";
-$resultst = $xoopsDB->queryF($testsql);
+$resultst = icms::$xoopsDB->queryF($testsql);
 $GLOBALS['formulize_versionFourOrHigher'] = true;
-while($table = $xoopsDB->fetchRow($resultst)) {
-	if($table[0] == $xoopsDB->prefix("formulize_framework_elements")) {
+while($table = icms::$xoopsDB->fetchRow($resultst)) {
+	if($table[0] == icms::$xoopsDB->prefix("formulize_framework_elements")) {
 		$GLOBALS['formulize_versionFourOrHigher'] = false;
 		break;
 	}
@@ -64,11 +64,10 @@ include_once XOOPS_ROOT_PATH . "/modules/formulize/include/extract.php";
 
 // identify form or framework
 function getFormFramework($formframe, $mainform="") {
-	global $xoopsDB;
 
 	if(!empty($mainform)) { // a framework
 		if(!is_numeric($formframe)) {
-			$frameid = q("SELECT frame_id FROM " . $xoopsDB->prefix("formulize_frameworks") . " WHERE frame_name='" . icms::$xoopsDB->escape($formframe) . "'");
+			$frameid = q("SELECT frame_id FROM " . icms::$xoopsDB->prefix("formulize_frameworks") . " WHERE frame_name='" . icms::$xoopsDB->escape($formframe) . "'");
 			$frid = $frameid[0]['frame_id'];
 		} else {
 			$frid = $formframe;
@@ -76,7 +75,7 @@ function getFormFramework($formframe, $mainform="") {
 		if(!is_numeric($mainform)) {
 			// only a deprecated framework form handle would apply in this situation
 			if($GLOBALS['formulize_versionFourOrHigher'] == false) {
-				$formcheck = q("SELECT ff_form_id FROM " . $xoopsDB->prefix("formulize_framework_forms") . " WHERE ff_frame_id='$frid' AND ff_handle='" . icms::$xoopsDB->escape($mainform) . "'");
+				$formcheck = q("SELECT ff_form_id FROM " . icms::$xoopsDB->prefix("formulize_framework_forms") . " WHERE ff_frame_id='$frid' AND ff_handle='" . icms::$xoopsDB->escape($mainform) . "'");
 				if(isset($formcheck[0]['ff_form_id'])) {
 					$fid = $formcheck[0]['ff_form_id'];
 				} else {
@@ -98,7 +97,7 @@ function getFormFramework($formframe, $mainform="") {
 	} else { // a form
 		$frid = "";
 		if(!is_numeric($formframe)) { // if it's a title, convert to the id
-			$formid = q("SELECT id_form FROM " . $xoopsDB->prefix("formulize_id") . " WHERE desc_form = '" . icms::$xoopsDB->escape($formframe) . "'");
+			$formid = q("SELECT id_form FROM " . icms::$xoopsDB->prefix("formulize_id") . " WHERE desc_form = '" . icms::$xoopsDB->escape($formframe) . "'");
 			$fid = $formid[0]['id_form'];
 		} else {
 			$fid = $formframe;
@@ -121,7 +120,6 @@ function getFormTitle($fid) {
 // $requireAllGroups is a 0 or 1, and if it's a 1, then we need to match only users who are members of all the groups specified
 // $filter is the specified filters to run on the profile form, if any
 function gatherNames($groups, $nametype, $requireAllGroups=false, $filter=false) {
-	global $xoopsDB;
 	$member_handler =& icms::handler('icms_member');
 	$all_users = array();
   $usersByGroup = array();
@@ -198,7 +196,7 @@ function gatherNames($groups, $nametype, $requireAllGroups=false, $filter=false)
 	}
 	array_unique($all_users);
 	$filter = makeUidFilter($all_users);
-	$names = q("SELECT $nametype, uid FROM " . $xoopsDB->prefix("users") . " WHERE $filter ORDER BY $nametype");
+	$names = q("SELECT $nametype, uid FROM " . icms::$xoopsDB->prefix("users") . " WHERE $filter ORDER BY $nametype");
 	foreach($names as $name) {
 		$found_names[$name['uid']] = $name[$nametype];
 	}
@@ -219,7 +217,6 @@ function getCurrentURL() {
 
 // this function returns a human readable, comma separated list of group names, given a string of comma separated group ids
 function groupNameList($list, $obeyMemberOnlyFlag = true) {
-	global $xoopsDB;
 	$grouplist = explode(",", trim($list, ","));
   if($grouplist[0] == "onlymembergroups") { // first group might be a special key to tell us to limit the selected groups
     unset($grouplist[0]);
@@ -231,7 +228,7 @@ function groupNameList($list, $obeyMemberOnlyFlag = true) {
 	$start = 1;
 	foreach($grouplist as $gid) {
     if(!$obeyMemberOnlyFlag OR in_array($gid, $groups)) {
-      $groupnames = q("SELECT name FROM " . $xoopsDB->prefix("groups") . " WHERE groupid='$gid'");
+      $groupnames = q("SELECT name FROM " . icms::$xoopsDB->prefix("groups") . " WHERE groupid='$gid'");
       if($start) {
       	$names = $groupnames[0]['name'];
       	$start = 0;
@@ -249,10 +246,9 @@ function getSavedViewOwner($vid) {
   static $cachedOwners = array();
   $vid = intval($vid);
   if(!isset($cachedOwners[$vid])) {
-    global $xoopsDB;
-    $sql = "SELECT sv_owner_uid FROM " . $xoopsDB->prefix("formulize_saved_views") . " WHERE sv_id = $vid";
-    $result = $xoopsDB->query($sql);
-    $array = $xoopsDB->fetchArray($result);
+    $sql = "SELECT sv_owner_uid FROM " . icms::$xoopsDB->prefix("formulize_saved_views") . " WHERE sv_id = $vid";
+    $result = icms::$xoopsDB->query($sql);
+    $array = icms::$xoopsDB->fetchArray($result);
     $cachedOwners[$vid] = intval($array['sv_owner_uid']) > 0 ? intval($array['sv_owner_uid']) : false; // record "false" if sql failed
   }
   return $cachedOwners[$vid];
@@ -260,14 +256,13 @@ function getSavedViewOwner($vid) {
 
 // return an array of the reports the user is allowed to see
 function availReports($uid, $groups, $fid, $frid="0") {
-	global $xoopsDB;
 
 	// get old saved reports
-      //$s_reports = q("SELECT report_id, report_name FROM " . $xoopsDB->prefix("formulize_reports") . " WHERE report_id_form='$fid' AND report_uid='$uid'");
+      //$s_reports = q("SELECT report_id, report_name FROM " . icms::$xoopsDB->prefix("formulize_reports") . " WHERE report_id_form='$fid' AND report_uid='$uid'");
 
 
 	// get old published reports
-	//$published_reports = q("SELECT report_id, report_name, report_groupids, report_uid FROM " . $xoopsDB->prefix("formulize_reports") . " WHERE report_id_form='$fid' AND report_ispublished > 0");
+	//$published_reports = q("SELECT report_id, report_name, report_groupids, report_uid FROM " . icms::$xoopsDB->prefix("formulize_reports") . " WHERE report_id_form='$fid' AND report_ispublished > 0");
 
 
 	// cull published reports to ones that are published to a group that the user belongs to
@@ -286,16 +281,16 @@ function availReports($uid, $groups, $fid, $frid="0") {
 
 	// get new saved reports
 	if($frid) {
-	      $ns_reports = q("SELECT sv_id, sv_name FROM " . $xoopsDB->prefix("formulize_saved_views") . " WHERE sv_formframe='$frid' AND sv_mainform='$fid' AND sv_owner_uid='$uid'");
+	      $ns_reports = q("SELECT sv_id, sv_name FROM " . icms::$xoopsDB->prefix("formulize_saved_views") . " WHERE sv_formframe='$frid' AND sv_mainform='$fid' AND sv_owner_uid='$uid'");
 	} else {
-	      $ns_reports = q("SELECT sv_id, sv_name FROM " . $xoopsDB->prefix("formulize_saved_views") . " WHERE sv_formframe='$fid' AND sv_owner_uid='$uid'");
+	      $ns_reports = q("SELECT sv_id, sv_name FROM " . icms::$xoopsDB->prefix("formulize_saved_views") . " WHERE sv_formframe='$fid' AND sv_owner_uid='$uid'");
 	}
 
 	// get new published reports
 	if($frid) {
-		$npublished_reports = q("SELECT sv_id, sv_name, sv_pubgroups, sv_owner_uid FROM " . $xoopsDB->prefix("formulize_saved_views") . " WHERE sv_formframe='$frid' AND sv_mainform='$fid' AND sv_pubgroups != \"\"");
+		$npublished_reports = q("SELECT sv_id, sv_name, sv_pubgroups, sv_owner_uid FROM " . icms::$xoopsDB->prefix("formulize_saved_views") . " WHERE sv_formframe='$frid' AND sv_mainform='$fid' AND sv_pubgroups != \"\"");
 	} else {
-		$npublished_reports = q("SELECT sv_id, sv_name, sv_pubgroups, sv_owner_uid FROM " . $xoopsDB->prefix("formulize_saved_views") . " WHERE sv_formframe='$fid' AND sv_pubgroups != \"\"");
+		$npublished_reports = q("SELECT sv_id, sv_name, sv_pubgroups, sv_owner_uid FROM " . icms::$xoopsDB->prefix("formulize_saved_views") . " WHERE sv_formframe='$fid' AND sv_pubgroups != \"\"");
 	}
 
 	// cull published reports to ones that are published to a group that the user belongs to
@@ -385,8 +380,7 @@ function security_check($fid, $entry="", $uid="", $owner="", $groups="", $mid=""
 				$view_groupscope = $gperm_handler->checkRight("view_groupscope", $fid, $groups, $mid);
 				// if no view_groupscope, then check to see if the settings for the form are "one entry per group" in which case override the groupscope setting
 				if(!$view_groupscope) {
-					global $xoopsDB;
-					$smq = q("SELECT singleentry FROM " . $xoopsDB->prefix("formulize_id") . " WHERE id_form=$fid");
+					$smq = q("SELECT singleentry FROM " . icms::$xoopsDB->prefix("formulize_id") . " WHERE id_form=$fid");
 					if($smq[0]['singleentry'] == "group") { $view_groupscope = true; }
 				}
 				// get the groupscope groups if specified, otherwise, use view_form permission to determine the groups
@@ -416,8 +410,7 @@ print "<br>";*/
 					// 1. get groups for unlocked view for this user's groups where the mainform is $fid or there is no mainform and formframe is $fid
 					// 2. if group or all scope, allow it
 					// 3. or if there's an intersection on the owner_groups and the groups in an unlocked view, then allow it.
-					global $xoopsDB;
-					$unlockviews = q("SELECT sv_currentview, sv_pubgroups FROM " . $xoopsDB->prefix("formulize_saved_views") . " WHERE sv_lockcontrols=0 AND ((sv_formframe='$fid' AND sv_mainform='') OR sv_mainform='$fid')");
+					$unlockviews = q("SELECT sv_currentview, sv_pubgroups FROM " . icms::$xoopsDB->prefix("formulize_saved_views") . " WHERE sv_lockcontrols=0 AND ((sv_formframe='$fid' AND sv_mainform='') OR sv_mainform='$fid')");
 					foreach($unlockviews as $thisview) {
 						$pubbedgroups = explode(",", $thisview['sv_pubgroups']);
 						if(array_intersect($pubbedgroups, $groups)) { // if this saved view has been published to the user's groups...
@@ -435,12 +428,11 @@ print "<br>";*/
 		$form_handler = icms_getModuleHandler('forms', 'formulize');
 		$formObject = $form_handler->get($fid);
 		if($perGroupFilter = $form_handler->getPerGroupFilterWhereClause($fid)) {
-			global $xoopsDB;
-			$checkSQL = "SELECT count(entry_id) FROM ".$xoopsDB->prefix("formulize_".$formObject->getVar('form_handle'))." WHERE entry_id = $entry $perGroupFilter";
-			if(!$checkRes = $xoopsDB->query($checkSQL)) {
+			$checkSQL = "SELECT count(entry_id) FROM " . icms::$xoopsDB->prefix("formulize_".$formObject->getVar('form_handle'))." WHERE entry_id = $entry $perGroupFilter";
+			if(!$checkRes = icms::$xoopsDB->query($checkSQL)) {
 				return false;
 			}
-			$countRow = $xoopsDB->fetchRow($checkRes);
+			$countRow = icms::$xoopsDB->fetchRow($checkRes);
 			if($countRow[0] != 1) {
 				return false;
 			}
@@ -453,12 +445,11 @@ print "<br>";*/
 
 // GET THE MODULE ID -- specifically get formulize, since if called from within a block, the xoopsModule module ID will not be formulize's id
 function getFormulizeModId() {
-  global $xoopsDB;
 	static $mid = "";
 	if(!$mid) {
-		$res4 = $xoopsDB->query("SELECT mid FROM ".$xoopsDB->prefix("modules")." WHERE dirname='formulize'");
+		$res4 = icms::$xoopsDB->query("SELECT mid FROM " . icms::$xoopsDB->prefix("modules")." WHERE dirname='formulize'");
 		if ($res4) {
-			while ($row = $xoopsDB->fetchRow($res4))
+			while ($row = icms::$xoopsDB->fetchRow($res4))
 				$mid = $row[0];
 		}
 	}
@@ -470,11 +461,10 @@ function getFormulizeModId() {
 // KEYFIELD IS OPTIONAL, and sets the key of the result array to be one of the fields in the query.  Useful if you want to use isset with a value to determine the presence of something in the result set, instead of searching the array.
 function q($query, $keyfield="", $keyfieldOnly = false) {
 
-	global $xoopsDB;
 	$result = array();
 	//print "$query"; // debug code
-	if($res = $xoopsDB->query($query)) {
-                while ($array = $xoopsDB->fetchArray($res)) {
+	if($res = icms::$xoopsDB->query($query)) {
+                while ($array = icms::$xoopsDB->fetchArray($res)) {
 			if($keyfield) {
                           if(!$keyfieldOnly) {
 				$result[$array[$keyfield]] = $array;
@@ -494,9 +484,8 @@ function q($query, $keyfield="", $keyfieldOnly = false) {
 // THIS FUNCTION RETURNS AN ARRAY OF THE CATEGORY NAMES WHERE THE CATEGORY IDS ARE THE KEYS -- added April 25/05
 function fetchCats() {
 
-	global $xoopsDB;
 
-	$result = q("SELECT cat_id, cat_name FROM " . $xoopsDB->prefix("formulize_menu_cats") . " ORDER BY cat_name");
+	$result = q("SELECT cat_id, cat_name FROM " . icms::$xoopsDB->prefix("formulize_menu_cats") . " ORDER BY cat_name");
 	foreach($result as $acat) {
 		$cats[$acat['cat_id']] = $acat['cat_name'];
 	}
@@ -507,8 +496,7 @@ function fetchCats() {
 
 // THIS FUNCTION RETURNS THE CAT_ID OF THE CATEGORY WHERE A FORM IS FOUND (OR 0 IF THE FORM IS NOT FOUND)
 function getMenuCat($fid) {
-	global $xoopsDB;
-	$foundCat = q("SELECT cat_id FROM " . $xoopsDB->prefix("formulize_menu_cats") . " WHERE id_form_array LIKE \"%,$fid,%\"");
+	$foundCat = q("SELECT cat_id FROM " . icms::$xoopsDB->prefix("formulize_menu_cats") . " WHERE id_form_array LIKE \"%,$fid,%\"");
 	if(count($foundCat)>0) {
 		return($foundCat[0]['cat_id']);
 	} else {
@@ -535,13 +523,11 @@ function printSmart($value, $chars="35") {
 // we do not filter the headerlist for private elements, because the columns in entriesdisplay are filtered for private columns (and display columns) after being gathered.
 function getHeaderList ($fid, $needids=false, $convertIdsToElementHandles=false) {
 	
-	global $xoopsDB;
-
 	$headerlist = array();
 
-	$hlq = "SELECT headerlist FROM " . $xoopsDB->prefix("formulize_id") . " WHERE id_form='$fid'";
-	if($result = $xoopsDB->query($hlq)) {
-		while ($row = $xoopsDB->fetchRow($result)) {
+	$hlq = "SELECT headerlist FROM " . icms::$xoopsDB->prefix("formulize_id") . " WHERE id_form='$fid'";
+	if($result = icms::$xoopsDB->query($hlq)) {
+		while ($row = icms::$xoopsDB->fetchRow($result)) {
 			if($somethingLeft = str_replace("*=+*:", "", $row[0])) { // check to see if there is actually any real data specified in this string, make sure it's not all separators.
 				$headerlist = explode("*=+*:", $row[0]);
 				array_shift($headerlist);
@@ -586,11 +572,11 @@ function getHeaderList ($fid, $needids=false, $convertIdsToElementHandles=false)
       				}
       			}
 						if($where_clause) {
-							$captionq = "SELECT ele_caption, ele_colhead FROM " . $xoopsDB->prefix("formulize") . " WHERE $where_clause AND (ele_type != \"ib\" AND ele_type != \"areamodif\" AND ele_type != \"subform\" AND ele_type != \"grid\") ORDER BY ele_order";
-							if($rescaptionq = $xoopsDB->query($captionq)) {
+							$captionq = "SELECT ele_caption, ele_colhead FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE $where_clause AND (ele_type != \"ib\" AND ele_type != \"areamodif\" AND ele_type != \"subform\" AND ele_type != \"grid\") ORDER BY ele_order";
+							if($rescaptionq = icms::$xoopsDB->query($captionq)) {
 								unset($headerlist);
 								$headerlist = $metaHeaderlist;
-								while ($row = $xoopsDB->fetchArray($rescaptionq)) {
+								while ($row = icms::$xoopsDB->fetchArray($rescaptionq)) {
 									if($row['ele_colhead'] != "") {
 										$headerlist[] = $row['ele_colhead'];
 									} else {
@@ -626,9 +612,9 @@ function getHeaderList ($fid, $needids=false, $convertIdsToElementHandles=false)
 
 	if(count($headerlist)==0) { // if no header fields specified, then....
 		// GATHER REQUIRED FIELDS FOR THIS FORM...
-		$reqfq = "SELECT ele_caption, ele_colhead, ele_id FROM " . $xoopsDB->prefix("formulize") . " WHERE ele_req=1 AND id_form='$fid' AND (ele_type != \"ib\" AND ele_type != \"areamodif\" AND ele_type != \"subform\" AND ele_type != \"grid\") ORDER BY ele_order ASC LIMIT 3";
-		if($result = $xoopsDB->query($reqfq)) {
-			while ($row = $xoopsDB->fetchArray($result)) {
+		$reqfq = "SELECT ele_caption, ele_colhead, ele_id FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE ele_req=1 AND id_form='$fid' AND (ele_type != \"ib\" AND ele_type != \"areamodif\" AND ele_type != \"subform\" AND ele_type != \"grid\") ORDER BY ele_order ASC LIMIT 3";
+		if($result = icms::$xoopsDB->query($reqfq)) {
+			while ($row = icms::$xoopsDB->fetchArray($result)) {
 				if($needids) {
 					$headerlist[] = $row['ele_id'];
 				} else {
@@ -644,9 +630,9 @@ function getHeaderList ($fid, $needids=false, $convertIdsToElementHandles=false)
 
 	if(count($headerlist) == 0) {
 		// IF there are no required fields THEN ... go with first three fields
-		$firstfq = "SELECT ele_caption, ele_colhead, ele_id FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form='$fid' AND (ele_type != \"ib\" AND ele_type != \"areamodif\" AND ele_type != \"subform\" AND ele_type != \"grid\") ORDER BY ele_order ASC LIMIT 3";
-		if($result = $xoopsDB->query($firstfq)) {
-			while ($row = $xoopsDB->fetchArray($result)) {
+		$firstfq = "SELECT ele_caption, ele_colhead, ele_id FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form='$fid' AND (ele_type != \"ib\" AND ele_type != \"areamodif\" AND ele_type != \"subform\" AND ele_type != \"grid\") ORDER BY ele_order ASC LIMIT 3";
+		if($result = icms::$xoopsDB->query($firstfq)) {
+			while ($row = icms::$xoopsDB->fetchArray($result)) {
 				if($needids) {
 					$headerlist[] = $row['ele_id'];
 				} else {
@@ -668,15 +654,15 @@ function getHeaderList ($fid, $needids=false, $convertIdsToElementHandles=false)
       }
     }
     if(count($headerlist)>0) {// if there are any numeric headers, then get the handles
-      $sql = "SELECT ele_handle FROM ".$xoopsDB->prefix("formulize") . " WHERE ele_id IN (".implode(",",$headerlist).") ORDER BY ele_order";
-      if($res = $xoopsDB->query($sql)) {
+      $sql = "SELECT ele_handle FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE ele_id IN (".implode(",",$headerlist).") ORDER BY ele_order";
+      if($res = icms::$xoopsDB->query($sql)) {
         $headerlist = array();
-        while($array = $xoopsDB->fetchArray($res)) {
+        while($array = icms::$xoopsDB->fetchArray($res)) {
           $headerlist[] = $array['ele_handle'];
         }
         $headerlist = array_merge($savedMetaHeaders, $headerlist); // add the non numeric headers back in to the front
       } else {
-        print "Error: could not convert Element IDs to Handles when retrieving the header list.  SQL error: ".icms::$xoopsDB->error()."<br>";
+        print "Error: could not convert Element IDs to Handles when retrieving the header list.  SQL error: ". icms::$xoopsDB->error()."<br>";
       }
     } else { // no numeric headers, so just return the non numeric ones
       $headerlist = $savedMetaHeaders;
@@ -688,10 +674,9 @@ function getHeaderList ($fid, $needids=false, $convertIdsToElementHandles=false)
 // gets the ele_ids of the headerlist for a form
 // now only used when opening a legacy report from 1.6 or older, or when reading a headerlist that is based on the old non-ID based system
 function convertHeadersToIds($headers, $fid) {
-	global $xoopsDB;
 	foreach($headers as $cap) {
 		$cap = addslashes($cap);
-		$ele_id = q("SELECT ele_id FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form='$fid' AND ele_caption='" . str_replace("`", "'", $cap) . "'"); // assume only one match, even though that is not enforced!  Ignores colheads since no use of this function should ever be passing colheads to it (only used for legacy purposes).
+		$ele_id = q("SELECT ele_id FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form='$fid' AND ele_caption='" . str_replace("`", "'", $cap) . "'"); // assume only one match, even though that is not enforced!  Ignores colheads since no use of this function should ever be passing colheads to it (only used for legacy purposes).
 		$ele_ids[] = $ele_id[0]['ele_id'];
 	}
 	return $ele_ids;
@@ -699,9 +684,8 @@ function convertHeadersToIds($headers, $fid) {
 
 // THIS FUNCTION RETURNS AN ARRAY OF THE ALLOWED CATEGORIES, KEY BEING ID AND VALUE BEING NAME, BASED ON THE ALLOWEDFORMS ARRAY
 function allowedCats($cats, $allowedForms) {
-	global $xoopsDB;
 	foreach($cats as $catid=>$catname) {
-		$flatFormArray = q("SELECT id_form_array FROM " . $xoopsDB->prefix("formulize_menu_cats") . " WHERE cat_id='$catid'");
+		$flatFormArray = q("SELECT id_form_array FROM " . icms::$xoopsDB->prefix("formulize_menu_cats") . " WHERE cat_id='$catid'");
 		$formsInCat = explode(",", trim($flatFormArray[0]['id_form_array'], ","));
 		if(array_intersect($formsInCat, $allowedForms)) {
 
@@ -714,8 +698,6 @@ function allowedCats($cats, $allowedForms) {
 
 // THIS FUNCTION RETURNS THE FORMS THE USER IS ALLOWED TO VIEW
 function allowedForms() {
-
-	global $xoopsDB;
 
 	// GET THE MODULE ID
         $module_id = getFormulizeModId();
@@ -746,8 +728,7 @@ function allowedForms() {
 
 // THIS FUNCTION RETURNS THE NAME OF A FORM WHEN GIVEN THE ID (internal, not meant for public use)
 function fetchFormName($id) {
-	global $xoopsDB;
-	$title_q = q("SELECT desc_form FROM " . $xoopsDB->prefix("formulize_id") . " WHERE id_form='$id'");
+	$title_q = q("SELECT desc_form FROM " . icms::$xoopsDB->prefix("formulize_id") . " WHERE id_form='$id'");
 	return trans($title_q[0]['desc_form']);
 }
 
@@ -769,8 +750,6 @@ function fetchFormNames($ids) {
 // THIS FUNCTION RETURNS THE FORMS IN A CATEGORY, IF GIVEN THE CATEGORY ID and the allowedforms for the user
 function fetchFormsInCat($thisid, $allowedForms="") {
 
-	global $xoopsDB;
-
 		if(!is_array($allowedForms)) { $allowedForms = allowedForms(); }
 
 		if($thisid == 0 ) { // GENERAL CAT...
@@ -779,7 +758,7 @@ function fetchFormsInCat($thisid, $allowedForms="") {
 			// 2. record each one in an array
 			// 3. make formsInCat equal the difference between found array and allowed forms
 			foreach($allowedForms as $thisform) {
-				$found_q = q("SELECT * FROM " . $xoopsDB->prefix("formulize_menu_cats") . " WHERE id_form_array LIKE \"%,$thisform,%\"");
+				$found_q = q("SELECT * FROM " . icms::$xoopsDB->prefix("formulize_menu_cats") . " WHERE id_form_array LIKE \"%,$thisform,%\"");
 				if(count($found_q)>0) { $foundForms[] = $thisform; }
 			}
 			if(count($foundForms) > 0 ) {
@@ -788,13 +767,13 @@ function fetchFormsInCat($thisid, $allowedForms="") {
 				$formsInCat1 = $allowedForms;
 			}
 		} else {
-			$flatFormArray = q("SELECT id_form_array FROM " . $xoopsDB->prefix("formulize_menu_cats") . " WHERE cat_id='$thisid'");
+			$flatFormArray = q("SELECT id_form_array FROM " . icms::$xoopsDB->prefix("formulize_menu_cats") . " WHERE cat_id='$thisid'");
 			$formsInCat1 = explode(",", trim($flatFormArray[0]['id_form_array'], ","));
 		}
 
 		// exclude inactive forms, and sort
 		foreach($formsInCat1 as $thisform) {
-			$status_q = q("SELECT menuid, position FROM " . $xoopsDB->prefix("formulize_menu") . " WHERE menuid='$thisform' AND status=1");
+			$status_q = q("SELECT menuid, position FROM " . icms::$xoopsDB->prefix("formulize_menu") . " WHERE menuid='$thisform' AND status=1");
 			if(count($status_q)>0 AND in_array($thisform, $allowedForms)) { // only include active forms that the user is allowed to see
 				$formpos[] = $status_q[0]['position'];
 				$formsInCat[] = $thisform;
@@ -807,8 +786,6 @@ function fetchFormsInCat($thisid, $allowedForms="") {
 
 // THIS FUNCTION DRAWS IN THE ELEMENTS OF THE FORM MENU
 function drawMenu($thisid, $thiscat, $allowedForms, $id_form, $topwritten, $force_open) {
-
-		global $xoopsDB;
 
 		$formsInCat = fetchFormsInCat($thisid, $allowedForms);
 
@@ -857,16 +834,13 @@ function deleteFormEntries($array, $fid) {
 
 // THIS FUNCTION REMOVES ENTRIES FROM THE OTHER TABLE BASED ON AN IDREQ
 function deleteMaintenance($id_req, $fid) {
-
-	global $xoopsDB;
-
 	
 	// remove entries in the formulize_other table
 	$form_handler = icms_getModuleHandler('forms', 'formulize');
 	$formObject = $form_handler->get($fid);
         	
-	$sql3 = "DELETE FROM " . $xoopsDB->prefix("formulize_other") . " WHERE id_req='$id_req' AND ele_id IN (" . implode(",", $formObject->getVar('elements')) . ")"; //limit to id_reqs where the element is from the right form, since the new id_reqs (entry_ids) can be repeated across forms
-	if(!$result3 = $xoopsDB->query($sql3)) {
+	$sql3 = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_other") . " WHERE id_req='$id_req' AND ele_id IN (" . implode(",", $formObject->getVar('elements')) . ")"; //limit to id_reqs where the element is from the right form, since the new id_reqs (entry_ids) can be repeated across forms
+	if(!$result3 = icms::$xoopsDB->query($sql3)) {
 		exit("Error: failed to delete 'Other' text for entry $id_req");
 	}
 
@@ -891,7 +865,6 @@ function deleteIdReq($id_req, $fid) {
 // $fid is required
 function deleteEntry($id_req, $frid="", $fid, $gperm_handler="", $member_handler="", $mid="", $owner="", $owner_groups="") {
 
-	global $xoopsDB;
 	$deletedEntries = array();
 
 	if($frid) { // if a framework is passed, then delete all sub entry items found in a unified display relationship with the base entry, in addition to the base entry itself.
@@ -985,10 +958,9 @@ function checkForLinks($frid, $fids, $fid, $entries, $gperm_handler, $owner_grou
     $unified_display = "";
   }
 
-  global $xoopsDB;
   // get one-to-one links
-  $one_q1 = q("SELECT fl_form1_id, fl_key1, fl_key2, fl_common_value FROM " . $xoopsDB->prefix("formulize_framework_links") . " WHERE fl_form2_id = $fid AND fl_relationship = 1 AND fl_frame_id = $frid $unified_display");
-  $one_q2 = q("SELECT fl_form2_id, fl_key1, fl_key2, fl_common_value FROM " . $xoopsDB->prefix("formulize_framework_links") . " WHERE fl_form1_id = $fid AND fl_relationship = 1 AND fl_frame_id = $frid $unified_display");
+  $one_q1 = q("SELECT fl_form1_id, fl_key1, fl_key2, fl_common_value FROM " . icms::$xoopsDB->prefix("formulize_framework_links") . " WHERE fl_form2_id = $fid AND fl_relationship = 1 AND fl_frame_id = $frid $unified_display");
+  $one_q2 = q("SELECT fl_form2_id, fl_key1, fl_key2, fl_common_value FROM " . icms::$xoopsDB->prefix("formulize_framework_links") . " WHERE fl_form1_id = $fid AND fl_relationship = 1 AND fl_frame_id = $frid $unified_display");
   $indexer=0;
   foreach($one_q1 as $res1) {
     $one_to_one[$indexer]['fid'] = $res1['fl_form1_id'];
@@ -1007,8 +979,8 @@ function checkForLinks($frid, $fids, $fid, $entries, $gperm_handler, $owner_grou
   
   $indexer=0;
   // get one-to-many links
-  $many_q1 = q("SELECT fl_form1_id, fl_key1, fl_key2, fl_common_value FROM " . $xoopsDB->prefix("formulize_framework_links") . " WHERE fl_form2_id = $fid AND fl_relationship = 3 AND fl_frame_id = $frid $unified_display");
-  $many_q2 = q("SELECT fl_form2_id, fl_key1, fl_key2, fl_common_value FROM " . $xoopsDB->prefix("formulize_framework_links") . " WHERE fl_form1_id = $fid AND fl_relationship = 2 AND fl_frame_id = $frid $unified_display");
+  $many_q1 = q("SELECT fl_form1_id, fl_key1, fl_key2, fl_common_value FROM " . icms::$xoopsDB->prefix("formulize_framework_links") . " WHERE fl_form2_id = $fid AND fl_relationship = 3 AND fl_frame_id = $frid $unified_display");
+  $many_q2 = q("SELECT fl_form2_id, fl_key1, fl_key2, fl_common_value FROM " . icms::$xoopsDB->prefix("formulize_framework_links") . " WHERE fl_form1_id = $fid AND fl_relationship = 2 AND fl_frame_id = $frid $unified_display");
 
   foreach($many_q1 as $res1) {
     $one_to_many[$indexer]['fid'] = $res1['fl_form1_id'];
@@ -1026,8 +998,8 @@ function checkForLinks($frid, $fids, $fid, $entries, $gperm_handler, $owner_grou
   }
 
   // get MANY-TO-ONE links
-  $many_q3 = q("SELECT fl_form1_id, fl_key1, fl_key2, fl_common_value FROM " . $xoopsDB->prefix("formulize_framework_links") . " WHERE fl_form2_id = $fid AND fl_relationship = 2 AND fl_frame_id = $frid $unified_display");
-  $many_q4 = q("SELECT fl_form2_id, fl_key1, fl_key2, fl_common_value FROM " . $xoopsDB->prefix("formulize_framework_links") . " WHERE fl_form1_id = $fid AND fl_relationship = 3 AND fl_frame_id = $frid $unified_display");
+  $many_q3 = q("SELECT fl_form1_id, fl_key1, fl_key2, fl_common_value FROM " . icms::$xoopsDB->prefix("formulize_framework_links") . " WHERE fl_form2_id = $fid AND fl_relationship = 2 AND fl_frame_id = $frid $unified_display");
+  $many_q4 = q("SELECT fl_form2_id, fl_key1, fl_key2, fl_common_value FROM " . icms::$xoopsDB->prefix("formulize_framework_links") . " WHERE fl_form1_id = $fid AND fl_relationship = 3 AND fl_frame_id = $frid $unified_display");
 
   foreach($many_q3 as $res1) {
     $many_to_one[$indexer]['fid'] = $res1['fl_form1_id'];
@@ -1075,12 +1047,12 @@ function checkForLinks($frid, $fids, $fid, $entries, $gperm_handler, $owner_grou
 		if($one_fid['common']) {
    		        $oneFormObject = $form_handler->get($one_fid['fid']);
 			$formObject = $form_handler->get($fid);
-			$mainHandle = q("SELECT ele_handle FROM ".$xoopsDB->prefix("formulize")." WHERE ele_id=".$one_to_one[0]['keyother']);
-			$candidateHandle = q("SELECT ele_handle FROM ".$xoopsDB->prefix("formulize")." WHERE ele_id=".$one_fid['keyself']);
-			$candidateEntry = q("SELECT candidate.entry_id FROM " . $xoopsDB->prefix("formulize_".$oneFormObject->getVar('form_handle')) . " AS candidate, ". $xoopsDB->prefix("formulize_".$formObject->getVar('form_handle')) . " AS main WHERE candidate.".$candidateHandle[0]['ele_handle']."=main.".$mainHandle[0]['ele_handle']." AND main.entry_id = ".intval($entries[$fid][0])." LIMIT 0,1");
-			/*print "SELECT ele_handle FROM ".$xoopsDB->prefix("formulize")." WHERE ele_id=".$one_fid['keyself'] . "<br><pre>";
+			$mainHandle = q("SELECT ele_handle FROM " . icms::$xoopsDB->prefix("formulize")." WHERE ele_id=".$one_to_one[0]['keyother']);
+			$candidateHandle = q("SELECT ele_handle FROM " . icms::$xoopsDB->prefix("formulize")." WHERE ele_id=".$one_fid['keyself']);
+			$candidateEntry = q("SELECT candidate.entry_id FROM " . icms::$xoopsDB->prefix("formulize_".$oneFormObject->getVar('form_handle')) . " AS candidate, ". icms::$xoopsDB->prefix("formulize_".$formObject->getVar('form_handle')) . " AS main WHERE candidate.".$candidateHandle[0]['ele_handle']."=main.".$mainHandle[0]['ele_handle']." AND main.entry_id = ".intval($entries[$fid][0])." LIMIT 0,1");
+			/*print "SELECT ele_handle FROM " icms::$xoopsDB->prefix("formulize")." WHERE ele_id=".$one_fid['keyself'] . "<br><pre>";
 			print_r($candidateHandle);
-			print "</pre><br>SELECT candidate.entry_id FROM " . $xoopsDB->prefix("formulize_".$one_fid['fid']) . " AS candidate, ". $xoopsDB->prefix("formulize_".$fid) . " AS main WHERE candidate.".$candidateHandle[0]['ele_handle']."=main.".$mainHandle[0]['ele_handle']." AND main.entry_id = ".intval($entries[$fid][0])." LIMIT 0,1<br><pre>";
+			print "</pre><br>SELECT candidate.entry_id FROM " . icms::$xoopsDB->prefix("formulize_".$one_fid['fid']) . " AS candidate, ". icms::$xoopsDB->prefix("formulize_".$fid) . " AS main WHERE candidate.".$candidateHandle[0]['ele_handle']."=main.".$mainHandle[0]['ele_handle']." AND main.entry_id = ".intval($entries[$fid][0])." LIMIT 0,1<br><pre>";
 			print_r($candidateEntry);
 			print "</pre>";*/
 			if($candidateEntry[0]['entry_id']) {
@@ -1179,7 +1151,6 @@ function prepExport($headers, $cols, $data, $fdchoice, $custdel="", $title, $tem
 		return XOOPS_URL . "/modules/formulize/export/$exfilename";
 	}
 
-	global $xoopsDB;
 	include_once XOOPS_ROOT_PATH . "/modules/formulize/include/extract.php";
 
 	if($fdchoice == "update") { // reset headers and cols to include all data -- when creating a blank template, this reset has already happened before prepexport is called
@@ -1275,13 +1246,13 @@ function prepExport($headers, $cols, $data, $fdchoice, $custdel="", $title, $tem
 		}
 
 		$c_uid = display($entry, 'creation_uid');
-		$c_name_q = q("SELECT name, uname FROM " . $xoopsDB->prefix("users") . " WHERE uid='$c_uid'");
+		$c_name_q = q("SELECT name, uname FROM " . icms::$xoopsDB->prefix("users") . " WHERE uid='$c_uid'");
 		$c_name = $c_name_q[0]['name'];
 		if(!$c_name) { $c_name = $c_name_q[0]['uname']; }
 		$c_date = display($entry, 'creation_datetime');
 		$m_uid = display($entry, 'mod_uid');
 		if($m_uid) {
-			$m_name_q = q("SELECT name, uname FROM " . $xoopsDB->prefix("users") . " WHERE uid='$m_uid'");
+			$m_name_q = q("SELECT name, uname FROM " . icms::$xoopsDB->prefix("users") . " WHERE uid='$m_uid'");
 			$m_name = $m_name_q[0]['name'];
 			if(!$m_name) { $m_name = $m_name_q[0]['uname']; }
 		} else {
@@ -1303,7 +1274,7 @@ function prepExport($headers, $cols, $data, $fdchoice, $custdel="", $title, $tem
 		foreach($cols as $col) {
 			if(($col == "uid" OR $col == "proxyid" OR $col=="creation_date" OR $col =="mod_date" OR $col == "creation_uid" OR $col == "mod_uid" OR $col == "creation_datetime" OR $col == "mod_datetime") AND $_POST['metachoice'] == 1) { continue; } // ignore the metadata columns if they are selected, since we already handle them better above
 			if($col == "creation_uid" OR $col == "mod_uid" OR $col == "uid" OR $col == "proxyid") {
-				$name_q = q("SELECT name, uname FROM " . $xoopsDB->prefix("users") . " WHERE uid=".intval(display($entry, $col)));
+				$name_q = q("SELECT name, uname FROM " . icms::$xoopsDB->prefix("users") . " WHERE uid=".intval(display($entry, $col)));
 				$data_to_write = $name_q[0]['name'];
 				if(!$data_to_write) { $data_to_write = $name_q[0]['uname']; }
 			} else {
@@ -1335,8 +1306,8 @@ function prepExport($headers, $cols, $data, $fdchoice, $custdel="", $title, $tem
 
 	// write id_reqs and tempfold to the DB if we're making an update template
 	if($template == "update") {
-		$sql = "INSERT INTO " . $xoopsDB->prefix("formulize_valid_imports") . " (file, id_reqs) VALUES (\"$tempfold\", \"" . serialize($id_req) . "\")";
-		if(!$res = $xoopsDB->queryF($sql)) {
+		$sql = "INSERT INTO " . icms::$xoopsDB->prefix("formulize_valid_imports") . " (file, id_reqs) VALUES (\"$tempfold\", \"" . serialize($id_req) . "\")";
+		if(!$res = icms::$xoopsDB->queryF($sql)) {
 			exit("Error: could not write import information to the database.  SQL: $sql<br>".icms::$xoopsDB->error());
 		}
 	}
@@ -1359,10 +1330,9 @@ function getMetaData($entry, $member_handler, $fid="", $useOldCode=false) {
         }
   
   if($useOldCode) {
-    global $xoopsDB;
-    $meta = q("SELECT uid, date FROM " . $xoopsDB->prefix("formulize_form") . " WHERE id_req = $entry AND date > 0 ORDER BY date DESC LIMIT 0,1");
-    $meta_proxyid = q("SELECT proxyid FROM " . $xoopsDB->prefix("formulize_form") . " WHERE id_req = $entry AND proxyid != uid ORDER BY date DESC LIMIT 0,1");
-    $meta_creation_date = q("SELECT creation_date FROM " . $xoopsDB->prefix("formulize_form") . " WHERE id_req = $entry AND creation_date > 0 ORDER BY creation_date ASC LIMIT 0,1");
+    $meta = q("SELECT uid, date FROM " . icms::$xoopsDB->prefix("formulize_form") . " WHERE id_req = $entry AND date > 0 ORDER BY date DESC LIMIT 0,1");
+    $meta_proxyid = q("SELECT proxyid FROM " . icms::$xoopsDB->prefix("formulize_form") . " WHERE id_req = $entry AND proxyid != uid ORDER BY date DESC LIMIT 0,1");
+    $meta_creation_date = q("SELECT creation_date FROM " . icms::$xoopsDB->prefix("formulize_form") . " WHERE id_req = $entry AND creation_date > 0 ORDER BY creation_date ASC LIMIT 0,1");
     $meta_to_return['last_update'] = $meta[0]['date'];
     if($meta_creation_date[0]['creation_date']) {
       $meta_to_return['created'] = $meta_creation_date[0]['creation_date'];
@@ -1428,7 +1398,6 @@ function getMetaData($entry, $member_handler, $fid="", $useOldCode=false) {
 
 function getAllColList($fid, $frid="", $groups="", $includeBreaks=false) {
 
-	global $xoopsDB;
 	$gperm_handler = &icms::handler('icms_member_groupperm');
 	$mid = getFormulizeModId();
 
@@ -1468,18 +1437,18 @@ function getAllColList($fid, $frid="", $groups="", $includeBreaks=false) {
 		$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : "0";
 		foreach($fids as $this_fid) {
 			if(security_check($this_fid, "", $uid, "", $groups, $mid, $gperm_handler)) {
-				$c = q("SELECT ele_id, ele_caption, ele_colhead, ele_handle FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form='$this_fid' $gq $pq $incbreaks AND ele_type != \"subform\" AND ele_type != \"grid\" ORDER BY ele_order");
+				$c = q("SELECT ele_id, ele_caption, ele_colhead, ele_handle FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form='$this_fid' $gq $pq $incbreaks AND ele_type != \"subform\" AND ele_type != \"grid\" ORDER BY ele_order");
 				$cols[$this_fid] = $c;
 			}
 		}
 		foreach($sub_fids as $this_fid) {
 			if(security_check($this_fid, "", $uid, "", $groups, $mid, $gperm_handler)) {
-				$c = q("SELECT ele_id, ele_caption, ele_colhead, ele_handle FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form='$this_fid' $gq $pq $incbreaks AND ele_type != \"subform\" AND ele_type != \"grid\" ORDER BY ele_order");
+				$c = q("SELECT ele_id, ele_caption, ele_colhead, ele_handle FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form='$this_fid' $gq $pq $incbreaks AND ele_type != \"subform\" AND ele_type != \"grid\" ORDER BY ele_order");
 				$cols[$this_fid] = $c;
 			}
 		}
 	} else {
-		$cols[$fid] = q("SELECT ele_id, ele_caption, ele_colhead, ele_handle FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form='$fid' $gq $pq $incbreaks AND ele_type != \"subform\" AND ele_type != \"grid\" ORDER BY ele_order");
+		$cols[$fid] = q("SELECT ele_id, ele_caption, ele_colhead, ele_handle FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form='$fid' $gq $pq $incbreaks AND ele_type != \"subform\" AND ele_type != \"grid\" ORDER BY ele_order");
 	}
 
 	return $cols;
@@ -1542,7 +1511,6 @@ function writableQuery($items, $mod="") {
 // THIS FUNCTION TAKES A ID FROM THE CALCULATIONS RESULT AND RETURNS THE TEXT TO PUT ON THE SCREEN THAT CORRESPONDS TO IT
 // Also used for advanced searches
 function getCalcHandleText($handle, $forceColhead=false) {
-	global $xoopsDB;
 	if($handle == "creation_uid") {
 		return _formulize_DE_CALC_CREATOR;
 	} elseif($handle == "mod_uid") {
@@ -1554,7 +1522,7 @@ function getCalcHandleText($handle, $forceColhead=false) {
 	} elseif($handle == "creator_email") {
 		return _formulize_DE_CALC_CREATOR_EMAIL;
 	} elseif(is_numeric($handle)) {
-		$caption = q("SELECT ele_caption, ele_colhead FROM " . $xoopsDB->prefix("formulize"). " WHERE ele_id = '$handle'");
+		$caption = q("SELECT ele_caption, ele_colhead FROM " . icms::$xoopsDB->prefix("formulize"). " WHERE ele_id = '$handle'");
 		if($forceColhead AND $caption[0]['ele_colhead'] != "") {
 			return $caption[0]['ele_colhead'];
 		} else {
@@ -1644,9 +1612,8 @@ function trans($string) {
 // THIS FUNCTION FIGURES OUT THE MAX ID_REQ IN USE AND RETURNS THE NEXT VALID ID_REQ
 // ***DEPRECATED*** only used in the patching logic for patching up to 3.0
 function getMaxIdReq() {
-    global $xoopsDB;
-    $sql = $xoopsDB->query("SELECT id_req from " . $xoopsDB->prefix("formulize_form")." order by id_req DESC LIMIT 0,1");
-    list($id_req) = $xoopsDB->fetchRow($sql);
+    $sql = icms::$xoopsDB->query("SELECT id_req from " . icms::$xoopsDB->prefix("formulize_form")." order by id_req DESC LIMIT 0,1");
+    list($id_req) = icms::$xoopsDB->fetchRow($sql);
     if ($id_req == 0) { $num_id = 1; }
     else if ($num_id <= $id_req) $num_id = $id_req + 1;
     return $num_id;
@@ -1939,9 +1906,8 @@ function getElementValue($entry, $element_id, $fid) {
 
 // this function checks for singleentry status and returns the appropriate entry in the form if there is one
 function getSingle($fid, $uid, $groups, $member_handler, $gperm_handler, $mid) {
-	global $xoopsDB;
 	// determine single/multi status
-	$smq = q("SELECT singleentry FROM " . $xoopsDB->prefix("formulize_id") . " WHERE id_form=$fid");
+	$smq = q("SELECT singleentry FROM " . icms::$xoopsDB->prefix("formulize_id") . " WHERE id_form=$fid");
 	if($smq[0]['singleentry'] != "") {
 		// find the entry that applies
 		$single['flag'] = $smq[0]['singleentry'] == "on" ? 1 : "group";
@@ -1990,7 +1956,7 @@ function checkOther($key, $id){
 // The other values are generated by the prepDataForWrite function, so it has to be called prior to this one
 // ADDED JWE - JUNE 1 2006
 function writeOtherValues($id_req, $fid) {
-	global $xoopsDB, $myts;
+	global $myts;
 	/*
 	 * Hack by F�lix <INBOX Solutions> for sedonde
 	 * myts == NULL
@@ -2009,9 +1975,9 @@ function writeOtherValues($id_req, $fid) {
 		// filter out any ele_ids that are not part of this form, since when a framework is used, the formulize_other array would contain ele_ids from multiple forms
 		if(!in_array($ele_id, $thisForm->getVar('elements'))) { continue; }
 		// determine the current status of that element
-		$sql = "SELECT * FROM " . $xoopsDB->prefix("formulize_other") . " WHERE ele_id='$ele_id' AND id_req='$id_req' LIMIT 0,1";
-		$result = $xoopsDB->query($sql);
-		$array = $xoopsDB->fetchArray($result);
+		$sql = "SELECT * FROM " . icms::$xoopsDB->prefix("formulize_other") . " WHERE ele_id='$ele_id' AND id_req='$id_req' LIMIT 0,1";
+		$result = icms::$xoopsDB->query($sql);
+		$array = icms::$xoopsDB->fetchArray($result);
 		if(isset($array['other_id'])) {
 			$existing_value = true;
 		} else {
@@ -2020,16 +1986,16 @@ function writeOtherValues($id_req, $fid) {
 
 		$value = icms_core_DataFilter::htmlSpecialChars($value);
 		if($value != "" AND $existing_value) { // update
-			$sql = "UPDATE " . $xoopsDB->prefix("formulize_other") . " SET other_text=\"" . icms::$xoopsDB->escape($value) . "\" WHERE id_req='$id_req' AND ele_id='$ele_id'";
+			$sql = "UPDATE " . icms::$xoopsDB->prefix("formulize_other") . " SET other_text=\"" . icms::$xoopsDB->escape($value) . "\" WHERE id_req='$id_req' AND ele_id='$ele_id'";
 		}elseif($value != "" AND !$existing_value) { // add
-			$sql = "INSERT INTO " . $xoopsDB->prefix("formulize_other") . " (id_req, ele_id, other_text) VALUES (\"$id_req\", \"$ele_id\", \"" . icms::$xoopsDB->escape($value) . "\")";
+			$sql = "INSERT INTO " . icms::$xoopsDB->prefix("formulize_other") . " (id_req, ele_id, other_text) VALUES (\"$id_req\", \"$ele_id\", \"" . icms::$xoopsDB->escape($value) . "\")";
 		}elseif($value == "" AND $existing_value) { // delete
-			$sql = "DELETE FROM " . $xoopsDB->prefix("formulize_other") . " WHERE id_req='$id_req' AND ele_id='$ele_id'";
+			$sql = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_other") . " WHERE id_req='$id_req' AND ele_id='$ele_id'";
 		}else { // do nothing (only other combination is....  if(!isset($value) AND !$existing_value) ....ie: nothing passed, and nothing existing in DB
 			$sql = false;
 		}
 		if($sql) {
-			if(!$result = $xoopsDB->query($sql)) {
+			if(!$result = icms::$xoopsDB->query($sql)) {
 				exit("Error writing 'Other' value to the database with this SQL:<br>$sql");
 			}
 		}
@@ -2044,7 +2010,6 @@ function writeOtherValues($id_req, $fid) {
 // note that ele_value has different contents for textboxes and selectboxes
 function createFieldList($val, $textbox=false, $limitToForm=false, $name="", $firstValue="") {
 
-	global $xoopsDB;
       array($formids);
       array($formnames);
       array($totalcaptionlist);
@@ -2061,17 +2026,17 @@ function createFieldList($val, $textbox=false, $limitToForm=false, $name="", $fi
       }
       
 
-      $formlist = "SELECT id_form, desc_form FROM " . $xoopsDB->prefix("formulize_id") . " $limitToForm ORDER BY desc_form";
+      $formlist = "SELECT id_form, desc_form FROM " . icms::$xoopsDB->prefix("formulize_id") . " $limitToForm ORDER BY desc_form";
       
-      $resformlist = $xoopsDB->query($formlist);
+      $resformlist = icms::$xoopsDB->query($formlist);
       if($resformlist)
       {
-      	while ($rowformlist = $xoopsDB->fetchRow($resformlist)) // loop through each form
+      	while ($rowformlist = icms::$xoopsDB->fetchRow($resformlist)) // loop through each form
       	{
-      		$fieldnames = "SELECT ele_caption, ele_id, ele_handle FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form=$rowformlist[0] ORDER BY ele_order";
-      		$resfieldnames = $xoopsDB->query($fieldnames);
+      		$fieldnames = "SELECT ele_caption, ele_id, ele_handle FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form=$rowformlist[0] ORDER BY ele_order";
+      		$resfieldnames = icms::$xoopsDB->query($fieldnames);
       		
-      		while ($rowfieldnames = $xoopsDB->fetchRow($resfieldnames)) // loop through each caption in the current form
+      		while ($rowfieldnames = icms::$xoopsDB->fetchRow($resfieldnames)) // loop through each caption in the current form
       		{
 
       			$totalcaptionlist[$captionlistindex] = printSmart(trans($rowformlist[1])) . ": " . printSmart(trans($rowfieldnames[0]), 50);  // write formname: caption to the master array that will be passed to the select box.
@@ -2157,7 +2122,7 @@ function findMatchingIdReq($element, $fid, $value) {
 // $handle is the data handle for the element
 function formatLinks($matchtext, $handle, $textWidth=35, $entryBeingFormatted) {
   formulize_benchmark("start of formatlinks");
-	global $xoopsDB, $myts;
+	global $myts;
   static $cachedValues = array();
   static $cachedTypes = array();
   $matchtext = icms_core_DataFilter::undoHtmlSpecialChars($matchtext);
@@ -2216,7 +2181,7 @@ function formatLinks($matchtext, $handle, $textWidth=35, $entryBeingFormatted) {
                 if(isset($cachedQueryResults[$boxproperties[0]][$boxproperties[1]][$entryBeingFormatted][$handle])) {
                   $id_req = $cachedQueryResults[$boxproperties[0]][$boxproperties[1]][$entryBeingFormatted][$handle];
                 } else {
-                  $element_id_q = q("SELECT ele_id FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form='" . $boxproperties[0] . "' AND ele_handle='" . icms::$xoopsDB->escape($boxproperties[1]) . "' LIMIT 0,1"); // should only be one match anyway, so limit 0,1 ought to be unnecessary
+                  $element_id_q = q("SELECT ele_id FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form='" . $boxproperties[0] . "' AND ele_handle='" . icms::$xoopsDB->escape($boxproperties[1]) . "' LIMIT 0,1"); // should only be one match anyway, so limit 0,1 ought to be unnecessary
 									$formulize_mgr = icms_getModuleHandler('elements', 'formulize');
                   $target_element =& $formulize_mgr->get($element_id_q[0]['ele_id']);
 									// get the targetEntry by checking in the entry we're processing, for the actual value recorded in the DB for the entry id we're pointing to
@@ -2243,7 +2208,7 @@ function formatLinks($matchtext, $handle, $textWidth=35, $entryBeingFormatted) {
 		if(isset($cachedUidResults[$matchtext])) {
 			$uids = $cachedUidResults[$matchtext];
 		} else {
-			$uids = q("SELECT uid FROM " . $xoopsDB->prefix("users") . " WHERE $nametype = '" . icms::$xoopsDB->escape($matchtext) . "' $archiveFilter");
+			$uids = q("SELECT uid FROM " . icms::$xoopsDB->prefix("users") . " WHERE $nametype = '" . icms::$xoopsDB->escape($matchtext) . "' $archiveFilter");
 			$cachedUidResults[$matchtext] = $uids;
 		}
 		if(count($uids) == 1) {
@@ -2329,10 +2294,9 @@ function getTextboxDefault($ele_value, $form_id, $entry_id) {
 			$replacementValue = icms::$user->getVar(strtolower($thisTerm));
 			if($replacementValue == "") {
 				// need to get the profile module if XOOPS 2.3 is in effect and has that module installed
-				global $xoopsDB;
-				$sql = "SELECT isactive FROM ".$xoopsDB->prefix("modules")." WHERE dirname='profile'";
-				if($res = $xoopsDB->query($sql)) {
-					$array = $xoopsDB->fetchArray($res);
+				$sql = "SELECT isactive FROM " . icms::$xoopsDB->prefix("modules")." WHERE dirname='profile'";
+				if($res = icms::$xoopsDB->query($sql)) {
+					$array = icms::$xoopsDB->fetchArray($res);
 					if($array['isactive']==1) {
 						$profile_handler = icms_getModuleHandler('profile', 'profile'); // this line will cause an abort of the page load if it fails, so must check for existence and active status of the module first!
 						$profile = $profile_handler->get(icms::$user->getVar('uid'));
@@ -2391,7 +2355,6 @@ function findLinkedEntries($startForm, $targetForm, $startEntry, $gperm_handler,
     $all_groups = "";
 	}
 
-	global $xoopsDB;
 	//targetForm is a special array containing the keys as specified in the framework, and the target form
 	//keys:  fid, keyself, keyother
 
@@ -2462,7 +2425,6 @@ function findLinkedEntries($startForm, $targetForm, $startEntry, $gperm_handler,
 function cloneEntry($entry, $frid, $fid, $copies) {
 
 
-	global $xoopsDB;
 	include_once XOOPS_ROOT_PATH . "/modules/formulize/class/forms.php";
 	$lsbpairs = array();
 	if($frid) {
@@ -2555,12 +2517,12 @@ function sendNotifications($fid, $event, $entries, $mid="", $groups=array()) {
 	// 17. determine the users subscribed and subscribe the necessary others with a oncethendelete mode
 	// 18. trigger the notification
 
-	global $xoopsDB, $xoopsConfig, $icmsConfig;
+	global $xoopsConfig, $icmsConfig;
 
 	$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 
 	// 1.  get all conditions for this fid and event
-	$cons = q("SELECT * FROM " . $xoopsDB->prefix("formulize_notification_conditions") . " WHERE not_cons_fid=".intval($fid)." AND not_cons_event=\"".icms::$xoopsDB->escape($event)."\"");
+	$cons = q("SELECT * FROM " . icms::$xoopsDB->prefix("formulize_notification_conditions") . " WHERE not_cons_fid=".intval($fid)." AND not_cons_event=\"".icms::$xoopsDB->escape($event)."\"");
 	if(count($cons) == 0) { return; }
 
 	if(!$mid) {
@@ -2952,11 +2914,10 @@ function compileNotUsers($uids_conditions, $thiscon, $uid, $member_handler, $rei
 }
 
 function compileNotUsers2($uids_conditions, $uids_complete, $notification_handler, $fid, $event, $mid) {
-	global $xoopsDB;
 	$uids_conditions = array_unique($uids_conditions);
 	$uids_real = array_intersect($uids_conditions, $uids_complete);
 	// figure out who is not subscribed to the event, and subscribe them once
-	$subd_uids = q("SELECT not_uid FROM " . $xoopsDB->prefix("xoopsnotifications") . " WHERE not_event=\"".icms::$xoopsDB->escape($event)."\" AND not_category=\"form\" AND not_modid=$mid AND not_itemid=$fid");
+	$subd_uids = q("SELECT not_uid FROM " . icms::$xoopsDB->prefix("xoopsnotifications") . " WHERE not_event=\"".icms::$xoopsDB->escape($event)."\" AND not_category=\"form\" AND not_modid=$mid AND not_itemid=$fid");
 	$uids_subd = array();
 	foreach($subd_uids as $thisuid) {
 		$uids_subd[] = $thisuid['not_uid'];
@@ -2972,7 +2933,6 @@ function compileNotUsers2($uids_conditions, $uids_complete, $notification_handle
 // this function takes a series of columns and gets the headers for them
 
 function getHeaders($cols, $colsIsElementHandles = false) {
-	global $xoopsDB;
   
 	foreach($cols as $col) {
 		if($col == "creation_uid") {
@@ -2991,7 +2951,7 @@ function getHeaders($cols, $colsIsElementHandles = false) {
 			} else {
 				$whereClause = "ele_id = '$col'";
 			}
-			$temp_cap = q("SELECT ele_caption, ele_colhead FROM " . $xoopsDB->prefix("formulize") . " WHERE $whereClause");
+			$temp_cap = q("SELECT ele_caption, ele_colhead FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE $whereClause");
 			if($temp_cap[0]['ele_colhead'] != "") {
 				$headers[] = $temp_cap[0]['ele_colhead'];
 			} else {
@@ -3021,7 +2981,7 @@ print "$prevValue<br><br>";
 
         //require_once XOOPS_ROOT_PATH . "/modules/formulize/include/extract.php";
 
-	global $formulize_mgr, $xoopsDB, $myts;
+	global $formulize_mgr, $myts;
 	if(!is_object($myts)) { $myts = icms_core_Textsanitizer::getInstance(); }
 
 	if(!$formulize_mgr) {
@@ -3106,7 +3066,7 @@ print "$prevValue<br><br>";
 						if(strstr($sourceEleValue[2], "#*=:*")) {
 							$sourceParts = explode("#*=:*", $sourceEleValue[2]);
 							$sourceFormObject = $form_handler->get($sourceParts[0]);
-							$linkQueryResult = q("SELECT `entry_id` FROM " . $xoopsDB->prefix("formulize_".$sourceFormObject->getVar('form_handle')) . " WHERE `".$sourceParts[1]."` = '".implode("' OR `".$sourceParts[1]."` = '", $searchForValues) . "'");
+							$linkQueryResult = q("SELECT `entry_id` FROM " . icms::$xoopsDB->prefix("formulize_".$sourceFormObject->getVar('form_handle')) . " WHERE `".$sourceParts[1]."` = '".implode("' OR `".$sourceParts[1]."` = '", $searchForValues) . "'");
 							unset($searchForValues);
 							foreach($linkQueryResult as $linkedEntryId) {
 								$searchForValues[] = ",".$linkedEntryId['entry_id'].",";
@@ -3119,7 +3079,7 @@ print "$prevValue<br><br>";
 					
           if(count($searchForValues) > 0) {
 					        $boxFormObject = $form_handler->get($boxproperties[0]);
-						$entry_id_q = q("SELECT `entry_id`, `".$boxproperties[1]."` FROM " . $xoopsDB->prefix("formulize_".$boxFormObject->getVar('form_handle')) . " WHERE `".$boxproperties[1]."` = '".implode("' OR `".$boxproperties[1]."` = '", $searchForValues) . "' $linkedTargetHint");
+						$entry_id_q = q("SELECT `entry_id`, `".$boxproperties[1]."` FROM " . icms::$xoopsDB->prefix("formulize_".$boxFormObject->getVar('form_handle')) . " WHERE `".$boxproperties[1]."` = '".implode("' OR `".$boxproperties[1]."` = '", $searchForValues) . "' $linkedTargetHint");
 						foreach($entry_id_q as $thisEntryId) {
 							$cachedEntryIds[$boxproperties[0]][$boxproperties[1]][$thisEntryId[$boxproperties[1]]] = $thisEntryId['entry_id'];
 							$foundEntryIds[] = $thisEntryId['entry_id'];
@@ -3140,11 +3100,11 @@ print "$prevValue<br><br>";
         $lockIsOn = false;
         if(($value == "{ID}" AND $entry == "new") OR $value == "{SEQUENCE}") {
                   $lockIsOn = true;
-                  $xoopsDB->query("LOCK TABLES ".$xoopsDB->prefix("formulize_".$elementFormObject->getVar('form_handle'))." WRITE"); // need to lock table since there are multiple operations required on it for this one write transaction
+                  icms::$xoopsDB->query("LOCK TABLES " . icms::$xoopsDB->prefix("formulize_".$elementFormObject->getVar('form_handle'))." WRITE"); // need to lock table since there are multiple operations required on it for this one write transaction
                   $fromField = $value == "{ID}" ? "entry_id" : $element->getVar('ele_handle');
-                  $maxValueSQL = "SELECT MAX(`$fromField`) FROM " . $xoopsDB->prefix("formulize_".$elementFormObject->getVar('form_handle'));
-                  if($maxValueRes = $xoopsDB->query($maxValueSQL)) {
-                    $maxValueArray = $xoopsDB->fetchArray($maxValueRes);
+                  $maxValueSQL = "SELECT MAX(`$fromField`) FROM " . icms::$xoopsDB->prefix("formulize_".$elementFormObject->getVar('form_handle'));
+                  if($maxValueRes = icms::$xoopsDB->query($maxValueSQL)) {
+                    $maxValueArray = icms::$xoopsDB->fetchArray($maxValueRes);
                     $value = $maxValueArray["MAX(`$fromfield`)"] + 1;
                   } else {
                     exit("Error: could not determine max value to use for $value.  SQL:<br>$maxValueSQL<br>");
@@ -3159,19 +3119,19 @@ print "$prevValue<br><br>";
                 $owner = is_numeric($append) ? $append : $uid; // for new entries, a numeric "action" indicates an owner for the entry that is different from the current user, ie: this is a proxy entry
                 // no handling as yet for an array of values, which would be required for replacing the selections in a checkbox series or selectbox series.
                 // radio buttons would also need to be massaged?
-                $sql="INSERT INTO ".$xoopsDB->prefix("formulize_".$elementFormObject->getVar('form_handle'))." (creation_datetime, mod_datetime, creation_uid, mod_uid, `".$element->getVar('ele_handle')."`) VALUES (NOW(), NOW(), \"$owner\", \"$uid\", '".icms::$xoopsDB->escape($value)."')";
+                $sql="INSERT INTO " . icms::$xoopsDB->prefix("formulize_".$elementFormObject->getVar('form_handle'))." (creation_datetime, mod_datetime, creation_uid, mod_uid, `".$element->getVar('ele_handle')."`) VALUES (NOW(), NOW(), \"$owner\", \"$uid\", '".icms::$xoopsDB->escape($value)."')";
                 $needToSetOwner = true;
         } else {
           // not new entry, so update the existing entry
           if($append=="remove") {
-            $prevValue = q("SELECT `".$element->getVar('ele_handle')."` FROM ".$xoopsDB->prefix("formulize_".$elementFormObject->getVar('form_handle'))." WHERE entry_id=".intval($entry));
+            $prevValue = q("SELECT `".$element->getVar('ele_handle')."` FROM " . icms::$xoopsDB->prefix("formulize_".$elementFormObject->getVar('form_handle'))." WHERE entry_id=".intval($entry));
             if(strstr($prevValue[0]['ele_value'], "*=+*:")) {
                     $valueToWrite = str_replace("*=+*:" . $value, "", $prevValue[0]['ele_value']);
             } else {
                     $valueToWrite = str_replace($value, "", $prevValue[0]['ele_value']);
             }
           } elseif($append=="append") {
-            $prevValue = q("SELECT `".$element->getVar('ele_handle')."` FROM ".$xoopsDB->prefix("formulize_".$elementFormObject->getVar('form_handle'))." WHERE entry_id=".intval($entry));
+            $prevValue = q("SELECT `".$element->getVar('ele_handle')."` FROM " . icms::$xoopsDB->prefix("formulize_".$elementFormObject->getVar('form_handle'))." WHERE entry_id=".intval($entry));
             switch($element->getVar('ele_type')) {
                     case "checkbox":
                             $valueToWrite = $prevValue[0]['ele_value'] . "*=+*:" . $value;
@@ -3198,19 +3158,19 @@ print "$prevValue<br><br>";
           } else { // append == "replace" or all other settings for append
               $valueToWrite = $value;
           }
-          $sql = "UPDATE ".$xoopsDB->prefix("formulize_".$elementFormObject->getVar('form_handle'))." SET `".$element->getVar('ele_handle')."` = '".icms::$xoopsDB->escape($valueToWrite)."' WHERE entry_id=".intval($entry);
+          $sql = "UPDATE " . icms::$xoopsDB->prefix("formulize_".$elementFormObject->getVar('form_handle'))." SET `".$element->getVar('ele_handle')."` = '".icms::$xoopsDB->escape($valueToWrite)."' WHERE entry_id=".intval($entry);
         }
         if($sql) { // run the query
                 //print $sql . "<br>";
-                if(!$res = $xoopsDB->queryF($sql)) {
-                        exit("Error: unable to execute a \"displayButton\" or writeElementValue call, using the following SQL:<br>$sql<br>" . $xoopsDB->error);
+                if(!$res = icms::$xoopsDB->queryF($sql)) {
+                        exit("Error: unable to execute a \"displayButton\" or writeElementValue call, using the following SQL:<br>$sql<br>" . icms::$xoopsDB->error);
                 }
                 $GLOBALS['formulize_writeElementValueWasRun'] = true;
         }
-    if($lockIsOn) { $xoopsDB->query("UNLOCK TABLES"); }
+    if($lockIsOn) { icms::$xoopsDB->query("UNLOCK TABLES"); }
 
     if($entry == "new") {
-      $insertedId = $xoopsDB->getInsertId();
+      $insertedId = icms::$xoopsDB->getInsertId();
     }
     
     if($needToSetOwner) {
@@ -3327,7 +3287,6 @@ function synchSubformBlankDefaults($fid, $entry) {
 	if(isset($GLOBALS['formulize_subformCreateEntry'])) {
     foreach($GLOBALS['formulize_subformCreateEntry'] as $sfid=>$sfid_id_reqs) {
       $sourceEntryId = $_POST['formulize_subformValueSourceEntry_'.$sfid] ? $_POST['formulize_subformValueSourceEntry_'.$sfid] : "new";
-      global $xoopsDB;
       // first, figure out the value we need to write in the subform entry
       if($_POST['formulize_subformSourceType_'.$sfid]) { // true if the source is a common value
         $elementPostHandle = "de_".$_POST['formulize_subformValueSourceForm_'.$sfid]."_".$sourceEntryId."_".$_POST['formulize_subformValueSource_'.$sfid];
@@ -3394,19 +3353,18 @@ function dealWithDeprecatedFormHandles($handle) {
 	if(is_numeric($handle) OR $GLOBALS['formulize_versionFourOrHigher'] == true) {
 		return $handle;
 	}
-	global $xoopsDB;
 	static $cachedHandles = array();
 	if(!isset($cachedHandles[$handle])) {
-		$sql = "SELECT ff_form_id FROM ".$xoopsDB->prefix("formulize_framework_forms")." WHERE ff_handle = '".icms::$xoopsDB->escape($handle)."'";
-		if($res = $xoopsDB->query($sql)) {
-			$numRows = $xoopsDB->getRowsNum($res);
+		$sql = "SELECT ff_form_id FROM " . icms::$xoopsDB->prefix("formulize_framework_forms")." WHERE ff_handle = '". icms::$xoopsDB->escape($handle)."'";
+		if($res = icms::$xoopsDB->query($sql)) {
+			$numRows = icms::$xoopsDB->getRowsNum($res);
 			if($numRows == 0) {
 				$cachedHandles[$handle] = $handle;
 			} elseif($numRows == 1) {
-				$array = $xoopsDB->fetchArray($res);
+				$array = icms::$xoopsDB->fetchArray($res);
 				$cachedHandles[$handle] = $array['ff_form_id'];
 			} else {
-				while($array = $xoopsDB->fetchArray($res)) {
+				while($array = icms::$xoopsDB->fetchArray($res)) {
 					if(isset($prevFormId)) {
 						$prevFormId = $form_id; // cache previous if we're on a second run through
 					}
@@ -3453,10 +3411,9 @@ function dealWithDeprecatedFrameworkHandles($handles, $frid=false, $returnFormId
 	if(isset($cachedHandles[$serializedWorkingHandles][$returnFormId])) {
 		return $cachedHandles[$serializedWorkingHandles][$returnFormId];
 	}
-	global $xoopsDB;
-	$handleSQL = "SELECT elements.ele_handle, handles.fe_handle, elements.id_form FROM ".$xoopsDB->prefix("formulize")." as elements, ".$xoopsDB->prefix("formulize_framework_elements")." as handles WHERE (handles.fe_handle = '".implode("' OR handles.fe_handle = '",$workingHandles)."') AND handles.fe_element_id = elements.ele_id";
-	if($handleRes = $xoopsDB->query($handleSQL)) {
-		while($handleArray = $xoopsDB->fetchArray($handleRes)) {
+	$handleSQL = "SELECT elements.ele_handle, handles.fe_handle, elements.id_form FROM " . icms::$xoopsDB->prefix("formulize")." as elements, " . icms::$xoopsDB->prefix("formulize_framework_elements")." as handles WHERE (handles.fe_handle = '".implode("' OR handles.fe_handle = '",$workingHandles)."') AND handles.fe_element_id = elements.ele_id";
+	if($handleRes = icms::$xoopsDB->query($handleSQL)) {
+		while($handleArray = icms::$xoopsDB->fetchArray($handleRes)) {
 			$foundKey = array_search($handleArray['fe_handle'],$workingHandles);
 			if($foundKey !== false) {
 				$workingHandles[$foundKey] = $handleArray['ele_handle'];
@@ -3564,7 +3521,6 @@ function convertAllHandlesAndIds($handles, $frid, $reverse=false, $ids=false, $f
 	}
 	$to_return = array();
 	if(!isset($cachedElementHandles[$frid]) OR ($fid AND !isset($cachedElementHandlesFromElementIds[$fid]))) {
-		global $xoopsDB;
 		
 		$cachedElementHandles[$frid]['creation_uid'] = "creation_uid";
 		$cachedElementHandles[$frid]['creation_datetime'] = "creation_datetime";
@@ -3594,9 +3550,9 @@ function convertAllHandlesAndIds($handles, $frid, $reverse=false, $ids=false, $f
 		
 		// now get all the rest of the handles
 		if($fid) {
-			$idHandleQuery = q("SELECT ele_handle, ele_id FROM ".$xoopsDB->prefix("formulize") . " WHERE id_form=".intval($fid));
+			$idHandleQuery = q("SELECT ele_handle, ele_id FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form=".intval($fid));
 		} else {
-			$idHandleQuery = q("SELECT t2.ele_handle, t1.fe_handle, t2.ele_id FROM " . $xoopsDB->prefix("formulize_framework_elements") . " as t1, " . $xoopsDB->prefix("formulize") . " as t2 WHERE t1.fe_frame_id='$frid' AND t1.fe_element_id=t2.ele_id");
+			$idHandleQuery = q("SELECT t2.ele_handle, t1.fe_handle, t2.ele_id FROM " . icms::$xoopsDB->prefix("formulize_framework_elements") . " as t1, " . icms::$xoopsDB->prefix("formulize") . " as t2 WHERE t1.fe_frame_id='$frid' AND t1.fe_element_id=t2.ele_id");
 		}
 		foreach($idHandleQuery as $thisIdRow) {
 			if($fid) {
@@ -3683,7 +3639,6 @@ function buildFilter($id, $ele_id, $defaulttext="", $name="", $overrides=array(0
 	// limits are very similar to subfilters in their effect, but subfilters are meant for situations where one filter influences another filter
 	// subfilters are kind of like dynamic limits, where the limit condition is not specified until the parent filter is chosen.
 
-	global $xoopsDB;		// required by q
 	$form_handler = icms_getModuleHandler('forms', 'formulize');
 	$filter = "<SELECT name=\"$id\" id=\"$id\"";
 	if($name == "{listofentries}") {
@@ -3706,7 +3661,7 @@ function buildFilter($id, $ele_id, $defaulttext="", $name="", $overrides=array(0
 			$filter .= "<option value=\"none\">".$defaulttext."</option>\n";
 		}
 
-    $form_element = q("SELECT ele_value, ele_type, ele_uitext FROM " . $xoopsDB->prefix("formulize") . " WHERE ele_id = " . $ele_id);
+    $form_element = q("SELECT ele_value, ele_type, ele_uitext FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE ele_id = " . $ele_id);
     $element_value = unserialize($form_element[0]["ele_value"]);
 		$ele_uitext = unserialize($form_element[0]["ele_uitext"]);
 	switch($form_element[0]["ele_type"]) {
@@ -3743,12 +3698,12 @@ function buildFilter($id, $ele_id, $defaulttext="", $name="", $overrides=array(0
 			$linkedSourceElementEleValue = $linkedSourceElementObject->getVar('ele_value');
 			$linkedSourceElementEleValueParts = explode("#*=:*", $linkedSourceElementEleValue[2]); // first part will be the form id of the source form, second part will be the element handle in that form
 			$linkedFormObject = $form_handler->get($linkedSourceElementEleValueParts[0]);
-			$limitCondition = ", ".$xoopsDB->prefix("formulize_".$linkedFormObject->getVar('form_handle'))." as t2 WHERE t1.`$linked_ele_id` LIKE CONCAT('%',t2.entry_id,'%') AND t2.`".$linkedSourceElementEleValueParts[1]."` LIKE '%".icms::$xoopsDB->escape($_POST[$linked_data_id])."%'";
+			$limitCondition = ", " . icms::$xoopsDB->prefix("formulize_".$linkedFormObject->getVar('form_handle'))." as t2 WHERE t1.`$linked_ele_id` LIKE CONCAT('%',t2.entry_id,'%') AND t2.`".$linkedSourceElementEleValueParts[1]."` LIKE '%".icms::$xoopsDB->escape($_POST[$linked_data_id])."%'";
 		}
 		unset($options);
 		$sourceFormObject = $form_handler->get($source_form_id);
-		if($dataResult = $xoopsDB->query("SELECT distinct(t1.`$source_element_handle`) FROM ".$xoopsDB->prefix("formulize_".$sourceFormObject->getVar('form_handle'))." as t1 ".$limitCondition." ORDER BY t1.`$source_element_handle`")) {
-			while($dataArray = $xoopsDB->fetchArray($dataResult)) {
+		if($dataResult = icms::$xoopsDB->query("SELECT distinct(t1.`$source_element_handle`) FROM " . icms::$xoopsDB->prefix("formulize_".$sourceFormObject->getVar('form_handle'))." as t1 ".$limitCondition." ORDER BY t1.`$source_element_handle`")) {
+			while($dataArray = icms::$xoopsDB->fetchArray($dataResult)) {
 				$options[$dataArray[$source_element_handle]] = "";
 			}
 		} else {
@@ -3800,8 +3755,7 @@ function buildFilter($id, $ele_id, $defaulttext="", $name="", $overrides=array(0
 			} else { // use all
 				if(!$element_value[4]) { // really use all (otherwise, we're just going will all user's groups, so existing value of $groups will be okay
 					unset($groups);
-					global $xoopsDB;
-					$allgroupsq = q("SELECT groupid FROM " . $xoopsDB->prefix("groups") . " WHERE groupid != " . XOOPS_GROUP_USERS);
+					$allgroupsq = q("SELECT groupid FROM " . icms::$xoopsDB->prefix("groups") . " WHERE groupid != " . XOOPS_GROUP_USERS);
 					foreach($allgroupsq as $thisgid) {
 						$groups[] = $thisgid['groupid'];
 					}
@@ -4198,8 +4152,8 @@ function formulize_createFilterUIMatch($newElementName,$formName,$filterName,$op
 // want to has the db pass since we don't want any SQL logging processes to include the db pass as plaintext
 function getAESPassword() {
 	$icmsDB = SDATA_DB_PASS;
-	$xoopsDB = XOOPS_DB_PASS;
-	$dbPass = $icmsDB ? $icmsDB : $xoopsDB;
+ icms::$xoopsDB = XOOPS_DB_PASS;
+	$dbPass = $icmsDB ? $icmsDB : icms::$xoopsDB;
 	return sha1($dbPass."I'm a cool, cool, cool dingbat");
 }
 
@@ -4474,7 +4428,6 @@ function buildConditionsFilterSQL($conditions, $targetFormId, $curlyBracketEntry
 
 // this function takes the info from the above function, and actually builds the parts of the SQL statement by analyzing the current situation
 function _buildConditionsFilterSQL($filterId, $filterOps, $filterTerms, $filterElementIds, $targetFormElementTypes, $curlyBracketEntry, $userComparisonId, $curlyBracketForm, $element_handler, $form_handler) {
-  global $xoopsDB;
   $conditionsFilterComparisonValue = "";
   $curlyBracketFormFrom = "";
   if($filterOps[$filterId] == "NOT") { $filterOps[$filterId] = "!="; }
@@ -4499,7 +4452,7 @@ function _buildConditionsFilterSQL($filterId, $filterOps, $filterTerms, $filterE
 		  // now build a comparison value that contains a subquery on the source source form, instead of a literal match to the source form
 		  if(substr($filterTerms[$filterId],0,1) == "{" AND substr($filterTerms[$filterId],-1)=="}") {
 		    $filterTermToUse = " curlybracketform.`".icms::$xoopsDB->escape(substr($filterTerms[$filterId],1,-1))."` ";
-		    $curlyBracketFormFrom = ", ".$xoopsDB->prefix("formulize_".$curlyBracketForm->getVar('form_handle'))." AS curlybracketform "; // set as a single value, we're assuming all { } terms refer to the same form
+		    $curlyBracketFormFrom = ", " . icms::$xoopsDB->prefix("formulize_".$curlyBracketForm->getVar('form_handle'))." AS curlybracketform "; // set as a single value, we're assuming all { } terms refer to the same form
 		    // figure out if the curlybracketform field is linked and pointing to the same source as the target element is pointing to
 		    // because if it is, then we don't need to do a subquery later, we just compare directly to the $filterTermToUse
 		    $curlyBracketElementObject = $element_handler->get(substr($filterTerms[$filterId],1,-1));
@@ -4522,7 +4475,7 @@ function _buildConditionsFilterSQL($filterId, $filterOps, $filterTerms, $filterE
 		    $filterTermToUse = icms::$xoopsDB->escape($filterTerms[$filterId]);
 		  }
 		  if(!$conditionsFilterComparisonValue) {
-		    $conditionsFilterComparisonValue = " CONCAT('$origlikebits,',(SELECT ss.entry_id FROM ".$xoopsDB->prefix("formulize_".$targetSourceFormObject->getVar('form_handle'))." AS ss WHERE `$targetSourceHandle` ".$filterOps[$filterId].$quotes.$likebits.$filterTermToUse.$likebits.$quotes."),',$origlikebits') ";
+		    $conditionsFilterComparisonValue = " CONCAT('$origlikebits,',(SELECT ss.entry_id FROM " . icms::$xoopsDB->prefix("formulize_".$targetSourceFormObject->getVar('form_handle'))." AS ss WHERE `$targetSourceHandle` ".$filterOps[$filterId].$quotes.$likebits.$filterTermToUse.$likebits.$quotes."),',$origlikebits') ";
 		  }
 		  if(substr($filterTerms[$filterId],0,1) == "{" AND substr($filterTerms[$filterId],-1)=="}") {
 		    $conditionsFilterComparisonValue .= "  AND curlybracketform.`entry_id`=$curlyBracketEntry ";
@@ -4539,7 +4492,7 @@ function _buildConditionsFilterSQL($filterId, $filterOps, $filterTerms, $filterE
 	  if(isset($GLOBALS['formulize_asynchronousFormDataInDatabaseReadyFormat'][substr($filterTerms[$filterId],1,-1)])) {
 		  $conditionsFilterComparisonValue = "'".icms::$xoopsDB->escape($GLOBALS['formulize_asynchronousFormDataInDatabaseReadyFormat'][substr($filterTerms[$filterId],1,-1)])."'";
 	  } else {
-		  $curlyBracketFormFrom = ", ".$xoopsDB->prefix("formulize_".$curlyBracketForm->getVar('form_handle'))." AS curlybracketform "; // set as a single value, we're assuming all { } terms refer to the same form
+		  $curlyBracketFormFrom = ", " . icms::$xoopsDB->prefix("formulize_".$curlyBracketForm->getVar('form_handle'))." AS curlybracketform "; // set as a single value, we're assuming all { } terms refer to the same form
 		  if($likebits == "%") {
 			  $conditionsFilterComparisonValue = " CONCAT('%',curlybracketform.`".substr($filterTerms[$filterId],1,-1)."`,'%') AND curlybracketform.`entry_id`=$curlyBracketEntry ";
 		  } else {

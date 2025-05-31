@@ -40,7 +40,7 @@ $config_handler = $config_handler = icms::handler('icms_config');
 $formulizeConfig =& $config_handler->getConfigsByCat(0, getFormulizeModId());
 
 if($aid == 0) {
-	$appName = "Forms with no app"; 
+	$appName = "Forms with no app";
 } else {
 	$appObject = $application_handler->get($aid);
 	$appName = $appObject->getVar('name');
@@ -90,22 +90,22 @@ if($_GET['ele_id'] != "new") {
   $ele_display = $elementObject->getVar('ele_display');
   if(strstr($ele_display,",")) {
     foreach(explode(",",trim($ele_display,",")) as $displayGroup) {
-      $display['ele_display'][$displayGroup] = " selected"; 
+      $display['ele_display'][$displayGroup] = " selected";
     }
   } elseif($ele_display == 1) {
-    $display['ele_display']['all'] = " selected"; 
+    $display['ele_display']['all'] = " selected";
   } elseif($ele_display == 0) {
-    $display['ele_display']['none'] = " selected"; 
+    $display['ele_display']['none'] = " selected";
   }
   $ele_disabled = $elementObject->getVar('ele_disabled');
   if(strstr($ele_disabled,",")) {
     foreach(explode(",",trim($ele_disabled,",")) as $displayGroup) {
-      $display['ele_disabled'][$displayGroup] = " selected"; 
+      $display['ele_disabled'][$displayGroup] = " selected";
     }
   } elseif($ele_disabled == 1) {
-    $display['ele_disabled']['all'] = " selected"; 
+    $display['ele_disabled']['all'] = " selected";
   } elseif($ele_disabled == 0) {
-    $display['ele_disabled']['none'] = " selected"; 
+    $display['ele_disabled']['none'] = " selected";
   }
   $ele_filtersettings = $elementObject->getVar('ele_filtersettings');
   $filterSettingsToSend = count($ele_filtersettings > 0) ? $ele_filtersettings : "";
@@ -175,7 +175,7 @@ if($_GET['ele_id'] != "new") {
     case("textarea"):
       $ele_value[1] = $xoopsModuleConfig['ta_rows'];
       $ele_value[2] = $xoopsModuleConfig['ta_cols'];
-      break;  
+      break;
     case "derived":
       $ele_value[1] = isset($formulizeConfig['number_decimals']) ? $formulizeConfig['number_decimals'] : 0;
       $ele_value[2] = isset($formulizeConfig['number_prefix']) ? $formulizeConfig['number_prefix'] : '';
@@ -273,22 +273,21 @@ if($ele_type=='text') {
 } elseif($ele_type == "subform") {
   
   $ele_value[1] = explode(",",$ele_value[1]);
-  global $xoopsDB;
-  $validForms1 = q("SELECT t1.fl_form1_id, t2.desc_form FROM " . $xoopsDB->prefix("formulize_framework_links") . " AS t1, " . $xoopsDB->prefix("formulize_id") . " AS t2 WHERE t1.fl_form2_id=" . intval($fid) . " AND t1.fl_unified_display=1 AND t1.fl_relationship != 1 AND t1.fl_form1_id=t2.id_form");
-  $validForms2 = q("SELECT t1.fl_form2_id, t2.desc_form FROM " . $xoopsDB->prefix("formulize_framework_links") . " AS t1, " . $xoopsDB->prefix("formulize_id") . " AS t2 WHERE t1.fl_form1_id=" . intval($fid) . " AND t1.fl_unified_display=1 AND t1.fl_relationship != 1 AND t1.fl_form2_id=t2.id_form");
+  $validForms1 = q("SELECT t1.fl_form1_id, t2.desc_form FROM " . icms::$xoopsDB->prefix("formulize_framework_links") . " AS t1, " . icms::$xoopsDB->prefix("formulize_id") . " AS t2 WHERE t1.fl_form2_id=" . intval($fid) . " AND t1.fl_unified_display=1 AND t1.fl_relationship != 1 AND t1.fl_form1_id=t2.id_form");
+  $validForms2 = q("SELECT t1.fl_form2_id, t2.desc_form FROM " . icms::$xoopsDB->prefix("formulize_framework_links") . " AS t1, " . icms::$xoopsDB->prefix("formulize_id") . " AS t2 WHERE t1.fl_form1_id=" . intval($fid) . " AND t1.fl_unified_display=1 AND t1.fl_relationship != 1 AND t1.fl_form2_id=t2.id_form");
   $caughtfirst = false;
   foreach($validForms1 as $vf1) {
   	$validForms[$vf1['fl_form1_id']] = $vf1['desc_form'];
-  	if(!$caughtfirst) { 
-  		$firstform = $vf1['fl_form1_id']; 
+  	if(!$caughtfirst) {
+  		$firstform = $vf1['fl_form1_id'];
   		$caughtfirst = true;
   	}
   }
   foreach($validForms2 as $vf2) {
   	if(!isset($validForms[$vf2['fl_form2_id']])) {
   		$validForms[$vf2['fl_form2_id']] = $vf2['desc_form'];
-  		if(!$caughtfirst) { 
-  			$firstform = $vf2['fl_form2_id']; 
+  		if(!$caughtfirst) {
+  			$firstform = $vf2['fl_form2_id'];
   			$caughtfirst = true;
   		}
   	}
@@ -297,7 +296,7 @@ if($ele_type=='text') {
   $options['subforms'] = $validForms;
   if($caughtfirst) {
     $formtouse = $ele_value[0] ? $ele_value[0] : $firstform; // use the user's selection, unless there isn't one, then use the first form found
-  	$elementsq = q("SELECT ele_caption, ele_id FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form=" . intval($formtouse) . " AND ele_type != \"areamodif\" AND ele_type != \"grid\" AND ele_type != \"ib\" AND ele_type != \"subform\" ORDER BY ele_order");
+    $elementsq = q("SELECT ele_caption, ele_id FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form=" . intval($formtouse) . " AND ele_type != \"areamodif\" AND ele_type != \"grid\" AND ele_type != \"ib\" AND ele_type != \"subform\" ORDER BY ele_order");
   	foreach($elementsq as $oneele) {
   		$options['subformelements'][$oneele['ele_id']] = printSmart($oneele['ele_caption']);
   	}
@@ -344,13 +343,13 @@ if($ele_type=='text') {
       $options['islinked'] = 1;
     } else {
       $options['islinked'] = 0;
-      if(is_array($ele_uitext) AND count($ele_uitext) > 0) { 
+      if(is_array($ele_uitext) AND count($ele_uitext) > 0) {
        	$ele_value[2] = formulize_mergeUIText($ele_value[2], $ele_uitext);
-      } 
+      }
       $options['useroptions'] = $ele_value[2];
     }
     
-    $options['formlink_scope'] = explode(",",$ele_value[3]); 
+    $options['formlink_scope'] = explode(",",$ele_value[3]);
   }
 
   list($formlink, $selectedLinkElementId) = createFieldList($ele_value[2]);
@@ -399,7 +398,7 @@ if($ele_type=='text') {
   if($selectedLinkElementId) {
     $selectedElementObject = $element_handler->get($selectedLinkElementId);
     if($selectedElementObject) {
-      $options['formlinkfilter'] = formulize_createFilterUI($ele_value[5], "formlinkfilter", $selectedElementObject->getVar('id_form'), "form-2");      
+      $options['formlinkfilter'] = formulize_createFilterUI($ele_value[5], "formlinkfilter", $selectedElementObject->getVar('id_form'), "form-2");
     }
   } elseif($selectedLinkFormId) { // if usernames or fullnames is in effect, we'll have the profile form fid instead
 	  $options['formlinkfilter'] = formulize_createFilterUI($ele_value[5], "formlinkfilter", $selectedLinkFormId, "form-2");
@@ -433,7 +432,7 @@ if($ele_type!='colorpick') {
   $adminPage['tabs'][++$tabindex]['name'] = "Options";
   $adminPage['tabs'][$tabindex]['template'] = "db:admin/element_options.html";
   if(count($customValues)>0) {
-	$adminPage['tabs'][$tabindex]['content'] = $options + $common + $customValues;	
+	$adminPage['tabs'][$tabindex]['content'] = $options + $common + $customValues;
   } else {
 	$adminPage['tabs'][$tabindex]['content'] = $options + $common;
   }
@@ -466,7 +465,7 @@ $breadcrumbtrail[3]['text'] = $formName;
 $breadcrumbtrail[4]['text'] = $elementName;
 
 function createDataTypeUI($ele_type, $element,$id_form,$ele_encrypt) {
-  // data type controls ... added May 31 2009, jwe 
+  // data type controls ... added May 31 2009, jwe
     // only do it for existing elements where the datatype choice is relevant
 		// do not do it for encrypted elements
     $renderedUI = "";
@@ -483,12 +482,11 @@ function createDataTypeUI($ele_type, $element,$id_form,$ele_encrypt) {
 		if(($ele_type == "text" OR $ele_type == "textarea" OR $ele_type == "select" OR $ele_type == "radio" OR $ele_type == "checkbox" OR $ele_type == "derived" OR $customTypeNeedsUI) AND !$ele_encrypt) {
       if($element) {
               // get the current type...
-              global $xoopsDB;
 	      $form_handler = icms_getModuleHandler('forms', 'formulize');
               $formObject = $form_handler->get($id_form);
-              $elementDataSQL = "SHOW COLUMNS FROM ".$xoopsDB->prefix("formulize_".$formObject->getVar('form_handle'))." LIKE '".$element->getVar('ele_handle')."'";
-              $elementDataRes = $xoopsDB->queryF($elementDataSQL);
-              $elementDataArray = $xoopsDB->fetchArray($elementDataRes);
+              $elementDataSQL = "SHOW COLUMNS FROM ". icms::$xoopsDB->prefix("formulize_".$formObject->getVar('form_handle'))." LIKE '".$element->getVar('ele_handle')."'";
+              $elementDataRes = icms::$xoopsDB->queryF($elementDataSQL);
+              $elementDataArray = icms::$xoopsDB->fetchArray($elementDataRes);
               $defaultTypeComplete = $elementDataArray['Type'];
               $parenLoc = strpos($defaultTypeComplete, "(");
               if($parenLoc) {

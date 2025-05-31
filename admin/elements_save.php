@@ -48,9 +48,9 @@ if( !empty($ele_id) AND $clone == 0){
       
       $element = $formulize_mgr->get($ele_id);
 
-			$ocq = "SELECT ele_caption, ele_handle FROM " . $xoopsDB->prefix("formulize") . " WHERE ele_id='$ele_id'";
-			$res_ocq = $xoopsDB->query($ocq);
-			$array_ocq = $xoopsDB->fetchArray($res_ocq);
+      $ocq = "SELECT ele_caption, ele_handle FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE ele_id='$ele_id'";
+      $res_ocq = icms::$xoopsDB->query($ocq);
+      $array_ocq = icms::$xoopsDB->fetchArray($res_ocq);
 			//$original_caption = $array_ocq['ele_caption'];
       $newFieldNeeded = false;
 			$original_handle = $array_ocq['ele_handle'];
@@ -343,9 +343,9 @@ if( !empty($ele_id) AND $clone == 0){
 				{
 					// $value[2] = stripslashes($_POST['formlink']);
 					// now receiving an ele_id due to the effects of xlanguage, so get the real caption out of the DB
-					$sql_link = "SELECT ele_caption, id_form, ele_handle FROM " . $xoopsDB->prefix("formulize") . " WHERE ele_id = " . intval($_POST['formlink']);
-					$res_link = $xoopsDB->query($sql_link);
-					$array_link = $xoopsDB->fetchArray($res_link);
+					$sql_link = "SELECT ele_caption, id_form, ele_handle FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE ele_id = " . intval($_POST['formlink']);
+					$res_link = icms::$xoopsDB->query($sql_link);
+					$array_link = icms::$xoopsDB->fetchArray($res_link);
 					$value[2] = $array_link['id_form'] . "#*=:*" . $array_link['ele_handle'];
          
 				}
@@ -460,16 +460,15 @@ if( !empty($ele_id) AND $clone == 0){
       if($original_handle) { // rewrite references in other elements to this handle (linked selectboxes)
 				$ele_handle_len = strlen($ele_handle) + 5 + strlen($id_form);
 				$orig_handle_len = strlen($original_handle) + 5 + strlen($id_form);
-				$lsbHandleFormDefSQL = "UPDATE " . $xoopsDB->prefix("formulize") . " SET ele_value = REPLACE(ele_value, 's:$orig_handle_len:\"$id_form#*=:*$original_handle', 's:$ele_handle_len:\"$id_form#*=:*$ele_handle') WHERE ele_value LIKE '%$id_form#*=:*$original_handle%'"; // must include the cap lengths or else the unserialization of this info won't work right later, since ele_value is a serialized array!
+				$lsbHandleFormDefSQL = "UPDATE " . icms::$xoopsDB->prefix("formulize") . " SET ele_value = REPLACE(ele_value, 's:$orig_handle_len:\"$id_form#*=:*$original_handle', 's:$ele_handle_len:\"$id_form#*=:*$ele_handle') WHERE ele_value LIKE '%$id_form#*=:*$original_handle%'"; // must include the cap lengths or else the unserialization of this info won't work right later, since ele_value is a serialized array!
 				if($ele_handle != $original_handle) {
-					if(!$res = $xoopsDB->query($lsbHandleFormDefSQL)) {
+					if(!$res = icms::$xoopsDB->query($lsbHandleFormDefSQL)) {
 						print "Error:  update of linked selectbox element definitions failed.";
 					}
 				}
 			}
 
 			if($newFieldNeeded) {
-        global $xoopsDB;
 			      // figure out what the data type should be.
 			      // the rules:
             // if it's encrypted, it's a BLOB, otherwise...

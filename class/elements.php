@@ -32,8 +32,7 @@
 # # URL: http://www.brandycoke.com/ ##
 # # Project: Formulize ##
 # ##############################################################################
-global $xoopsDB;
-define('formulize_TABLE', $xoopsDB->prefix("formulize"));
+define('formulize_TABLE', icms::$xoopsDB->prefix("formulize"));
 
 class formulizeformulize extends icms_core_Object {
 	var $isLinked;
@@ -206,7 +205,6 @@ class formulizeElementsHandler {
 			return false;
 		}
 
-		global $xoopsDB;
 
 		$sql = "DELETE FROM " . formulize_TABLE . " WHERE ele_id=" . $element->getVar("ele_id") . "";
 		if (false != $force) {
@@ -215,7 +213,7 @@ class formulizeElementsHandler {
 			$result = $this->db->query($sql);
 		}
 		// delete from frameworks table too -- added July 27 2006
-		$sql = "DELETE FROM " . $xoopsDB->prefix('formulize_framework_elements') . " WHERE fe_element_id=" . $element->getVar("ele_id");
+		$sql = "DELETE FROM " . icms::$xoopsDB->prefix('formulize_framework_elements') . " WHERE fe_element_id=" . $element->getVar("ele_id");
 		if (false != $force) {
 			$result = $this->db->queryF($sql);
 		} else {
@@ -298,12 +296,11 @@ class formulizeElementsHandler {
 		if (!$result) {
 			return 0;
 		}
-		list($count) = $xoopsDB->fetchRow($result);
+		list($count) = icms::$xoopsDB->fetchRow($result);
 		return $count;
 	}
 
 	function deleteAll($criteria = null) {
-		global $xoopsDB;
 		$sql = 'DELETE FROM ' . formulize_TABLE;
 		if (isset($criteria)) {
 			$sql .= ' ' . $criteria->renderWhere();
@@ -316,10 +313,9 @@ class formulizeElementsHandler {
 
 	// this method returns the id number of the element with the next highest order, below the specified order, in the specified form
 	function getPreviousElement($order, $fid) {
-		global $xoopsDB;
-		$sql = "SELECT ele_id FROM " . $xoopsDB->prefix("formulize") . " WHERE ele_order < $order AND id_form = $fid ORDER BY ele_order DESC LIMIT 0,1";
-		if ($result = $xoopsDB->query($sql)) {
-			$array = $xoopsDB->fetchArray($result);
+		$sql = "SELECT ele_id FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE ele_order < $order AND id_form = $fid ORDER BY ele_order DESC LIMIT 0,1";
+		if ($result = icms::$xoopsDB->query($sql)) {
+			$array = icms::$xoopsDB->fetchArray($result);
 			return $array['ele_id'];
 		} else {
 			return false;

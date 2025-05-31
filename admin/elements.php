@@ -49,7 +49,7 @@ if(!isset($_POST['ele_id'])){
 	$ele_id = $_POST['ele_id'];
 }
 /* // commented due to title now being identical with id_form
-	$sql=sprintf("SELECT id_form FROM ".$xoopsDB->prefix("formulize_id")." WHERE desc_form='%s'",$title);
+	$sql=sprintf("SELECT id_form FROM " icms::$xoopsDB->prefix("formulize_id")." WHERE desc_form='%s'",$title);
 	$res = mysql_query ( $sql ) or die('Erreur SQL !<br>'.$requete.'<br>'.icms::$xoopsDB->error());
 
 if ( $res ) {
@@ -405,10 +405,9 @@ switch($op){
 		if(($ele_type == "text" OR $ele_type == "textarea" OR $ele_type == "select" OR $ele_type == "radio" OR $ele_type == "checkbox" OR $ele_type == "derived" OR (isset($elementTypeHandler) AND $elementTypeHandler->needsDataType)) AND !$encryptState) {
                         if(!empty($ele_id)) {
                                 // get the current type...
-                                global $xoopsDB;
-				$elementDataSQL = "SHOW COLUMNS FROM ".$xoopsDB->prefix("formulize_".$formObject->getVar('form_handle'))." LIKE '".$element->getVar('ele_handle')."'";
-                                $elementDataRes = $xoopsDB->queryF($elementDataSQL);
-                                $elementDataArray = $xoopsDB->fetchArray($elementDataRes);
+                        	$elementDataSQL = "SHOW COLUMNS FROM ". icms::$xoopsDB->prefix("formulize_".$formObject->getVar('form_handle'))." LIKE '".$element->getVar('ele_handle')."'";
+                        	$elementDataRes = icms::$xoopsDB->queryF($elementDataSQL);
+                        	$elementDataArray = icms::$xoopsDB->fetchArray($elementDataRes);
                                 $defaultTypeComplete = $elementDataArray['Type'];
                                 $parenLoc = strpos($defaultTypeComplete, "(");
                                 if($parenLoc) {
@@ -579,11 +578,10 @@ function addOptionsTray(){
 }
 
 function formulize_getElementHighOrder($id_form) {
-	global $xoopsDB;
 	// added by jwe 01/06/05 -- get the current highest order value for the form, and add up to 5 to it to reach the nearest mod 5 value
-	$highorderq = "SELECT MAX(ele_order) FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form=$id_form";
-	$reshighorderq = $xoopsDB->query($highorderq);
-	$rowhighorderq = $xoopsDB->fetchRow($reshighorderq);
+	$highorderq = "SELECT MAX(ele_order) FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form=$id_form";
+	$reshighorderq = icms::$xoopsDB->query($highorderq);
+	$rowhighorderq = icms::$xoopsDB->fetchRow($reshighorderq);
 	$highorder = $rowhighorderq[0]+1;
 	while($highorder % 5 != 0)
 	{

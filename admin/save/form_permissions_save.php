@@ -47,7 +47,6 @@ if(!$gperm_handler->checkRight("edit_form", $fid, icms::$user->getGroups(), getF
   return;
 }
 
-global $xoopsDB;
 
 // check to see if we're dealing with a grouplist save or deletion
 if($_POST['grouplistname']) {
@@ -55,35 +54,35 @@ if($_POST['grouplistname']) {
   $groupListId = intval($_POST['grouplistid']);
   $groupListGroups = icms::$xoopsDB->escape(implode(",",$_POST['groups']));
   $name = icms::$xoopsDB->escape($_POST['grouplistname']);
-  // are we inserting or updating? 
+  // are we inserting or updating?
   $newList = $groupListId == 0 ? true : false;
   if(!$newList) {
-	  // Get exisitng name to see if we update, or create new.	
-	  $result = $xoopsDB->query("SELECT gl_name FROM ".$xoopsDB->prefix("group_lists")." WHERE gl_id='".intval($groupListId)."'");
-	  if($xoopsDB->getRowsNum($result) > 0) {
-      $entry = $xoopsDB->fetchArray($result); 
-      if($entry['gl_name'] != $name) { 
+	  // Get exisitng name to see if we update, or create new.
+  	$result = icms::$xoopsDB->query("SELECT gl_name FROM ". icms::$xoopsDB->prefix("group_lists")." WHERE gl_id='".intval($groupListId)."'");
+  	if(icms::$xoopsDB->getRowsNum($result) > 0) {
+  		$entry = icms::$xoopsDB->fetchArray($result);
+      if($entry['gl_name'] != $name) {
 				$newList = true;
-			}				  
+			}
 	  }
 	}
   if($newList) {
-    $grouplist_query = "INSERT INTO ". $xoopsDB->prefix("group_lists") . " (gl_name, gl_groups) VALUES ('" . $name . "', '" . $groupListGroups . "')";
-    $groupListId = $xoopsDB->getInsertId();
+  	$grouplist_query = "INSERT INTO ". icms::$xoopsDB->prefix("group_lists") . " (gl_name, gl_groups) VALUES ('" . $name . "', '" . $groupListGroups . "')";
+  	$groupListId = icms::$xoopsDB->getInsertId();
   } else {
-    $grouplist_query = "UPDATE ". $xoopsDB->prefix("group_lists") . " SET gl_groups = '" . $groupListGroups . "', gl_name = '".$name."' WHERE gl_id='" . $groupListId . "'";
+  	$grouplist_query = "UPDATE ". icms::$xoopsDB->prefix("group_lists") . " SET gl_groups = '" . $groupListGroups . "', gl_name = '".$name."' WHERE gl_id='" . $groupListId . "'";
   }
-  if(!$grouplist_result = $xoopsDB->query($grouplist_query)) {
-    print "Error: could not add a group list ".icms::$xoopsDB->error(); 
+  if(!$grouplist_result = icms::$xoopsDB->query($grouplist_query)) {
+    print "Error: could not add a group list ". icms::$xoopsDB->error();
   }
 }
 
 if($_POST['removelistid']) {
   $id = intval($_POST['removelistid']);
 	if($id) {
-    $delete_query = "DELETE FROM ".$xoopsDB->prefix("group_lists") . " WHERE gl_id='" . $id . "'";
-    if(!$delete_result = $xoopsDB->query($delete_query)) {
-      print "Error: could not delete group list ".icms::$xoopsDB->error();
+		$delete_query = "DELETE FROM ". icms::$xoopsDB->prefix("group_lists") . " WHERE gl_id='" . $id . "'";
+		if(!$delete_result = icms::$xoopsDB->query($delete_query)) {
+      print "Error: could not delete group list ". icms::$xoopsDB->error();
     }
   }
   $_SESSION['formulize_selectedGroupList'] = 0;
@@ -101,20 +100,20 @@ foreach($_POST['group_list'] as $gid) {
   // deal with regular permissions
   // in order to limit this to two operations per group, we wholesale delete, and then insert, so it's easier to construct a single insert query to cover all the perms
   $mid = getFormulizeModId();
-  $deleteSQL = "DELETE FROM ".$xoopsDB->prefix("group_permission") . " WHERE gperm_groupid='$gid' AND gperm_itemid='$fid' AND gperm_modid='$mid'";
-  $insertSQL = "INSERT INTO ".$xoopsDB->prefix("group_permission") . " (`gperm_groupid`, `gperm_itemid`, `gperm_modid`, `gperm_name`) VALUES ";
+  $deleteSQL = "DELETE FROM ". icms::$xoopsDB->prefix("group_permission") . " WHERE gperm_groupid='$gid' AND gperm_itemid='$fid' AND gperm_modid='$mid'";
+  $insertSQL = "INSERT INTO ". icms::$xoopsDB->prefix("group_permission") . " (`gperm_groupid`, `gperm_itemid`, `gperm_modid`, `gperm_name`) VALUES ";
   $permsToAdd = array();
   foreach(array("view_form", "add_own_entry", "update_own_entry", "delete_own_entry", "update_other_entries", "delete_other_entries", "add_proxy_entries", "view_groupscope", "view_globalscope", "view_private_elements", "update_other_reports", "delete_other_reports", "publish_reports", "publish_globalscope", "set_notifications_for_others", "import_data", "edit_form", "delete_form", "update_entry_ownership") as $thisPerm) {
     if($_POST[$fid."_".$gid."_".$thisPerm]) {
       $permsToAdd[] = "($gid, $fid, $mid, '$thisPerm')";
     }
   }
-  if(!$xoopsDB->query($deleteSQL)) {
+  if(!icms::$xoopsDB->query($deleteSQL)) {
     print "Error: could not delete the permissions for group $gid";
   }
   if(count($permsToAdd)>0) {
     $insertSQL .= implode(", ", $permsToAdd);
-    if(!$xoopsDB->query($insertSQL)) {
+    if(!icms::$xoopsDB->query($insertSQL)) {
       print "Error: could not set the permissions for group $gid";
     }
   }
@@ -178,4 +177,4 @@ if(count($filterSettings)>0) {
 
 if($_POST['reload'] OR $_POST['loadthislist']) {
   print "/* eval */ window.document.getElementById('form-".intval($_POST['form_number'])."').submit();";
-} 
+}

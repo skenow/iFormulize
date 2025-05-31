@@ -26,7 +26,6 @@
 # # URL: http://www.freeformsolutions.ca/formulize ##
 # # Project: Formulize ##
 # ##############################################################################
-global $xoopsDB;
 
 class formulizeApplication extends icms_core_Object {
 
@@ -52,7 +51,6 @@ class formulizeApplicationsHandler {
 
 	function get($ids, $fid = 0) { // takes a single ID or an array of ids, or the keyword 'all', Plus, if $fid is greater than 0, limit applications retrieved to ones where that form is involved
 		static $cachedApps = array();
-		global $xoopsDB;
 		$idsArray = array();
 		if (is_array($ids)) {
 			$idsArray = $ids;
@@ -80,9 +78,9 @@ class formulizeApplicationsHandler {
 				}
 			}
 			if ($fid > 0) {
-				$sql = 'SELECT * FROM ' . $xoopsDB->prefix("formulize_applications") . ' as t1, ' . $xoopsDB->prefix("formulize_application_form_link") . ' as t2 WHERE t1.appid IN (' . implode(",", $queryIds) . ') AND t1.appid = t2.appid AND t2.fid = ' . $fid . ' ORDER BY t1.name';
+				$sql = 'SELECT * FROM ' . icms::$xoopsDB->prefix("formulize_applications") . ' as t1, ' . icms::$xoopsDB->prefix("formulize_application_form_link") . ' as t2 WHERE t1.appid IN (' . implode(",", $queryIds) . ') AND t1.appid = t2.appid AND t2.fid = ' . $fid . ' ORDER BY t1.name';
 			} else {
-				$sql = 'SELECT * FROM ' . $xoopsDB->prefix("formulize_applications") . ' WHERE appid IN (' . implode(",", $queryIds) . ') ORDER BY name';
+				$sql = 'SELECT * FROM ' . icms::$xoopsDB->prefix("formulize_applications") . ' WHERE appid IN (' . implode(",", $queryIds) . ') ORDER BY name';
 			}
 		} else {
 			if (isset($cachedApps['all'])) {
@@ -99,9 +97,9 @@ class formulizeApplicationsHandler {
 				}
 			}
 			if ($fid > 0) {
-				$sql = 'SELECT * FROM ' . $xoopsDB->prefix("formulize_applications") . ' as t1, ' . $xoopsDB->prefix("formulize_application_form_link") . ' as t2 WHERE t1.appid = t2.appid AND t2.fid = ' . $fid . ' ORDER BY t1.name';
+				$sql = 'SELECT * FROM ' . icms::$xoopsDB->prefix("formulize_applications") . ' as t1, ' . icms::$xoopsDB->prefix("formulize_application_form_link") . ' as t2 WHERE t1.appid = t2.appid AND t2.fid = ' . $fid . ' ORDER BY t1.name';
 			} else {
-				$sql = 'SELECT * FROM ' . $xoopsDB->prefix("formulize_applications") . ' ORDER BY name';
+				$sql = 'SELECT * FROM ' . icms::$xoopsDB->prefix("formulize_applications") . ' ORDER BY name';
 			}
 		}
 		// query the DB for the ids we're supposed to
@@ -111,7 +109,7 @@ class formulizeApplicationsHandler {
 				$newApp->assignVars($resultArray);
 				$newAppId = $newApp->getVar('appid');
 				// add in the forms
-				$sql = 'SELECT link.fid FROM ' . $xoopsDB->prefix("formulize_application_form_link") . ' as link, ' . $xoopsDB->prefix("formulize_id") . ' as forms WHERE link.appid = ' . $newAppId . ' AND forms.id_form = link.fid ORDER BY forms.desc_form';
+				$sql = 'SELECT link.fid FROM ' . icms::$xoopsDB->prefix("formulize_application_form_link") . ' as link, ' . icms::$xoopsDB->prefix("formulize_id") . ' as forms WHERE link.appid = ' . $newAppId . ' AND forms.id_form = link.fid ORDER BY forms.desc_form';
 				$foundForms = array();
 				if ($formRes = $this->db->query($sql)) {
 					while ($formArray = $this->db->fetchArray($formRes)) {
@@ -259,10 +257,9 @@ class formulizeApplicationsHandler {
 		} elseif (!is_numeric($appid)) {
 			return false;
 		}
-		global $xoopsDB;
 		$isError = false;
-		$sql[] = "DELETE FROM " . $xoopsDB->prefix("formulize_applications") . " WHERE appid=$appid";
-		$sql[] = "DELETE FROM " . $xoopsDB->prefix("formulize_application_form_link") . " WHERE appid=$appid";
+		$sql[] = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_applications") . " WHERE appid=$appid";
+		$sql[] = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_application_form_link") . " WHERE appid=$appid";
 		foreach ($sql as $thisSql) {
 			if (!$xoopsDB->query($thisSql)) {
 				print "Error: could not complete the deletion of application " . $appid;

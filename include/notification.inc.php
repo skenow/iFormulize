@@ -27,12 +27,11 @@
 
 function form_item_info($category, $item_id)
 {
-	global $xoopsDB;
 	if ($category=='form') {
 		// Assume we have a valid form id
-		$sql = 'SELECT desc_form FROM ' . $xoopsDB->prefix('formulize_id') . ' WHERE id_form = '.intval($item_id);
-		$result = $xoopsDB->query($sql); // TODO: error check
-		$result_array = $xoopsDB->fetchArray($result);
+		$sql = 'SELECT desc_form FROM ' . icms::$xoopsDB->prefix('formulize_id') . ' WHERE id_form = '.intval($item_id);
+		$result = icms::$xoopsDB->query($sql); // TODO: error check
+		$result_array = icms::$xoopsDB->fetchArray($result);
 		$item['name'] = $result_array['desc_form'];
 		$item['url'] = XOOPS_URL . "/modules/formulize/index.php?fid=" . intval($item_id);
 		return $item;

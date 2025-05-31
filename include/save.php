@@ -132,7 +132,7 @@ if($pubflag) {
 
 require_once "../../../mainfile.php";
 
-global $xoopsConfig, $xoopsDB;
+global $xoopsConfig;
 // load the formulize language constants if they haven't been loaded already
 	if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/main.php") ) {
 		include_once XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/main.php";
@@ -141,7 +141,6 @@ global $xoopsConfig, $xoopsDB;
 	}
 
 
-global $xoopsDB;
 include_once XOOPS_ROOT_PATH.'/modules/formulize/include/functions.php';
 
 	// Set some required variables
@@ -324,7 +323,7 @@ if(count($publishgroups) > 1 ) { $pubflag = 1; }
 if($pubflag) {
 	// get lastloaded publishing option
 	if(strstr($viewselection, "old_") AND $viewselection != "new" AND $viewselection != "x1" AND $viewselection != "x2") { // legacy view
-		$lastpub = q("SELECT report_groupids, report_ispublished FROM " . $xoopsDB->prefix("formulize_reports") . " WHERE report_id = '" . substr($viewselection, 5). "'");
+		$lastpub = q("SELECT report_groupids, report_ispublished FROM " . icms::$xoopsDB->prefix("formulize_reports") . " WHERE report_id = '" . substr($viewselection, 5). "'");
 		$lastpubgroups = explode("&*=%4#", $lastpub[0]['report_groupids']);
 		if(strstr($lastpub[0]['report_ispublished'], "3") OR strstr($lastpub[0]['report_ispublished'], "2")) {
 			$currentlock = 1;
@@ -332,7 +331,7 @@ if($pubflag) {
 			$currentlock = 0;
 		}
 	} elseif($viewselection AND $viewselection != "new" AND $viewselection != "x1" AND $viewselection != "x2") { // new view
-		$lastpub = q("SELECT sv_pubgroups, sv_lockcontrols FROM " . $xoopsDB->prefix("formulize_saved_views") . " WHERE sv_id = '" . substr($viewselection, 1) . "'");
+		$lastpub = q("SELECT sv_pubgroups, sv_lockcontrols FROM " . icms::$xoopsDB->prefix("formulize_saved_views") . " WHERE sv_id = '" . substr($viewselection, 1) . "'");
 		$lastpubgroups = explode(",", $lastpub[0]['sv_pubgroups']);
 		$currentlock = $lastpub[0]['sv_lockcontrols'];
 	} else {

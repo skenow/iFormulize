@@ -42,7 +42,7 @@ if (file_exists(XOOPS_ROOT_PATH . '/class/mail/phpmailer/class.phpmailer.php')) 
 $GLOBALS['formulize_asynchronousFormDataInDatabaseReadyFormat'] = array();
 $GLOBALS['formulize_asynchronousFormDataInAPIFormat'] = array();
 
-global $xoopsDB, $myts, $xoopsConfig;
+global $myts, $xoopsConfig;
 
 // load the formulize language constants if they haven't been loaded already
 	if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/main.php") ) {
@@ -88,12 +88,12 @@ if(isset($_GET['forceDerivedValueUpdate'])) {
 }
 
 // query modified to include singleentry - July 28, 2005 -- part of switch to new intnerface
-$sql=sprintf("SELECT singleentry,desc_form FROM ".$xoopsDB->prefix("formulize_id")." WHERE id_form='$fid'");
-$res = $xoopsDB->query ( $sql ) or die('SQL Error !<br />'.$sql.'<br />'.icms::$xoopsDB->error());
+$sql=sprintf("SELECT singleentry,desc_form FROM " . icms::$xoopsDB->prefix("formulize_id")." WHERE id_form='$fid'");
+$res = icms::$xoopsDB->query ( $sql ) or die('SQL Error !<br />'.$sql.'<br />'.icms::$xoopsDB->error());
 //global $nb_fichier;
  
 if ( $res ) {
-  while ( $row = $xoopsDB->fetchArray ( $res ) ) {
+  while ( $row = icms::$xoopsDB->fetchArray ( $res ) ) {
     $singleentry = $row['singleentry'];
     $desc_form = $row['desc_form'];
   }

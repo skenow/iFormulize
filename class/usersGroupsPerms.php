@@ -79,8 +79,7 @@ class formulizePermHandler {
 		} else {
 			$groupsToInsert = $gids; // if none are set, then just insert all the ones specified
 		}
-		global $xoopsDB;
-		$insertSQL = "INSERT INTO " . $xoopsDB->prefix("formulize_groupscope_settings") . " (`groupid`, `fid`, `view_groupid`) VALUES ";
+		$insertSQL = "INSERT INTO " . icms::$xoopsDB->prefix("formulize_groupscope_settings") . " (`groupid`, `fid`, `view_groupid`) VALUES ";
 		$start = true;
 		foreach ($groupsToInsert as $thisInsertGroup) {
 			if ($thisInsertGroup === 0) {
@@ -93,13 +92,13 @@ class formulizePermHandler {
 			$start = false;
 		}
 		if (count($groupsToInsert) > 0) {
-			if (!$res = $xoopsDB->query($insertSQL)) {
+			if (!$res = icms::$xoopsDB->query($insertSQL)) {
 				return false;
 			}
 		}
 		if (count($groupsToDelete) > 0) {
-			$deleteSQL = "DELETE FROM " . $xoopsDB->prefix("formulize_groupscope_settings") . " WHERE `fid` = " . $this->fid . " AND `groupid` = " . intval($gid) . " AND `view_groupid` IN (" . implode(", ", $groupsToDelete) . ")";
-			if (!$res = $xoopsDB->query($deleteSQL)) {
+			$deleteSQL = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_groupscope_settings") . " WHERE `fid` = " . $this->fid . " AND `groupid` = " . intval($gid) . " AND `view_groupid` IN (" . implode(", ", $groupsToDelete) . ")";
+			if (!$res = icms::$xoopsDB->query($deleteSQL)) {
 				return false;
 			}
 		}
@@ -131,11 +130,10 @@ class formulizePermHandler {
 		static $cachedGroupScopeInfo = array();
 		if (!isset($cachedGroupScopeInfo[$this->fid][$gid]) or $updateCache) {
 			$cachedGroupScopeInfo[$this->fid][$gid] = array();
-			global $xoopsDB;
-			$sql = "SELECT t1.view_groupid, t2.name FROM " . $xoopsDB->prefix("formulize_groupscope_settings") . " as t1, " . $xoopsDB->prefix("groups") . " as t2 WHERE t1.groupid=" . intval($gid) . " AND t1.fid = " . $this->fid . " AND t1.view_groupid=t2.groupid";
-			if ($res = $xoopsDB->query($sql)) {
+			$sql = "SELECT t1.view_groupid, t2.name FROM " . icms::$xoopsDB->prefix("formulize_groupscope_settings") . " as t1, " . icms::$xoopsDB->prefix("groups") . " as t2 WHERE t1.groupid=" . intval($gid) . " AND t1.fid = " . $this->fid . " AND t1.view_groupid=t2.groupid";
+			if ($res = icms::$xoopsDB->query($sql)) {
 				if ($xoopsDB->getRowsNum($res) != 0) {
-					while ($array = $xoopsDB->fetchArray($res)) {
+					while ($array = icms::$xoopsDB->fetchArray($res)) {
 						$cachedGroupScopeInfo[$this->fid][$gid]['group_ids'][$array['view_groupid']] = $array['view_groupid'];
 						$cachedGroupScopeInfo[$this->fid][$gid]['group_names'][$array['view_groupid']] = $array['name'];
 					}
@@ -154,15 +152,14 @@ class formulizePermHandler {
 		if (!is_array($gids)) {
 			$gids = array(0 => intval($gids));
 		}
-		global $xoopsDB;
 		if (!$different) {
-			$sql = "SELECT groupid FROM " . $xoopsDB->prefix("formulize_groupscope_settings") . " WHERE view_groupid IN (" . icms::$xoopsDB->escape(implode(", ", $gids)) . ") AND fid=" . $this->fid;
+			$sql = "SELECT groupid FROM " . icms::$xoopsDB->prefix("formulize_groupscope_settings") . " WHERE view_groupid IN (" . icms::$xoopsDB->escape(implode(", ", $gids)) . ") AND fid=" . $this->fid;
 		} else {
-			$sql = "SELECT groupid FROM " . $xoopsDB->prefix("formulize_groupscope_settings") . " as t1 WHERE fid = " . $this->fid . " AND NOT EXISTS(SELECT 1 FROM " . $xoopsDB->prefix("formulize_groupscope_settings") . " as t2 WHERE view_groupid IN (" . icms::$xoopsDB->escape(implode(", ", $gids)) . ") AND fid=" . $this->fid . " AND t1.groupid = t2.groupid)";
+			$sql = "SELECT groupid FROM " . icms::$xoopsDB->prefix("formulize_groupscope_settings") . " as t1 WHERE fid = " . $this->fid . " AND NOT EXISTS(SELECT 1 FROM " . icms::$xoopsDB->prefix("formulize_groupscope_settings") . " as t2 WHERE view_groupid IN (" . icms::$xoopsDB->escape(implode(", ", $gids)) . ") AND fid=" . $this->fid . " AND t1.groupid = t2.groupid)";
 		}
-		$res = $xoopsDB->query($sql);
+		$res = icms::$xoopsDB->query($sql);
 		$foundGids = array();
-		while ($array = $xoopsDB->fetchArray($res)) {
+		while ($array = icms::$xoopsDB->fetchArray($res)) {
 			$foundGids[] = $array['groupid'];
 		}
 		return $foundGids;

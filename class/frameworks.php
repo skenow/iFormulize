@@ -38,7 +38,6 @@ class formulizeFramework extends icms_core_Object {
 	function __construct($frid = "") {
 
 		// validate $id_form
-		global $xoopsDB;
 		$notAFramework = false;
 		if (!is_numeric($frid)) {
 			// set empty defaults
@@ -49,7 +48,7 @@ class formulizeFramework extends icms_core_Object {
 			$handles = array();
 			$element_ids = array();
 			if ($GLOBALS['formulize_versionFourOrHigher'] == false) {
-				$frame_elements_q = q("SELECT * FROM " . $xoopsDB->prefix("formulize_framework_elements") . " WHERE fe_frame_id=$frid");
+				$frame_elements_q = q("SELECT * FROM " . icms::$xoopsDB->prefix("formulize_framework_elements") . " WHERE fe_frame_id=$frid");
 				if (isset($frame_elements_q[0])) { // elements are not a required part of a framework...well, they should be, but if they're not defined, that doesn't mean the rest of the data is invalid, so don't call NotAFramework on this framework
 					foreach ($frame_elements_q as $row => $value) {
 						$handles[$value['fe_element_id']] = $value['fe_handle'];
@@ -57,7 +56,7 @@ class formulizeFramework extends icms_core_Object {
 					}
 				}
 			}
-			$frame_links_q = q("SELECT * FROM " . $xoopsDB->prefix("formulize_framework_links") . " WHERE fl_frame_id=\"" . icms::$xoopsDB->escape($frid) . "\"");
+			$frame_links_q = q("SELECT * FROM " . icms::$xoopsDB->prefix("formulize_framework_links") . " WHERE fl_frame_id=\"" . icms::$xoopsDB->escape($frid) . "\"");
 			if (!isset($frame_links_q[0])) {
 				$notAFramework = true;
 			} else {
@@ -71,13 +70,13 @@ class formulizeFramework extends icms_core_Object {
 				}
 				$fids = array_unique($fids);
 			}
-			$frame_name_q = q("SELECT * FROM " . $xoopsDB->prefix("formulize_frameworks") . " WHERE frame_id=$frid");
+			$frame_name_q = q("SELECT * FROM " . icms::$xoopsDB->prefix("formulize_frameworks") . " WHERE frame_id=$frid");
 			if (!isset($frame_name_q[0])) {
 				$notAFramework = true;
 			}
 			$formHandles = array();
 			if (in_array($xoopsDB->prefix("formulize_framework_forms"), $existingTables)) {
-				$frame_form_handles_q = q("SELECT * FROM " . $xoopsDB->prefix("formulize_framework_forms") . " WHERE ff_frame_id=$frid");
+				$frame_form_handles_q = q("SELECT * FROM " . icms::$xoopsDB->prefix("formulize_framework_forms") . " WHERE ff_frame_id=$frid");
 				if (!isset($frame_form_handles_q[0])) {
 					$notAFramework = true;
 				} else {
@@ -167,7 +166,6 @@ class formulizeFrameworkLink extends icms_core_Object {
 	function __construct($lid = "") {
 
 		// validate $lid
-		global $xoopsDB;
 		if (!is_numeric($lid)) {
 			// set empty defaults
 			$lid = "";
@@ -180,7 +178,7 @@ class formulizeFrameworkLink extends icms_core_Object {
 			$relationship = "";
 			$unified_display = "";
 		} else {
-			$link_q = q("SELECT * FROM " . $xoopsDB->prefix("formulize_framework_links") . " WHERE fl_id=\"" . icms::$xoopsDB->escape($lid) . "\"");
+			$link_q = q("SELECT * FROM " . icms::$xoopsDB->prefix("formulize_framework_links") . " WHERE fl_id=\"" . icms::$xoopsDB->escape($lid) . "\"");
 			if (!isset($link_q[0])) {
 				// set empty defaults
 				$lid = "";

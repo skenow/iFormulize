@@ -62,7 +62,6 @@ function displayEntries($formframe, $mainform="", $loadview="", $loadOnlyView=0,
 
   formulize_benchmark("start of drawing list");
 
-	global $xoopsDB;
 
 	// Set some required variables
 	$mid = getFormulizeModId();
@@ -163,11 +162,11 @@ function displayEntries($formframe, $mainform="", $loadview="", $loadOnlyView=0,
     
 		if($delete_other_reports OR icms::$user->getVar('uid') == getSavedViewOwner($delviewid_formulize)) { // "get saved view owner" only works with new saved view format in 2.0 or greater, but since that is 2.5 years old now, should be good to go!
 			if(substr($_POST['delviewid_formulize'], 1, 4) == "old_") {
-				$sql = "DELETE FROM " . $xoopsDB->prefix("formulize_reports") . " WHERE report_id='" . $delviewid_formulize . "'";
+				$sql = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_reports") . " WHERE report_id='" . $delviewid_formulize . "'";
 			} else {
-				$sql = "DELETE FROM " . $xoopsDB->prefix("formulize_saved_views") . " WHERE sv_id='" . $delviewid_formulize . "'";
+				$sql = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_saved_views") . " WHERE sv_id='" . $delviewid_formulize . "'";
 			}
-			if(!$res = $xoopsDB->query($sql)) {
+			if(!$res = icms::$xoopsDB->query($sql)) {
 				exit("Error deleting report: " . $_POST['delviewid_formulize']);
 			}
 			unset($_POST['currentview']);
@@ -221,7 +220,7 @@ function displayEntries($formframe, $mainform="", $loadview="", $loadOnlyView=0,
 		// put name into loadview
 		if($saveid_formulize != "new") {
 			if(!strstr($saveid_formulize, "old_")) { // if it's not a legacy report...
-				$sname = q("SELECT sv_name, sv_owner_uid FROM " . $xoopsDB->prefix("formulize_saved_views") . " WHERE sv_id = \"" . substr($saveid_formulize, 1) . "\"");
+				$sname = q("SELECT sv_name, sv_owner_uid FROM " . icms::$xoopsDB->prefix("formulize_saved_views") . " WHERE sv_id = \"" . substr($saveid_formulize, 1) . "\"");
 				if($sname[0]['sv_owner_uid'] == $uid) {
 					$loadedView = $saveid_formulize;
 				} else {
@@ -268,33 +267,33 @@ function displayEntries($formframe, $mainform="", $loadview="", $loadOnlyView=0,
 				$moduid = $uid;
 			} else {
 				// get existing uid
-				$olduid = q("SELECT report_uid FROM " . $xoopsDB->prefix("formulize_reports") . " WHERE report_id = '" . substr($saveid_formulize, 5) . "'");
+				$olduid = q("SELECT report_uid FROM " . icms::$xoopsDB->prefix("formulize_reports") . " WHERE report_id = '" . substr($saveid_formulize, 5) . "'");
 				$owneruid = $olduid[0]['report_uid'];
 				$moduid = $uid;
 			}
-			$savesql = "INSERT INTO " . $xoopsDB->prefix("formulize_saved_views") . " (sv_name, sv_pubgroups, sv_owner_uid, sv_mod_uid, sv_formframe, sv_mainform, sv_lockcontrols, sv_hidelist, sv_hidecalc, sv_asearch, sv_sort, sv_order, sv_oldcols, sv_currentview, sv_calc_cols, sv_calc_calcs, sv_calc_blanks, sv_calc_grouping, sv_quicksearches) VALUES (\"$savename\", \"$savegroups\", \"$owneruid\", \"$moduid\", \"$saveformframe\", \"$savemainform\", \"{$_POST['savelock']}\", \"{$_POST['hlist']}\", \"{$_POST['hcalc']}\", \"$savesearches\", \"{$_POST['sort']}\", \"{$_POST['order']}\", \"{$_POST['oldcols']}\", \"{$_POST['savescope']}\", \"{$_POST['calc_cols']}\", \"{$_POST['calc_calcs']}\", \"{$_POST['calc_blanks']}\", \"{$_POST['calc_grouping']}\", \"$qsearches\")";
+			$savesql = "INSERT INTO " . icms::$xoopsDB->prefix("formulize_saved_views") . " (sv_name, sv_pubgroups, sv_owner_uid, sv_mod_uid, sv_formframe, sv_mainform, sv_lockcontrols, sv_hidelist, sv_hidecalc, sv_asearch, sv_sort, sv_order, sv_oldcols, sv_currentview, sv_calc_cols, sv_calc_calcs, sv_calc_blanks, sv_calc_grouping, sv_quicksearches) VALUES (\"$savename\", \"$savegroups\", \"$owneruid\", \"$moduid\", \"$saveformframe\", \"$savemainform\", \"{$_POST['savelock']}\", \"{$_POST['hlist']}\", \"{$_POST['hcalc']}\", \"$savesearches\", \"{$_POST['sort']}\", \"{$_POST['order']}\", \"{$_POST['oldcols']}\", \"{$_POST['savescope']}\", \"{$_POST['calc_cols']}\", \"{$_POST['calc_calcs']}\", \"{$_POST['calc_blanks']}\", \"{$_POST['calc_grouping']}\", \"$qsearches\")";
 		} else {
-			// print "UPDATE " . $xoopsDB->prefix("formulize_saved_views") . " SET sv_pubgroups=\"$savegroups\", sv_mod_uid=\"$uid\", sv_lockcontrols=\"{$_POST['savelock']}\", sv_hidelist=\"{$_POST['hlist']}\", sv_hidecalc=\"{$_POST['hcalc']}\", sv_asearch=\"$savesearches\", sv_sort=\"{$_POST['sort']}\", sv_order=\"{$_POST['order']}\", sv_oldcols=\"{$_POST['oldcols']}\", sv_currentview=\"{$_POST['savescope']}\", sv_calc_cols=\"{$_POST['calc_cols']}\", sv_calc_calcs=\"{$_POST['calc_calcs']}\", sv_calc_blanks=\"{$_POST['calc_blanks']}\", sv_calc_grouping=\"{$_POST['calc_grouping']}\", sv_quicksearches=\"$qsearches\" WHERE sv_id = \"" . substr($saveid_formulize, 1) . "\"";
-			$savesql = "UPDATE " . $xoopsDB->prefix("formulize_saved_views") . " SET sv_name=\"$savename\", sv_pubgroups=\"$savegroups\", sv_mod_uid=\"$uid\", sv_lockcontrols=\"{$_POST['savelock']}\", sv_hidelist=\"{$_POST['hlist']}\", sv_hidecalc=\"{$_POST['hcalc']}\", sv_asearch=\"$savesearches\", sv_sort=\"{$_POST['sort']}\", sv_order=\"{$_POST['order']}\", sv_oldcols=\"{$_POST['oldcols']}\", sv_currentview=\"{$_POST['savescope']}\", sv_calc_cols=\"{$_POST['calc_cols']}\", sv_calc_calcs=\"{$_POST['calc_calcs']}\", sv_calc_blanks=\"{$_POST['calc_blanks']}\", sv_calc_grouping=\"{$_POST['calc_grouping']}\", sv_quicksearches=\"$qsearches\" WHERE sv_id = \"" . substr($saveid_formulize, 1) . "\"";
+			// print "UPDATE " . icms::$xoopsDB->prefix("formulize_saved_views") . " SET sv_pubgroups=\"$savegroups\", sv_mod_uid=\"$uid\", sv_lockcontrols=\"{$_POST['savelock']}\", sv_hidelist=\"{$_POST['hlist']}\", sv_hidecalc=\"{$_POST['hcalc']}\", sv_asearch=\"$savesearches\", sv_sort=\"{$_POST['sort']}\", sv_order=\"{$_POST['order']}\", sv_oldcols=\"{$_POST['oldcols']}\", sv_currentview=\"{$_POST['savescope']}\", sv_calc_cols=\"{$_POST['calc_cols']}\", sv_calc_calcs=\"{$_POST['calc_calcs']}\", sv_calc_blanks=\"{$_POST['calc_blanks']}\", sv_calc_grouping=\"{$_POST['calc_grouping']}\", sv_quicksearches=\"$qsearches\" WHERE sv_id = \"" . substr($saveid_formulize, 1) . "\"";
+			$savesql = "UPDATE " . icms::$xoopsDB->prefix("formulize_saved_views") . " SET sv_name=\"$savename\", sv_pubgroups=\"$savegroups\", sv_mod_uid=\"$uid\", sv_lockcontrols=\"{$_POST['savelock']}\", sv_hidelist=\"{$_POST['hlist']}\", sv_hidecalc=\"{$_POST['hcalc']}\", sv_asearch=\"$savesearches\", sv_sort=\"{$_POST['sort']}\", sv_order=\"{$_POST['order']}\", sv_oldcols=\"{$_POST['oldcols']}\", sv_currentview=\"{$_POST['savescope']}\", sv_calc_cols=\"{$_POST['calc_cols']}\", sv_calc_calcs=\"{$_POST['calc_calcs']}\", sv_calc_blanks=\"{$_POST['calc_blanks']}\", sv_calc_grouping=\"{$_POST['calc_grouping']}\", sv_quicksearches=\"$qsearches\" WHERE sv_id = \"" . substr($saveid_formulize, 1) . "\"";
 		}
 
 		// save the report
-		if(!$result = $xoopsDB->query($savesql)) {
+		if(!$result = icms::$xoopsDB->query($savesql)) {
 			exit("Error:  unable to save the current view settings.  SQL dump: $savesql");
 		}
 		if($saveid_formulize == "new" OR strstr($saveid_formulize, "old_")) {
 			if($owneruid == $uid) {
-				$loadedView = "s" . $xoopsDB->getInsertId();
+				$loadedView = "s" . icms::$xoopsDB->getInsertId();
 			} else {
-				$loadedView = "p" . $xoopsDB->getInsertId();
+				$loadedView = "p" . icms::$xoopsDB->getInsertId();
 			}
 		}
 		$settings['loadedview'] = $loadedView;
 
 		// delete legacy report if necessary
 		if(strstr($saveid_formulize, "old_")) {
-			$dellegacysql = "DELETE FROM " . $xoopsDB->prefix("formulize_reports") . " WHERE report_id=\"" . substr($saveid_formulize, 5) . "\"";
-			if(!$result = $xoopsDB->query($dellegacysql)) {
+			$dellegacysql = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_reports") . " WHERE report_id=\"" . substr($saveid_formulize, 5) . "\"";
+			if(!$result = icms::$xoopsDB->query($dellegacysql)) {
 				exit("Error:  unable to delete legacy report: " . substr($saveid_formulize, 5));
 			}
 		}
@@ -323,7 +322,7 @@ function displayEntries($formframe, $mainform="", $loadview="", $loadOnlyView=0,
 		} elseif(is_numeric($loadview)) { // new view id
 			$loadview = "p" . $loadview;
 		} else { // new view name -- loading view by name -- note if two reports have the same name, then the first one created will be returned
-			$viewnameq = q("SELECT sv_id FROM " . $xoopsDB->prefix("formulize_saved_views") . " WHERE sv_name='$loadview' ORDER BY sv_id");
+			$viewnameq = q("SELECT sv_id FROM " . icms::$xoopsDB->prefix("formulize_saved_views") . " WHERE sv_name='$loadview' ORDER BY sv_id");
 			$loadview = "p" . $viewnameq[0]['sv_id'];
 		}
 		$_POST['currentview'] = $loadview;
@@ -717,7 +716,6 @@ function displayEntries($formframe, $mainform="", $loadview="", $loadOnlyView=0,
 
 // return the available current view settings based on the user's permissions
 function generateViews($fid, $uid, $groups, $frid="0", $currentView, $loadedView="", $view_groupscope, $view_globalscope, $prevview="", $loadOnlyView=0, $screen, $lastLoaded) {
-	global $xoopsDB;
 
 	$limitViews = false;
 	$screenLimitViews = array();
@@ -870,7 +868,6 @@ function generateViews($fid, $uid, $groups, $frid="0", $currentView, $loadedView
 // this function draws in the interface parts of a display entries widget
 function drawInterface($settings, $fid, $frid, $groups, $mid, $gperm_handler, $loadview="", $loadOnlyView=0, $screen, $searches, $pageNav, $messageText, $hiddenQuickSearches) {
 
-	global $xoopsDB;
 	// unpack the $settings
 	foreach($settings as $k=>$v) {
 		${$k} = $v;
@@ -879,7 +876,7 @@ function drawInterface($settings, $fid, $frid, $groups, $mid, $gperm_handler, $l
 	
 	
 	// get single/multi entry status of this form...
-	$singleMulti = q("SELECT singleentry FROM " . $xoopsDB->prefix("formulize_id") . " WHERE id_form = $fid");
+	$singleMulti = q("SELECT singleentry FROM " . icms::$xoopsDB->prefix("formulize_id") . " WHERE id_form = $fid");
 		
 	// flatten columns array and convert handles to ids so that we can send them to the change columns popup
 	// Since 4.0 columns and columnhandles are identical...this is a cleanup job for later
@@ -1245,7 +1242,6 @@ function drawEntries($fid, $cols, $searches="", $frid="", $scope, $standalone=""
 		$data = array();
 	}
 
-	global $xoopsDB;
 	
 	$useScrollBox = true;
 	$useHeadings = true;
@@ -1971,7 +1967,6 @@ function clickableSortLink($handle, $contents) {
 
 // this function returns the ele_ids of form elements to show, or the handles of the form elements to show for a framework
 function getDefaultCols($fid, $frid="") {
-	global $xoopsDB;
 
 	if($frid) { // expand the headerlist to include the other forms
 		$fids[0] = $fid;
@@ -2039,7 +2034,6 @@ function performCalcs($cols, $calcs, $blanks, $grouping, $frid, $fid)  {
   // calculations that are simple, with the same exclusion options, can be done in the same query
   // percentage distribution is not simple, nor is percentile calculation (part of averages), nor is mode (part of averages), but all others are simple and can be done in one query
   
-  global $xoopsDB;
   $masterResults = array();
   $blankSettings = array();
   $groupingSettings = array();
@@ -2229,8 +2223,8 @@ function performCalcs($cols, $calcs, $blanks, $grouping, $frid, $fid)  {
       //if(icms::$user->getVar('uid') == 1) {
       //  print "$calcResultSQL<br><br>";
       //}*/
-      $calcResultRes = $xoopsDB->query($calcResultSQL);
-      while($calcResultArray = $xoopsDB->fetchArray($calcResultRes)) {
+      $calcResultRes = icms::$xoopsDB->query($calcResultSQL);
+      while($calcResultArray = icms::$xoopsDB->fetchArray($calcResultRes)) {
         $calcResult[] = $calcResultArray;
       }
       
@@ -2320,8 +2314,8 @@ function performCalcs($cols, $calcs, $blanks, $grouping, $frid, $fid)  {
                 $groupingValues[$cols[$i]][$calc][$perindexer] = convertRawValuesToRealValues($groupingValuesFound, $ghandle, true);
                 $countSQL = "SELECT count($fidAlias.`$handle`) as count$fidAlias$handle $thisBaseQuery $allowedWhere $excludedWhere $groupingWhere";
                 //print "$countSQL<br>";
-                $countRes = $xoopsDB->query($countSQL);
-                $countArray = $xoopsDB->fetchArray($countRes);
+                $countRes = icms::$xoopsDB->query($countSQL);
+                $countArray = icms::$xoopsDB->fetchArray($countRes);
                 $countValue = $countArray["count$fidAlias$handle"];
                 $indexerToUse = $perindexer;
                 $groupCounts[$groupingWhere]['countValue'] = $countValue;
@@ -2361,10 +2355,10 @@ function performCalcs($cols, $calcs, $blanks, $grouping, $frid, $fid)  {
         }
         $modeQuery .= "avgcount$fidAlias$handle DESC";
         //print "$modeQuery<br>";
-        $modeRes = $xoopsDB->query($modeQuery);
+        $modeRes = icms::$xoopsDB->query($modeQuery);
         $foundModeValue = array();
         $modeIndexer = 0;
-        while($modeData = $xoopsDB->fetchArray($modeRes)) {
+        while($modeData = icms::$xoopsDB->fetchArray($modeRes)) {
           $foundValues = "";
           $modeCountsTemp = array();
           foreach($theseGroupings as $gid=>$thisGrouping) {
@@ -2397,8 +2391,8 @@ function performCalcs($cols, $calcs, $blanks, $grouping, $frid, $fid)  {
           }
           $countSQL = "SELECT count($fidAlias.`$handle`) as count$fidAlias$handle $thisBaseQuery $allowedWhere $excludedWhere $groupingWhere";
           //print "<br>$countSQL<br>";
-          $countRes = $xoopsDB->query($countSQL);
-          $countArray = $xoopsDB->fetchArray($countRes);
+          $countRes = icms::$xoopsDB->query($countSQL);
+          $countArray = icms::$xoopsDB->fetchArray($countRes);
           $countValue = $countArray["count$fidAlias$handle"];
           $per25Limit = floor(($countValue+1)/4);
           $per25Fraction = (($countValue+1)/4)-$per25Limit;
@@ -2418,16 +2412,16 @@ function performCalcs($cols, $calcs, $blanks, $grouping, $frid, $fid)  {
           //print "$per75SQL<Br><Br>";
           $per50SQL = "SELECT $fidAlias.`$handle` as $fidAlias$handle $thisBaseQuery $allowedWhere $excludedWhere $groupingWhere ORDER BY $fidAlias$handle LIMIT $per50Limit,$per50Size";
           //print "$per50SQL<Br><Br>";
-          $per25Res = $xoopsDB->query($per25SQL);
-          $per75Res = $xoopsDB->query($per75SQL);
-          $per50Res = $xoopsDB->query($per50SQL);
+          $per25Res = icms::$xoopsDB->query($per25SQL);
+          $per75Res = icms::$xoopsDB->query($per75SQL);
+          $per50Res = icms::$xoopsDB->query($per50SQL);
           $allPerResults = _formulize_DE_CALC_MEDIAN25.": ";
           $per25Results = "";
           $per75Results = "";
           $per50Results = "";
           $start = true;
           $perPair = array();
-          while($per25Array = $xoopsDB->fetchArray($per25Res)) {
+          while($per25Array = icms::$xoopsDB->fetchArray($per25Res)) {
               $perPair[] = $per25Array["$fidAlias$handle"];
               if(!$start) { $per25Results .= ", "; }
               $start = false;
@@ -2444,7 +2438,7 @@ function performCalcs($cols, $calcs, $blanks, $grouping, $frid, $fid)  {
           $allPerResults .= _formulize_DE_CALC_MEDIAN.": ";
           $start = true;
           $perPair = array();
-          while($per50Array = $xoopsDB->fetchArray($per50Res)) {
+          while($per50Array = icms::$xoopsDB->fetchArray($per50Res)) {
               $perPair[] = $per50Array["$fidAlias$handle"];
               if(!$start) { $per50Results .= ", "; }
               $start = false;
@@ -2461,7 +2455,7 @@ function performCalcs($cols, $calcs, $blanks, $grouping, $frid, $fid)  {
           $allPerResults .= _formulize_DE_CALC_MEDIAN75.": ";
           $start = true;
           $perPair = array();
-          while($per75Array = $xoopsDB->fetchArray($per75Res)) {
+          while($per75Array = icms::$xoopsDB->fetchArray($per75Res)) {
               $perPair[] = $per75Array["$fidAlias$handle"];
               if(!$start) { $per75Results .= ", "; }
               $start = false;
@@ -2490,13 +2484,12 @@ function performCalcs($cols, $calcs, $blanks, $grouping, $frid, $fid)  {
           // replace the indivText with a corresponding name, if we have any on file
           $nameReplacementMap = array();
           if(isset($GLOBALS['formulize_fullNameUserNameCalculationReplacementList'][$cols[$i]][$calc][$groupCountData['indexerToUse']]) AND $start) {
-            global $xoopsDB;
             $nameType = $GLOBALS['formulize_fullNameUserNameCalculationReplacementList'][$cols[$i]][$calc][$groupCountData['indexerToUse']]['nametype'];
             $userIDs = $GLOBALS['formulize_fullNameUserNameCalculationReplacementList'][$cols[$i]][$calc][$groupCountData['indexerToUse']]['values'];
             // get a list of all the names and uids that we're dealing with
-            $nameReplacementSQL = "SELECT $nameType, uid FROM ".$xoopsDB->prefix("users") . " WHERE uid IN (". implode(", ", $userIDs). ")";
-            $nameReplacementRes = $xoopsDB->query($nameReplacementSQL);
-            while($nameReplacementArray = $xoopsDB->fetchArray($nameReplacementRes)) {
+            $nameReplacementSQL = "SELECT $nameType, uid FROM " . icms::$xoopsDB->prefix("users") . " WHERE uid IN (". implode(", ", $userIDs). ")";
+            $nameReplacementRes = icms::$xoopsDB->query($nameReplacementSQL);
+            while($nameReplacementArray = icms::$xoopsDB->fetchArray($nameReplacementRes)) {
               // map the uid and name values we found, so we can sub them in lower down when needed
               $nameReplacementMap[$nameReplacementArray['uid']] = $nameReplacementArray[$nameType];
             }
@@ -2863,8 +2856,7 @@ $output
 function convertUids($value, $handle) {
 	if(!is_numeric($value) AND $value == "") { $value = "[blank]"; }
 	if($handle != "creation_uid" AND $handle != "mod_uid") { return $value; }
-	global $xoopsDB;
-	$name_q = q("SELECT name, uname FROM " . $xoopsDB->prefix("users") . " WHERE uid='$value'");
+	$name_q = q("SELECT name, uname FROM " . icms::$xoopsDB->prefix("users") . " WHERE uid='$value'");
 	$name = $name_q[0]['name'];
 	if($name) {
 		return $name;
@@ -3525,10 +3517,9 @@ function loadOldReport($id, $fid, $view_groupscope) {
 	$_POST['sort'] - ele_id for form, handle for framework
 	$_POST['order'] - SORT_ASC, SORT_DESC
 */
-	global $xoopsDB;
 	$s = "&*=%4#";
 	// get all data from DB
-	$data = q("SELECT report_ispublished, report_scope, report_fields, report_search_typeArray, report_search_textArray, report_andorArray, report_calc_typeArray, report_sort_orderArray, report_ascdscArray, report_globalandor FROM " . $xoopsDB->prefix("formulize_reports") . " WHERE report_id=$id AND report_id_form=$fid");
+	$data = q("SELECT report_ispublished, report_scope, report_fields, report_search_typeArray, report_search_textArray, report_andorArray, report_calc_typeArray, report_sort_orderArray, report_ascdscArray, report_globalandor FROM " . icms::$xoopsDB->prefix("formulize_reports") . " WHERE report_id=$id AND report_id_form=$fid");
 
 	// reportscope
 	$scope = explode($s, $data[0]['report_scope']);
@@ -3752,9 +3743,8 @@ function loadOldReport($id, $fid, $view_groupscope) {
 // THIS FUNCTION LOADS A SAVED VIEW
 // fid and frid are only used if a report is being asked for by name
 function loadReport($id, $fid, $frid) {
-	global $xoopsDB;
   if(is_numeric($id)) {
-    $thisview = q("SELECT * FROM " . $xoopsDB->prefix("formulize_saved_views") . " WHERE sv_id='$id'");
+    $thisview = q("SELECT * FROM " . icms::$xoopsDB->prefix("formulize_saved_views") . " WHERE sv_id='$id'");
   } else {
     if($frid) {
       $formframe = intval($frid);
@@ -3763,7 +3753,7 @@ function loadReport($id, $fid, $frid) {
       $formframe = intval($fid);
       $mainform = "''";
     }
-    $thisview = q("SELECT * FROM " . $xoopsDB->prefix("formulize_saved_views") . " WHERE sv_name='".icms::$xoopsDB->escape($id)."' AND sv_formframe = $formframe AND sv_mainform = $mainform");
+    $thisview = q("SELECT * FROM " . icms::$xoopsDB->prefix("formulize_saved_views") . " WHERE sv_name='".icms::$xoopsDB->escape($id)."' AND sv_formframe = $formframe AND sv_mainform = $mainform");
   }
   if(!isset($thisview[0]['sv_currentview'])) {
     print "Error: could not load the specified saved view: '".strip_tags(htmlspecialchars($id))."'";

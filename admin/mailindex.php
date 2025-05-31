@@ -50,20 +50,20 @@ if(!is_numeric($_GET['title'])) {
 		$title = $_POST['title'];
 	}
 
-	$sql=sprintf("SELECT id_form FROM ".$xoopsDB->prefix("formulize_id")." WHERE desc_form='%s'",$title);
+	$sql=sprintf("SELECT id_form FROM " . icms::$xoopsDB->prefix("formulize_id")." WHERE desc_form='%s'",$title);
 	$res = icms::$xoopsDB->queryF( $sql ) or die('Erreur SQL !<br>'.$requete.'<br>'.icms::$xoopsDB->error());
 
 	if ( $res ) {
-		  while ( $row = $xoopsDB->fetchRow( $res ) ) {
+		  while ( $row = icms::$xoopsDB->fetchRow( $res ) ) {
 		    $id_form = $row[0];
   		}
 	}
 } else {
 	$id_form = $_GET['title'];
 	$title = $_GET['title'];
-	$rtsql = "SELECT desc_form FROM " . $xoopsDB->prefix("formulize_id") . " WHERE id_form=$id_form";
-	$rtres = $xoopsDB->query($rtsql);
-	$rtarray = $xoopsDB->fetchArray($rtres);
+	$rtsql = "SELECT desc_form FROM " . icms::$xoopsDB->prefix("formulize_id") . " WHERE id_form=$id_form";
+	$rtres = icms::$xoopsDB->query($rtsql);
+	$rtarray = icms::$xoopsDB->fetchArray($rtres);
 	$realtitle = $rtarray['desc_form'];
 }
 
@@ -87,11 +87,11 @@ if(!isset($_POST['op'])){ $_POST['op']=" ";}
 // query modified to call in new fields -- jwe 7/25/04. 7/28/04
 
 if ( isset ($title)) {
-	$sql=sprintf("SELECT id_form,singleentry,headerlist FROM ".$xoopsDB->prefix("formulize_id")." WHERE desc_form='%s'",$realtitle);
+	$sql=sprintf("SELECT id_form,singleentry,headerlist FROM " . icms::$xoopsDB->prefix("formulize_id")." WHERE desc_form='%s'",$realtitle);
 	$res = icms::$xoopsDB->queryF( $sql ) or die('Erreur SQL !<br>'.$requete.'<br>'.icms::$xoopsDB->error());
 
 	if ( $res ) {
-	  while ( $row = $xoopsDB->fetchArray ( $res ) ) {
+	  while ( $row = icms::$xoopsDB->fetchArray ( $res ) ) {
 		//print"<br>";
 		//print_r($row);
 		//print"<br>";
@@ -119,13 +119,13 @@ $eh = new ErrorHandler;
 
 if( $_POST['op'] != 'upform' && $op != 'addform'){
 
-	$sql="SELECT groupid,name FROM ".$xoopsDB->prefix("groups");
-	$res = $xoopsDB->query ( $sql );
+	$sql="SELECT groupid,name FROM " . icms::$xoopsDB->prefix("groups");
+	$res = icms::$xoopsDB->query ( $sql );
 	if ( $res ) {
 	$tab[$m] = 0;
 	$tab2[$m] = "";
 	$m++;
-	  while ( $row = $xoopsDB->fetchArray ( $res ) ) {
+	  while ( $row = icms::$xoopsDB->fetchArray ( $res ) ) {
 	    $tab[$m] = $row['groupid'];
 	    $tab2[$m] = $row['name'];
 	    $m++;
@@ -234,19 +234,19 @@ echo '<tr>
 		echo ">" . _formulize_DE_CALC_CREATOR_EMAIL . "</option>";
 	}
 
-	$getform_id ="SELECT id_form FROM ".$xoopsDB->prefix("formulize_id")." WHERE desc_form=\"$realtitle\"";
-	$resultgetform = $xoopsDB->query($getform_id);
-	$resgetformrow = $xoopsDB->fetchRow($resultgetform);
+	$getform_id ="SELECT id_form FROM " . icms::$xoopsDB->prefix("formulize_id")." WHERE desc_form=\"$realtitle\"";
+	$resultgetform = icms::$xoopsDB->query($getform_id);
+	$resgetformrow = icms::$xoopsDB->fetchRow($resultgetform);
 	$thisformid = $resgetformrow[0];
 
 	// get a list of captions in the form (fancy SQL Join query)
 	// then draw them into the selection box
 	// addition of column heading fields June 25 2006 -- jwe
-	$sqljwe="SELECT ele_caption, ele_id, ele_colhead FROM ".$xoopsDB->prefix("formulize")." WHERE id_form = \"$thisformid\" AND ele_type != \"ib\" AND ele_type != \"areamodif\" AND ele_type != \"subform\" ORDER BY ele_order";
-	$resjwe = $xoopsDB->query ( $sqljwe );
+	$sqljwe="SELECT ele_caption, ele_id, ele_colhead FROM " . icms::$xoopsDB->prefix("formulize")." WHERE id_form = \"$thisformid\" AND ele_type != \"ib\" AND ele_type != \"areamodif\" AND ele_type != \"subform\" ORDER BY ele_order";
+	$resjwe = icms::$xoopsDB->query ( $sqljwe );
 	if ( $resjwe ) {
 		$loopiteration = 0;
-		while ( $rowjwe = $xoopsDB->fetchRow ( $resjwe ) ) {
+		while ( $rowjwe = icms::$xoopsDB->fetchRow ( $resjwe ) ) {
 			echo "<option value=\"" . $rowjwe[1] . "\"";
 			// check id and caption, since legacy systems will be using the caption
 			// caption will not match if a form has recently been translated to another language, but once the headerlist is specified from scratch now, it will always be remembered since ids are now stored
@@ -417,7 +417,7 @@ print "</table></center></form>\n";
 
 function upform($title)
 {
-	global $xoopsDB, $_POST, $myts, $eh;
+	global $_POST, $myts, $eh;
 		
 	// added to handle new params -- jwe 7/25/07
 	$singleentry = $myts->makeTboxData4Save($_POST["singleentry"]);
@@ -432,15 +432,15 @@ function upform($title)
 
 	
 	// sql updated with new fields -- jwe 7/25/04 , 7/28/04
-	$sql = sprintf("UPDATE %s SET singleentry='%s', headerlist='%s' WHERE id_form='%s'", $xoopsDB->prefix("formulize_id"), $singleentry, $cheaderlist, $title);
-	$xoopsDB->query($sql) or $eh->show("0013");
+	$sql = sprintf("UPDATE %s SET singleentry='%s', headerlist='%s' WHERE id_form='%s'", icms::$xoopsDB->prefix("formulize_id"), $singleentry, $cheaderlist, $title);
+ icms::$xoopsDB->query($sql) or $eh->show("0013");
 	redirect_header("formindex.php",1,_formulize_FORMTITRE);
 }
 
 
 function addform()
 {
-	global $xoopsDB, $_POST, $myts, $eh;
+	global $_POST, $myts, $eh;
 	$title = $myts->makeTboxData4Save($_POST["newtitle"]);
 		
 	// added to handle new params -- jwe 7/25/07
@@ -460,15 +460,15 @@ function addform()
 	$title = str_replace ('&', "_", $title);
 
 	// updated to handle new params -- jwe 7/25/07 , 7/28/04
-	$sql = sprintf("INSERT INTO %s (desc_form, singleentry, tableform) VALUES ('%s', '%s', '%s')", $xoopsDB->prefix("formulize_id"), $title, $singleentry, icms::$xoopsDB->escape($_POST['tablename']));
-	$xoopsDB->queryF($sql) or $eh->show("error insertion 1 dans addform");
+	$sql = sprintf("INSERT INTO %s (desc_form, singleentry, tableform) VALUES ('%s', '%s', '%s')", icms::$xoopsDB->prefix("formulize_id"), $title, $singleentry, icms::$xoopsDB->escape($_POST['tablename']));
+ icms::$xoopsDB->queryF($sql) or $eh->show("error insertion 1 dans addform");
 
 	// need to get the new form id -- added by jwe sept 13 2005
-	$newfid = $xoopsDB->getInsertId();
+	$newfid = icms::$xoopsDB->getInsertId();
 	
 	if($newfid) {
-		$sql2 = sprintf("INSERT INTO %s (itemname,itemurl) VALUES ('%s', '%s')", $xoopsDB->prefix("formulize_menu"), $title, XOOPS_URL.'/modules/formulize/index.php?title='.$title.'');
-		$xoopsDB->queryF($sql2) or $eh->show("error insertion 2 dans addform");
+		$sql2 = sprintf("INSERT INTO %s (itemname,itemurl) VALUES ('%s', '%s')", icms::$xoopsDB->prefix("formulize_menu"), $title, XOOPS_URL.'/modules/formulize/index.php?title='.$title.'');
+	 icms::$xoopsDB->queryF($sql2) or $eh->show("error insertion 2 dans addform");
 	}
 
 	if(!isset($_GET['table'])) {
@@ -489,10 +489,10 @@ function addform()
 		// 2. create an array of the information
 		// 3. write it all out into the formulize table
 		
-		$result = $xoopsDB->query("SHOW COLUMNS FROM " . icms::$xoopsDB->escape($_POST['tablename']));
+		$result = icms::$xoopsDB->query("SHOW COLUMNS FROM " . icms::$xoopsDB->escape($_POST['tablename']));
 		static $element_order = 0;
 		$formulize_mgr =& icms_getModuleHandler('elements');
-		while($row = $xoopsDB->fetchRow($result)) {
+		while($row = icms::$xoopsDB->fetchRow($result)) {
 			$element =& $formulize_mgr->create();
 			$element->setVar('ele_caption', str_replace("_", " ", str_replace("'", "`", $row[0]))); // should be no apostrophes in field names, but we better make sure to follow Formulize convention!
 			//$element->setVar('ele_delim', ""); // only set for radio and checkbox, but cannot be put into ele_value because ele_value is not a multidimensional array for those elements, so must be treated as a separate db field for now
@@ -515,8 +515,8 @@ function addform()
 			}
 			unset($element);
 		}
-		$handleUpdateSQL = "UPDATE ".$xoopsDB->prefix("formulize")." SET ele_handle=ele_id WHERE id_form=".intval($newfid);
-    if(!$res = $xoopsDB->query($handleUpdateSQL)) {
+		$handleUpdateSQL = "UPDATE " . icms::$xoopsDB->prefix("formulize")." SET ele_handle=ele_id WHERE id_form=".intval($newfid);
+    if(!$res = icms::$xoopsDB->query($handleUpdateSQL)) {
       print "Error: could not synchronize handles with element ids for the '".strip_tags(htmlspecialchars($_POST['tablename'])). "' form";
     }
 		redirect_header("formindex.php",1,_formulize_FORMCREA);

@@ -52,7 +52,6 @@ $op = $_GET['op']; // the switch that tells us what page we're on
 
 function mainpage()
 {
-global $xoopsDB;
 // javascript function to reload page everytime someone selects a new Framework to edit...
 		print "<script type='text/javascript'>\n";
 		print "<!--//\n";
@@ -94,15 +93,15 @@ global $xoopsDB;
 
 	// gather and draw in the list of Frameworks
 
-	$sql = "SELECT frame_name, frame_id FROM " . $xoopsDB->prefix("formulize_frameworks") . " ORDER BY frame_name";
-	$res = $xoopsDB->query($sql);
+	$sql = "SELECT frame_name, frame_id FROM " . icms::$xoopsDB->prefix("formulize_frameworks") . " ORDER BY frame_name";
+	$res = icms::$xoopsDB->query($sql);
 	print "<SELECT name=currentFrame size=1 onChange='redrawpage(document.startframe.currentFrame.value)'>\n";
-	if($xoopsDB->getRowsNum($res)>0) 
+	if($xoopsDB->getRowsNum($res)>0)
 	{
 	
 		print "<option value='0'>" . _AM_FRAME_CHOOSE . "</option>\n";
 
-		while($array = $xoopsDB->fetchArray($res))
+		while($array = icms::$xoopsDB->fetchArray($res))
 		{
 			$optiontext .= "<option value='" . $array['frame_id'] . "'>". $array['frame_name']. "</option>\n";
 		}
@@ -112,7 +111,7 @@ global $xoopsDB;
 	else // no frameworks found, no result to the query
 	{
 		print "<option value='0' selected>" . _AM_FRAME_NONE . "</option>\n";
-	} 
+	}
 	print "</SELECT></center><br>&nbsp;</p></td></tr>\n";
 
 	// delete a framework UI...
@@ -123,7 +122,7 @@ global $xoopsDB;
 	// gather and draw in the list of Frameworks
 
 	print "<SELECT name=deleteFrame size=1 onChange='delframe(document.startframe.deleteFrame.value)'>\n";
-	if($xoopsDB->getRowsNum($res)>0) 
+	if($xoopsDB->getRowsNum($res)>0)
 	{
 	
 		print "<option value='0'>" . _AM_FRAME_CHOOSE . "</option>\n";
@@ -134,7 +133,7 @@ global $xoopsDB;
 	else // no frameworks found, no result to the query
 	{
 		print "<option value='0' selected>" . _AM_FRAME_NONE . "</option>\n";
-	} 
+	}
 	print "</SELECT></center><br>&nbsp;</p></form></td></tr></table>\n";
 	
 
@@ -144,13 +143,12 @@ global $xoopsDB;
 
 // **********
 //
-// This function sets a series of global arrays which 
+// This function sets a series of global arrays which
 //
 // **********
 
 function getlinks() {
 
-	global $xoopsDB;
 
 	
 
@@ -172,7 +170,6 @@ function getlinks() {
 function modframe($cf)
 {
 
-	global $xoopsDB;
 
 			array($hits);
 			array($truehits);
@@ -209,7 +206,7 @@ function modframe($cf)
 		if (window.popup.closed) {
 			popup = window.open(url,'popup','toolbar=no,scrollbars=yes,resizable=yes,width=800,height=550,screenX=0,screenY=0,top=0,left=0');
             } else {
-			window.popup.location = url;              
+			window.popup.location = url;
 		}
 	}
 	window.popup.focus();
@@ -223,21 +220,21 @@ function modframe($cf)
 
 	//retrieve name for the current framework
 
-	$nameq = "SELECT frame_name FROM " . $xoopsDB->prefix("formulize_frameworks") . " WHERE frame_id=$cf";
-	$res = $xoopsDB->query($nameq);
-	$array = $xoopsDB->fetchArray($res);
+	$nameq = "SELECT frame_name FROM " . icms::$xoopsDB->prefix("formulize_frameworks") . " WHERE frame_id=$cf";
+	$res = icms::$xoopsDB->query($nameq);
+	$array = icms::$xoopsDB->fetchArray($res);
 	$framename = $array['frame_name'];
 
 	// retrieve the names and ids of all forms
 
-	$formsq = "SELECT id_form, desc_form FROM " . $xoopsDB->prefix("formulize_id");
-	$res = $xoopsDB->query($formsq);
-	while($array = $xoopsDB->fetchArray($res)) {
+	$formsq = "SELECT id_form, desc_form FROM " . icms::$xoopsDB->prefix("formulize_id");
+	$res = icms::$xoopsDB->query($formsq);
+	while($array = icms::$xoopsDB->fetchArray($res)) {
 		$form_names[] = $array['desc_form'];
 		$form_ids[] = $array['id_form'];
 	}
 
-	// sort forms by name	
+	// sort forms by name
 	array_multisort($form_names, $form_ids);
 
 	//create the form options for the Add Form section
@@ -256,10 +253,10 @@ function modframe($cf)
 
 	// get a list of all the linked select boxes since we need to know if any fields in these two forms are the source for any links
 
-	$getlinksq = "SELECT id_form, ele_caption, ele_id, ele_handle FROM " . $xoopsDB->prefix("formulize") . " WHERE ele_type=\"select\" AND ele_value LIKE '%#*=:*%' ORDER BY id_form";
+	$getlinksq = "SELECT id_form, ele_caption, ele_id, ele_handle FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE ele_type=\"select\" AND ele_value LIKE '%#*=:*%' ORDER BY id_form";
 	// print "$getlinksq<br>";
-	$resgetlinksq = $xoopsDB->query($getlinksq);
-	while ($rowlinksq = $xoopsDB->fetchRow($resgetlinksq))
+	$resgetlinksq = icms::$xoopsDB->query($getlinksq);
+	while ($rowlinksq = icms::$xoopsDB->fetchRow($resgetlinksq))
 	{
 		//print_r($rowlinksq);
 		//print "<br>";
@@ -280,9 +277,9 @@ function modframe($cf)
 				$source_form_ids[] = $details[0];
 
 				//get the element ID for the source we've just found
-				$sourceq = "SELECT ele_id, ele_caption FROM " . $xoopsDB->prefix("formulize") . " WHERE ele_handle = '" . icms::$xoopsDB->escape($details[1]) . "' AND id_form = '$details[0]'";
-				if($ressourceq = $xoopsDB->query($sourceq)) {
-					$rowsourceq = $xoopsDB->fetchRow($ressourceq);
+				$sourceq = "SELECT ele_id, ele_caption FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE ele_handle = '" . icms::$xoopsDB->escape($details[1]) . "' AND id_form = '$details[0]'";
+				if($ressourceq = icms::$xoopsDB->query($sourceq)) {
+					$rowsourceq = icms::$xoopsDB->fetchRow($ressourceq);
 					$source_ele_ids[] = $rowsourceq[0];
 					$source_captions[] = $rowsourceq[1];
 				} else {
@@ -312,9 +309,9 @@ function modframe($cf)
 
 	// need to get list of all forms/links in the current framework
 
-	$getFrameInfoq = "SELECT fl_id, fl_form1_id, fl_form2_id, fl_key1, fl_key2, fl_relationship, fl_unified_display, fl_common_value FROM " . $xoopsDB->prefix("formulize_framework_links") . " WHERE fl_frame_id = '$cf' ORDER BY fl_id";
-	$res = $xoopsDB->query($getFrameInfoq);
-	while ($array = $xoopsDB->fetchArray($res)) {
+	$getFrameInfoq = "SELECT fl_id, fl_form1_id, fl_form2_id, fl_key1, fl_key2, fl_relationship, fl_unified_display, fl_common_value FROM " . icms::$xoopsDB->prefix("formulize_framework_links") . " WHERE fl_frame_id = '$cf' ORDER BY fl_id";
+	$res = icms::$xoopsDB->query($getFrameInfoq);
+	while ($array = icms::$xoopsDB->fetchArray($res)) {
 		$links[] = $array;
 	}
 
@@ -322,7 +319,7 @@ function modframe($cf)
 
 	
 	
-	// now build the page 
+	// now build the page
 
 	print "<form name='modframe' action='modframe.php?op=addlink&cf=$cf' method=post>\n";
 
@@ -377,13 +374,13 @@ function modframe($cf)
 			print "<td class=$class>";
 
 			// get names of forms in the link
-			$name1q = "SELECT desc_form FROM " . $xoopsDB->prefix("formulize_id") . " WHERE id_form = '" . $link['fl_form1_id'] . "'";
-			$res = $xoopsDB->query($name1q);
-			$row = $xoopsDB->fetchRow($res);
+			$name1q = "SELECT desc_form FROM " . icms::$xoopsDB->prefix("formulize_id") . " WHERE id_form = '" . $link['fl_form1_id'] . "'";
+			$res = icms::$xoopsDB->query($name1q);
+			$row = icms::$xoopsDB->fetchRow($res);
 			$form1 = $row[0];
-			$name2q = "SELECT desc_form FROM " . $xoopsDB->prefix("formulize_id") . " WHERE id_form = '" . $link['fl_form2_id'] . "'";
-			$res = $xoopsDB->query($name2q);
-			$row = $xoopsDB->fetchRow($res);
+			$name2q = "SELECT desc_form FROM " . icms::$xoopsDB->prefix("formulize_id") . " WHERE id_form = '" . $link['fl_form2_id'] . "'";
+			$res = icms::$xoopsDB->query($name2q);
+			$row = icms::$xoopsDB->fetchRow($res);
 			$form2 = $row[0];
 
 			print "<table><tr><td>" . _AM_FRAME_AVAILFORMS1 . " <b><a href='modframe.php?op=editform&cf=$cf&fid=" . $link['fl_form1_id'] . "'>" . $form1 . "</a></b>";
@@ -433,7 +430,7 @@ function modframe($cf)
 			$selected = "";
 			if($link['fl_key1'] == 0 AND $link['fl_key2'] == 0) { $selected = " selected"; }
 
-			$linkoptions = "<option value='0+0'" . $selected . ">" . _AM_FRAME_UIDLINK . "</option>\n"; 
+			$linkoptions = "<option value='0+0'" . $selected . ">" . _AM_FRAME_UIDLINK . "</option>\n";
 
 			// common value option added July 19 2006 -- jwe
 			if($link['fl_common_value'] != 1) {
@@ -449,7 +446,7 @@ function modframe($cf)
 				print "<input type=hidden name=preservecommon" . $link['fl_id'] . " value=" . $link['fl_key1'] . "+" . $link['fl_key2'] . ">\n";
 			}
 			$linkoptions .= writelinks($hits12, 0, $link['fl_key1'], $link['fl_key2'], $target_ele_ids, $source_ele_ids, $target_captions, $source_captions);
-			$linkoptions .= writelinks($hits21, 1, $link['fl_key1'], $link['fl_key2'], $target_ele_ids, $source_ele_ids, $target_captions, $source_captions);			
+			$linkoptions .= writelinks($hits21, 1, $link['fl_key1'], $link['fl_key2'], $target_ele_ids, $source_ele_ids, $target_captions, $source_captions);
 
 			// debug code
 			/*print $rel1 . "<br>";
@@ -496,12 +493,12 @@ function modframe($cf)
 						if($key1 == $source_ele_ids[$link] AND $key2 == $target_ele_ids[$link]) {
 							$selected = " selected";
 						}
-						$linkoptions .= "<option value='" . $source_ele_ids[$link] . "+" . $target_ele_ids[$link] . "'" . $selected . ">" . printSmart($source_captions[$link],20) . "/" . printSmart($target_captions[$link],20) . "</option>\n"; 
-					} else { 
+						$linkoptions .= "<option value='" . $source_ele_ids[$link] . "+" . $target_ele_ids[$link] . "'" . $selected . ">" . printSmart($source_captions[$link],20) . "/" . printSmart($target_captions[$link],20) . "</option>\n";
+					} else {
 						if($key1 == $target_ele_ids[$link] AND $key2 == $source_ele_ids[$link]) {
 							$selected = " selected";
 						}
-						$linkoptions .= "<option value='" . $target_ele_ids[$link] . "+" . $source_ele_ids[$link] . "'" . $selected . ">" . printSmart($source_captions[$link],20) . "/" . printSmart($target_captions[$link],20) . "</option>\n"; 
+						$linkoptions .= "<option value='" . $target_ele_ids[$link] . "+" . $source_ele_ids[$link] . "'" . $selected . ">" . printSmart($source_captions[$link],20) . "/" . printSmart($target_captions[$link],20) . "</option>\n";
 					}
 				}
 				return $linkoptions;
@@ -512,19 +509,18 @@ function modframe($cf)
 function createframe($framename)
 {
 
-	global $xoopsDB;
 
 	//write the name to the DB and then get the ID of the name just written
-	$writename = "INSERT INTO " . $xoopsDB->prefix("formulize_frameworks") . " (frame_name) VALUES (\"$framename\")";
-	if($res = $xoopsDB->query($writename)) {
+	$writename = "INSERT INTO " . icms::$xoopsDB->prefix("formulize_frameworks") . " (frame_name) VALUES (\"$framename\")";
+	if($res = icms::$xoopsDB->query($writename)) {
 	} else {
 		print "Error: Framework creation unsuccessful";
 	}
 
 	// set $cf to next available ID value so we know what number to pass for the new framework
-	$highcf = "SELECT MAX(frame_id) FROM " . $xoopsDB->prefix("formulize_frameworks") . " WHERE frame_name = \"$framename\"";
-	$res = $xoopsDB->query($highcf);
-	$row = $xoopsDB->fetchRow($res);
+	$highcf = "SELECT MAX(frame_id) FROM " . icms::$xoopsDB->prefix("formulize_frameworks") . " WHERE frame_name = \"$framename\"";
+	$res = icms::$xoopsDB->query($highcf);
+	$row = icms::$xoopsDB->fetchRow($res);
 
 	return $row[0];
 
@@ -532,7 +528,6 @@ function createframe($framename)
 
 function createformslink($fid1, $fid2, $cf) {
 
-	global $xoopsDB;
 
 	// This is the function that makes a new form entry in the framework DB tables
 
@@ -543,20 +538,20 @@ function createformslink($fid1, $fid2, $cf) {
 	// check that the forms are new and if so add them to the forms table
 
 	foreach($forms as $fid) {
-		$checkq = "SELECT ff_id FROM " . $xoopsDB->prefix("formulize_framework_forms") . " WHERE ff_form_id='$fid' AND ff_frame_id = '$cf'";
+		$checkq = "SELECT ff_id FROM " . icms::$xoopsDB->prefix("formulize_framework_forms") . " WHERE ff_form_id='$fid' AND ff_frame_id = '$cf'";
 		$res=$xoopsDB->query($checkq);
 		if($xoopsDB->getRowsNum($res)==0) {
-			$writeform = "INSERT INTO " . $xoopsDB->prefix("formulize_framework_forms") . " (ff_frame_id, ff_form_id) VALUES ('$cf', '$fid')";
-			if(!$res = $xoopsDB->query($writeform)) {
+			$writeform = "INSERT INTO " . icms::$xoopsDB->prefix("formulize_framework_forms") . " (ff_frame_id, ff_form_id) VALUES ('$cf', '$fid')";
+			if(!$res = icms::$xoopsDB->query($writeform)) {
 				print "Error:  could not add form: $fid to framework: $cf";
 			}
-		}		
+		}
 	}
 
 	// write the link to the links table
 
-	$writelink = "INSERT INTO " . $xoopsDB->prefix("formulize_framework_links") . " (fl_frame_id, fl_form1_id, fl_form2_id, fl_key1, fl_key2, fl_relationship, fl_unified_display, fl_common_value) VALUES ('$cf', '$fid1', '$fid2', 0, 0, 1, 0, 0)";
-	if(!$res = $xoopsDB->query($writelink)) {
+	$writelink = "INSERT INTO " . icms::$xoopsDB->prefix("formulize_framework_links") . " (fl_frame_id, fl_form1_id, fl_form2_id, fl_key1, fl_key2, fl_relationship, fl_unified_display, fl_common_value) VALUES ('$cf', '$fid1', '$fid2', 0, 0, 1, 0, 0)";
+	if(!$res = icms::$xoopsDB->query($writelink)) {
 		print "Error:  could not write link of $fid1 and $fid2 to the links table for framework $cf";
 	}
 
@@ -564,10 +559,9 @@ function createformslink($fid1, $fid2, $cf) {
 
 function deleteform($ff_id, $cf) {
 
-	global $xoopsDB;
 
-		$deleteq = "DELETE FROM " . $xoopsDB->prefix("formulize_framework_forms") . " WHERE ff_id='$ff_id'";
-		if ($res = $xoopsDB->queryF($deleteq)) {
+		$deleteq = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_framework_forms") . " WHERE ff_id='$ff_id'";
+		if ($res = icms::$xoopsDB->queryF($deleteq)) {
 		} else {
 			print "Error: form deletion unsuccessful";
 		}
@@ -576,10 +570,9 @@ function deleteform($ff_id, $cf) {
 
 function deletelink($fl_id, $cf) {
 
-	global $xoopsDB;
 
-		$deleteq = "DELETE FROM " . $xoopsDB->prefix("formulize_framework_links") . " WHERE fl_id='$fl_id'";
-		if ($res = $xoopsDB->queryF($deleteq)) {
+		$deleteq = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_framework_links") . " WHERE fl_id='$fl_id'";
+		if ($res = icms::$xoopsDB->queryF($deleteq)) {
 		} else {
 			print "Error: link deletion unsuccessful";
 		}
@@ -587,10 +580,9 @@ function deletelink($fl_id, $cf) {
 
 function deleteelements($fe_id, $cf) {
 
-	global $xoopsDB;
 
-		$deleteq = "DELETE FROM " . $xoopsDB->prefix("formulize_framework_elements") . " WHERE fe_id='$fe_id'";
-		if ($res = $xoopsDB->queryF($deleteq)) {
+		$deleteq = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_framework_elements") . " WHERE fe_id='$fe_id'";
+		if ($res = icms::$xoopsDB->queryF($deleteq)) {
 		} else {
 			print "Error: element deletion unsuccessful";
 		}
@@ -600,7 +592,6 @@ function deleteelements($fe_id, $cf) {
 
 function editform($fid, $cf) {
 
-	global $xoopsDB;
 
 	// This is the edit form page
 
@@ -610,26 +601,26 @@ function editform($fid, $cf) {
 	// 2. Complete element list for this form
 	// 3. Handle of each element for this form (in this framework)
 
-	$nameq = "SELECT desc_form FROM " . $xoopsDB->prefix("formulize_id") . " WHERE id_form = '" . $fid . "'";
-	$res = $xoopsDB->query($nameq);
-	$row = $xoopsDB->fetchRow($res);
+	$nameq = "SELECT desc_form FROM " . icms::$xoopsDB->prefix("formulize_id") . " WHERE id_form = '" . $fid . "'";
+	$res = icms::$xoopsDB->query($nameq);
+	$row = icms::$xoopsDB->fetchRow($res);
 	$formname = $row[0];
 
-	$handleq = "SELECT ff_handle FROM " . $xoopsDB->prefix("formulize_framework_forms") . " WHERE ff_frame_id = '" . $cf . "' AND ff_form_id = '" . $fid . "'";
-	$res = $xoopsDB->query($handleq);
-	$row = $xoopsDB->fetchRow($res);
+	$handleq = "SELECT ff_handle FROM " . icms::$xoopsDB->prefix("formulize_framework_forms") . " WHERE ff_frame_id = '" . $cf . "' AND ff_form_id = '" . $fid . "'";
+	$res = icms::$xoopsDB->query($handleq);
+	$row = icms::$xoopsDB->fetchRow($res);
 	$formhandle = $row[0];
 
 	$indexer = 0;
-	$elementsq = "SELECT ele_caption, ele_id FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form = '" . $fid . "' ORDER BY ele_order";
-	$res = $xoopsDB->query($elementsq);
-	while ($row = $xoopsDB->fetchRow($res)) {
+	$elementsq = "SELECT ele_caption, ele_id FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form = '" . $fid . "' ORDER BY ele_order";
+	$res = icms::$xoopsDB->query($elementsq);
+	while ($row = icms::$xoopsDB->fetchRow($res)) {
 		$elements[$indexer]['caption'] = $row[0];
 		$elements[$indexer]['id'] = $row[1];
 
-		$ehandleq = "SELECT fe_handle FROM " . $xoopsDB->prefix("formulize_framework_elements") . " WHERE fe_frame_id = '$cf' AND fe_form_id = '$fid' AND fe_element_id = '" . $row[1] . "'";
-		$res2 = $xoopsDB->query($ehandleq);
-		$row2 = $xoopsDB->fetchRow($res2);
+		$ehandleq = "SELECT fe_handle FROM " . icms::$xoopsDB->prefix("formulize_framework_elements") . " WHERE fe_frame_id = '$cf' AND fe_form_id = '$fid' AND fe_element_id = '" . $row[1] . "'";
+		$res2 = icms::$xoopsDB->query($ehandleq);
+		$row2 = icms::$xoopsDB->fetchRow($res2);
 		$elements[$indexer]['handle'] = $row2[0];
 
 		$indexer++;
@@ -663,12 +654,11 @@ function editform($fid, $cf) {
 
 function saveform($fid, $cf) {
 
-	global $xoopsDB;
 
 	// read the $_POST array and get all the handles out of it and write them to the DB
 
-	$formhandleq = "UPDATE " . $xoopsDB->prefix("formulize_framework_forms") . " SET ff_handle='" . $_POST['formhandle'] . "' WHERE ff_frame_id='$cf' AND ff_form_id='$fid'";
-	if(!$res = $xoopsDB->query($formhandleq)) {
+	$formhandleq = "UPDATE " . icms::$xoopsDB->prefix("formulize_framework_forms") . " SET ff_handle='" . $_POST['formhandle'] . "' WHERE ff_frame_id='$cf' AND ff_form_id='$fid'";
+	if(!$res = icms::$xoopsDB->query($formhandleq)) {
  		print "Error: could not update form handle";
 	}
 
@@ -676,54 +666,53 @@ function saveform($fid, $cf) {
 		if(substr($key, 0, 9) == "elehandle") {
 			$eleid = substr($key, 9);
 			// check to see if element has been written to DB already
-			$elecheckq = "SELECT fe_id FROM " . $xoopsDB->prefix("formulize_framework_elements") . " WHERE fe_frame_id='$cf' AND fe_form_id='$fid' AND fe_element_id='$eleid'";
-			$res = $xoopsDB->query($elecheckq);
-			// INSERT 
+			$elecheckq = "SELECT fe_id FROM " . icms::$xoopsDB->prefix("formulize_framework_elements") . " WHERE fe_frame_id='$cf' AND fe_form_id='$fid' AND fe_element_id='$eleid'";
+			$res = icms::$xoopsDB->query($elecheckq);
+			// INSERT
 			if($xoopsDB->getRowsNum($res)==0) {
-				$eleq = "INSERT INTO " . $xoopsDB->prefix("formulize_framework_elements") . " (fe_frame_id, fe_form_id, fe_element_id, fe_handle) VALUES ('$cf', '$fid', '$eleid', '$value')";
-				if(!$res2 = $xoopsDB->query($eleq)) {
+				$eleq = "INSERT INTO " . icms::$xoopsDB->prefix("formulize_framework_elements") . " (fe_frame_id, fe_form_id, fe_element_id, fe_handle) VALUES ('$cf', '$fid', '$eleid', '$value')";
+				if(!$res2 = icms::$xoopsDB->query($eleq)) {
 					print "Error: could not insert element handle $value";
 				}
 			} else {
 			// UPDATE
-				$row = $xoopsDB->fetchRow($res);
-				$eleq = "UPDATE " . $xoopsDB->prefix("formulize_framework_elements") . " SET fe_handle='$value' WHERE fe_id='" . $row[0] . "'";
-				if(!$res2 = $xoopsDB->query($eleq)) {
+				$row = icms::$xoopsDB->fetchRow($res);
+				$eleq = "UPDATE " . icms::$xoopsDB->prefix("formulize_framework_elements") . " SET fe_handle='$value' WHERE fe_id='" . $row[0] . "'";
+				if(!$res2 = icms::$xoopsDB->query($eleq)) {
 					print "Error: could not update element handle $value";
 				}
 			}
-		}		
+		}
 	}
 }
 
 function deleteframe($cf) {
 
-	global $xoopsDB;
 
 	// delete the framework and all its forms and elements in the other tables
 	// need to add more stuff here to delete everything
 
-	$deleteq = "DELETE FROM " . $xoopsDB->prefix("formulize_frameworks") . " WHERE frame_id=$cf";
-	if ($res = $xoopsDB->queryF($deleteq)) {
+	$deleteq = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_frameworks") . " WHERE frame_id=$cf";
+	if ($res = icms::$xoopsDB->queryF($deleteq)) {
 	} else {
 		print "Error: Framework deletion unsuccessful";
 	}
 
-	$findformsq = "SELECT ff_id FROM " . $xoopsDB->prefix("formulize_framework_forms") . " WHERE ff_frame_id='$cf'";
-	$res = $xoopsDB->query($findformsq);
-	while ($array = $xoopsDB->fetchArray($res)){
+	$findformsq = "SELECT ff_id FROM " . icms::$xoopsDB->prefix("formulize_framework_forms") . " WHERE ff_frame_id='$cf'";
+	$res = icms::$xoopsDB->query($findformsq);
+	while ($array = icms::$xoopsDB->fetchArray($res)){
 		deleteform($array['ff_id'], $cf);
 	}
 
-	$findlinksq = "SELECT fl_id FROM " . $xoopsDB->prefix("formulize_framework_links") . " WHERE fl_frame_id='$cf'";
-	$res = $xoopsDB->query($findlinksq);
-	while ($array = $xoopsDB->fetchArray($res)) {
+	$findlinksq = "SELECT fl_id FROM " . icms::$xoopsDB->prefix("formulize_framework_links") . " WHERE fl_frame_id='$cf'";
+	$res = icms::$xoopsDB->query($findlinksq);
+	while ($array = icms::$xoopsDB->fetchArray($res)) {
 		deletelink($array['fl_id'], $cf);
 	}
 
-	$findelementsq = "SELECT fe_id FROM " . $xoopsDB->prefix("formulize_framework_elements") . " WHERE fe_frame_id='$cf'";
-	$res = $xoopsDB->query($findelementsq);
-	while ($array = $xoopsDB->fetchArray($res)) {
+	$findelementsq = "SELECT fe_id FROM " . icms::$xoopsDB->prefix("formulize_framework_elements") . " WHERE fe_frame_id='$cf'";
+	$res = icms::$xoopsDB->query($findelementsq);
+	while ($array = icms::$xoopsDB->fetchArray($res)) {
 		deleteelements($array['fe_id'], $cf);
 	}
 }
@@ -731,16 +720,14 @@ function deleteframe($cf) {
 
 
 function updaterels($fl_id, $value) {
-	global $xoopsDB;
 
-	$sql = "UPDATE " . $xoopsDB->prefix("formulize_framework_links") . " SET fl_relationship='$value' WHERE fl_id='$fl_id'";
-	if(!$res = $xoopsDB->query($sql)) {
+	$sql = "UPDATE " . icms::$xoopsDB->prefix("formulize_framework_links") . " SET fl_relationship='$value' WHERE fl_id='$fl_id'";
+	if(!$res = icms::$xoopsDB->query($sql)) {
 		print "Error: could not update relationship for framework link $fl_id";
 	}
 }
 
 function updatelinks($fl_id, $value) {
-	global $xoopsDB;
 	if($value == "common" AND $_POST['common_fl_id'] == $fl_id) {
 		$keys[0] = $_POST['common1choice'];
 		$keys[1] = $_POST['common2choice'];
@@ -749,16 +736,15 @@ function updatelinks($fl_id, $value) {
 		$keys = explode("+", $value);
 		$common = $_POST['preservecommon'.$fl_id] == $value ? 1 : 0;
 	}
-	$sql = "UPDATE " . $xoopsDB->prefix("formulize_framework_links") . " SET fl_key1='" . $keys[0] . "', fl_key2='" . $keys[1] . "', fl_common_value='$common' WHERE fl_id='$fl_id'";
-	if(!$res = $xoopsDB->query($sql)) {
+	$sql = "UPDATE " . icms::$xoopsDB->prefix("formulize_framework_links") . " SET fl_key1='" . $keys[0] . "', fl_key2='" . $keys[1] . "', fl_common_value='$common' WHERE fl_id='$fl_id'";
+	if(!$res = icms::$xoopsDB->query($sql)) {
 		print "Error: could not update key fields for framework link $fl_id";
 	}
 }
 
 function updatedisplays($fl_id, $value) {
-	global $xoopsDB;
-	$sql = "UPDATE " . $xoopsDB->prefix("formulize_framework_links") . " SET fl_unified_display='$value' WHERE fl_id='$fl_id'";	
-	if(!$res = $xoopsDB->query($sql)) {
+	$sql = "UPDATE " . icms::$xoopsDB->prefix("formulize_framework_links") . " SET fl_unified_display='$value' WHERE fl_id='$fl_id'";
+	if(!$res = icms::$xoopsDB->query($sql)) {
 		print "Error: could not update unified display setting for framework link $fl_id";
 	}
 }
@@ -821,10 +807,10 @@ switch ($op) {
 	case "edit":
 		modframe($cf);
 		break;
-	case "addlink": 
+	case "addlink":
 		$fid1 = $_POST['fid1'];
 		$fid2 = $_POST['fid2'];
-		$new = createformslink($fid1, $fid2, $cf); 
+		$new = createformslink($fid1, $fid2, $cf);
 		modframe($cf);
 		break;
 	case "updateframe":
@@ -837,7 +823,7 @@ switch ($op) {
 			break;
 		}*/
 
-		updateframe($cf);			
+		updateframe($cf);
 		modframe($cf);
 		break;
 	case "editform":
@@ -847,7 +833,7 @@ switch ($op) {
 	case "delete":
 		deleteframe($cf);
 		mainpage();
-		break;	
+		break;
 	case "saveform":
 		$fid = $_GET['fid'];
 		saveform($fid, $cf);

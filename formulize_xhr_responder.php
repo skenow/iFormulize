@@ -84,7 +84,7 @@ switch($op) {
     break;
   case 'get_element_option_list':
     include_once XOOPS_ROOT_PATH . "/modules/formulize/include/functions.php";
-  	$elementsq = q("SELECT ele_caption, ele_id FROM " . $xoopsDB->prefix("formulize") . " WHERE id_form=" . intval($_GET['fid']) . " AND ele_type != \"ib\" AND ele_type != \"subform\" ORDER BY ele_order");
+  	$elementsq = q("SELECT ele_caption, ele_id FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form=" . intval($_GET['fid']) . " AND ele_type != \"ib\" AND ele_type != \"subform\" ORDER BY ele_order");
     $json = "{ \"options\": [";
     $start = true;
   	foreach($elementsq as $oneele) {
