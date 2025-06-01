@@ -1264,7 +1264,7 @@ function getUserID($stringName) {
         " WHERE uname='" . icms::$xoopsDB->escape($stringName) . "'";
 
 	$result = icms::$xoopsDB->query($sql);
-    if($xoopsDB->getRowsNum($result) > 0)
+    if(icms::$xoopsDB->getRowsNum($result) > 0)
     {
 		$item = icms::$xoopsDB->fetchArray($result);
         if(@$item["uid"])

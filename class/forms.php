@@ -404,17 +404,17 @@ class formulizeFormsHandler {
 		}
 		$isError = false;
 		$sql = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_id") . " WHERE id_form = $fid";
-		if (!$xoopsDB->query($sql)) {
+		if (!icms::$xoopsDB->query($sql)) {
 			print "Error: could not delete form $fid";
 			$isError = true;
 		}
 		$sql = "DELETE FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form = $fid";
-		if (!$xoopsDB->query($sql)) {
+		if (!icms::$xoopsDB->query($sql)) {
 			print "Error: could not delete elements for form $fid";
 			$isError = true;
 		}
 		$sql = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_framework_links") . " WHERE fl_form1_id = $fid OR fl_form2_id = $fid";
-		if (!$xoopsDB->query($sql)) {
+		if (!icms::$xoopsDB->query($sql)) {
 			print "Error: could not delete relationship links for form $fid";
 			$isError = true;
 		}
@@ -422,19 +422,19 @@ class formulizeFormsHandler {
 		if ($res = icms::$xoopsDB->query($sql)) {
 			while ($array = icms::$xoopsDB->fetchArray($res)) {
 				$sql = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_screen_" . strtolower($array['type'])) . " WHERE sid=" . intval($array['sid']);
-				if (!$xoopsDB->query($sql)) {
+				if (!icms::$xoopsDB->query($sql)) {
 					print "Error: could not delete screen " . htmlspecialchars(strip_tags($array['sid'])) . " for form $fid";
 					$isError = true;
 				}
 			}
 			$sql = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_screen") . " WHERE fid=$fid";
-			if (!$xoopsDB->query($sql)) {
+			if (!icms::$xoopsDB->query($sql)) {
 				print "Error: could not delete screens for form $fid";
 				$isError = true;
 			}
 		}
 		$sql = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_application_form_link") . " WHERE fid=$fid";
-		if (!$xoopsDB->query($sql)) {
+		if (!icms::$xoopsDB->query($sql)) {
 			print "Error: could not delete form $fid from its applications";
 			$isError = true;
 		}
@@ -468,7 +468,7 @@ class formulizeFormsHandler {
 				$existingTables[] = $table[0];
 			}
 		}
-		$foundval = in_array($xoopsDB->prefix("formulize_" . $form_handle . "_revisions"), $existingTables);
+		$foundval = in_array(icms::$xoopsDB->prefix("formulize_" . $form_handle . "_revisions"), $existingTables);
 		return $foundval;
 	}
 
@@ -708,12 +708,12 @@ class formulizeFormsHandler {
 		$updateSQL .= " ELSE filter END WHERE fid=" . $fid;
 
 		if ($runInsert) {
-			if (!$xoopsDB->query($insertSQL)) {
+			if (!icms::$xoopsDB->query($insertSQL)) {
 				return false;
 			}
 		}
 		if ($runUpdate) {
-			if (!$xoopsDB->query($updateSQL)) {
+			if (!icms::$xoopsDB->query($updateSQL)) {
 				return false;
 			}
 		}
@@ -729,7 +729,7 @@ class formulizeFormsHandler {
 			return false;
 		}
 		$deleteSQL = icms::$xoopsDB->escape("DELETE FROM " . icms::$xoopsDB->prefix("formulize_group_filters") . " WHERE fid=$fid AND groupid IN (" . implode(", ", $groupids) . ")");
-		if (!$xoopsDB->query($deleteSQL)) {
+		if (!icms::$xoopsDB->query($deleteSQL)) {
 			return false;
 		} else {
 			return true;

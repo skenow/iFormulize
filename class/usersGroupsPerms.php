@@ -132,7 +132,7 @@ class formulizePermHandler {
 			$cachedGroupScopeInfo[$this->fid][$gid] = array();
 			$sql = "SELECT t1.view_groupid, t2.name FROM " . icms::$xoopsDB->prefix("formulize_groupscope_settings") . " as t1, " . icms::$xoopsDB->prefix("groups") . " as t2 WHERE t1.groupid=" . intval($gid) . " AND t1.fid = " . $this->fid . " AND t1.view_groupid=t2.groupid";
 			if ($res = icms::$xoopsDB->query($sql)) {
-				if ($xoopsDB->getRowsNum($res) != 0) {
+				if (icms::$xoopsDB->getRowsNum($res) != 0) {
 					while ($array = icms::$xoopsDB->fetchArray($res)) {
 						$cachedGroupScopeInfo[$this->fid][$gid]['group_ids'][$array['view_groupid']] = $array['view_groupid'];
 						$cachedGroupScopeInfo[$this->fid][$gid]['group_names'][$array['view_groupid']] = $array['name'];

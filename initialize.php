@@ -35,10 +35,6 @@
 
 //include 'header.php'; //redundant as all the code that this calls is now called from within each function (since the functions operate on a standalone basis)
 
-if (file_exists(XOOPS_ROOT_PATH . '/class/mail/phpmailer/class.phpmailer.php')) {
-	include_once XOOPS_ROOT_PATH.'/class/mail/phpmailer/class.phpmailer.php';
-}
-
 $GLOBALS['formulize_asynchronousFormDataInDatabaseReadyFormat'] = array();
 $GLOBALS['formulize_asynchronousFormDataInAPIFormat'] = array();
 

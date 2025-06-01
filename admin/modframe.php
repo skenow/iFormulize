@@ -96,7 +96,7 @@ function mainpage()
 	$sql = "SELECT frame_name, frame_id FROM " . icms::$xoopsDB->prefix("formulize_frameworks") . " ORDER BY frame_name";
 	$res = icms::$xoopsDB->query($sql);
 	print "<SELECT name=currentFrame size=1 onChange='redrawpage(document.startframe.currentFrame.value)'>\n";
-	if($xoopsDB->getRowsNum($res)>0)
+	if(icms::$xoopsDB->getRowsNum($res)>0)
 	{
 	
 		print "<option value='0'>" . _AM_FRAME_CHOOSE . "</option>\n";
@@ -122,7 +122,7 @@ function mainpage()
 	// gather and draw in the list of Frameworks
 
 	print "<SELECT name=deleteFrame size=1 onChange='delframe(document.startframe.deleteFrame.value)'>\n";
-	if($xoopsDB->getRowsNum($res)>0)
+	if(icms::$xoopsDB->getRowsNum($res)>0)
 	{
 	
 		print "<option value='0'>" . _AM_FRAME_CHOOSE . "</option>\n";
@@ -539,8 +539,8 @@ function createformslink($fid1, $fid2, $cf) {
 
 	foreach($forms as $fid) {
 		$checkq = "SELECT ff_id FROM " . icms::$xoopsDB->prefix("formulize_framework_forms") . " WHERE ff_form_id='$fid' AND ff_frame_id = '$cf'";
-		$res=$xoopsDB->query($checkq);
-		if($xoopsDB->getRowsNum($res)==0) {
+		$res= icms::$xoopsDB->query($checkq);
+		if(icms::$xoopsDB->getRowsNum($res)==0) {
 			$writeform = "INSERT INTO " . icms::$xoopsDB->prefix("formulize_framework_forms") . " (ff_frame_id, ff_form_id) VALUES ('$cf', '$fid')";
 			if(!$res = icms::$xoopsDB->query($writeform)) {
 				print "Error:  could not add form: $fid to framework: $cf";
@@ -669,7 +669,7 @@ function saveform($fid, $cf) {
 			$elecheckq = "SELECT fe_id FROM " . icms::$xoopsDB->prefix("formulize_framework_elements") . " WHERE fe_frame_id='$cf' AND fe_form_id='$fid' AND fe_element_id='$eleid'";
 			$res = icms::$xoopsDB->query($elecheckq);
 			// INSERT
-			if($xoopsDB->getRowsNum($res)==0) {
+			if(icms::$xoopsDB->getRowsNum($res)==0) {
 				$eleq = "INSERT INTO " . icms::$xoopsDB->prefix("formulize_framework_elements") . " (fe_frame_id, fe_form_id, fe_element_id, fe_handle) VALUES ('$cf', '$fid', '$eleid', '$value')";
 				if(!$res2 = icms::$xoopsDB->query($eleq)) {
 					print "Error: could not insert element handle $value";

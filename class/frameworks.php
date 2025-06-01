@@ -75,7 +75,7 @@ class formulizeFramework extends icms_core_Object {
 				$notAFramework = true;
 			}
 			$formHandles = array();
-			if (in_array($xoopsDB->prefix("formulize_framework_forms"), $existingTables)) {
+			if (in_array(icms::$xoopsDB->prefix("formulize_framework_forms"), $existingTables)) {
 				$frame_form_handles_q = q("SELECT * FROM " . icms::$xoopsDB->prefix("formulize_framework_forms") . " WHERE ff_frame_id=$frid");
 				if (!isset($frame_form_handles_q[0])) {
 					$notAFramework = true;

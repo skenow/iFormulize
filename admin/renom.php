@@ -42,10 +42,7 @@ if ( file_exists("../language/".$xoopsConfig['language']."/main.php") ) {
 }
 
 
-include_once XOOPS_ROOT_PATH."/class/xoopstree.php";
-include_once XOOPS_ROOT_PATH."/class/xoopslists.php";
 include_once XOOPS_ROOT_PATH."/include/xoopscodes.php";
-include_once XOOPS_ROOT_PATH."/class/module.errorhandler.php";
 $myts =& icms_core_Textsanitizer::getInstance();
 
 if(!isset($_POST['title'])){

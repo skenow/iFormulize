@@ -71,10 +71,7 @@ $module_id = icms::$module->getVar('mid'); // recupere le numero id du module
 
 $n = 0;
 $m = 0;
-include_once XOOPS_ROOT_PATH."/class/xoopstree.php";
-include_once XOOPS_ROOT_PATH."/class/xoopslists.php";
 include_once XOOPS_ROOT_PATH."/include/xoopscodes.php";
-include_once XOOPS_ROOT_PATH."/class/module.errorhandler.php";
 $myts =& icms_core_Textsanitizer::getInstance();
 $eh = new ErrorHandler;
 
@@ -1595,7 +1592,7 @@ function patch31() {
 			$existingTables[] = $table[0];
 		}
                 $need22DataChecks = false;
-		if(!in_array($xoopsDB->prefix("formulize_other"), $existingTables)) {
+		if(!in_array(icms::$xoopsDB->prefix("formulize_other"), $existingTables)) {
                         $need22DataChecks = true; // assume that if the formulize_other table is not present, then we have not patched up to 2.2 level yet
 			$sql[] = "CREATE TABLE " . icms::$xoopsDB->prefix("formulize_other") . " (
   other_id smallint(5) NOT NULL auto_increment,
@@ -1608,7 +1605,7 @@ function patch31() {
 ) ENGINE=MyISAM;";
 		}
 
-		if(!in_array($xoopsDB->prefix("formulize_notification_conditions"), $existingTables)) {
+		if(!in_array(icms::$xoopsDB->prefix("formulize_notification_conditions"), $existingTables)) {
 			$sql[] = "CREATE TABLE " . icms::$xoopsDB->prefix("formulize_notification_conditions") . " (
   not_cons_id smallint(5) NOT NULL auto_increment,
   not_cons_fid smallint(5) NOT NULL default 0,
@@ -1627,7 +1624,7 @@ function patch31() {
 ) ENGINE=MyISAM;";
 		}
 
-		if(!in_array($xoopsDB->prefix("formulize_valid_imports"), $existingTables)) {
+		if(!in_array(icms::$xoopsDB->prefix("formulize_valid_imports"), $existingTables)) {
 			$sql[] = "CREATE TABLE " . icms::$xoopsDB->prefix("formulize_valid_imports") . " (
   import_id smallint(5) NOT NULL auto_increment,
   file varchar(255) NOT NULL default '',
@@ -1636,7 +1633,7 @@ function patch31() {
 ) ENGINE=MyISAM;";
 		}
                 
-                if(!in_array($xoopsDB->prefix("formulize_screen_listofentries"), $existingTables)) {
+                if(!in_array(icms::$xoopsDB->prefix("formulize_screen_listofentries"), $existingTables)) {
                         $sql[] = "CREATE TABLE " . icms::$xoopsDB->prefix("formulize_screen_listofentries") . " (
   listofentriesid int(11) NOT NULL auto_increment,
   sid int(11) NOT NULL default 0,
@@ -1683,7 +1680,7 @@ function patch31() {
 ) ENGINE=MyISAM;";
                 }
                 
-                if(!in_array($xoopsDB->prefix("formulize_screen_multipage"), $existingTables)) {
+                if(!in_array(icms::$xoopsDB->prefix("formulize_screen_multipage"), $existingTables)) {
                         $sql[] = "CREATE TABLE " . icms::$xoopsDB->prefix("formulize_screen_multipage") . " (
   multipageid int(11) NOT NULL auto_increment,
   sid int(11) NOT NULL default 0,
@@ -1700,7 +1697,7 @@ function patch31() {
 ) ENGINE=MyISAM;";
                 }
                 
-                if(!in_array($xoopsDB->prefix("formulize_screen"), $existingTables)) {
+                if(!in_array(icms::$xoopsDB->prefix("formulize_screen"), $existingTables)) {
                         $sql[] = "CREATE TABLE " . icms::$xoopsDB->prefix("formulize_screen") . " (
   sid int(11) NOT NULL auto_increment,
   title varchar(255) NOT NULL default '',
@@ -1711,7 +1708,7 @@ function patch31() {
 ) ENGINE=MyISAM;";
                 }
 
-if(!in_array($xoopsDB->prefix("formulize_entry_owner_groups"), $existingTables)) {
+if(!in_array(icms::$xoopsDB->prefix("formulize_entry_owner_groups"), $existingTables)) {
 	$sql[] = "CREATE TABLE " . icms::$xoopsDB->prefix("formulize_entry_owner_groups")." (
   owner_id int(5) unsigned NOT NULL auto_increment,
   fid int(5) NOT NULL default '0',
@@ -1727,7 +1724,7 @@ if(!in_array($xoopsDB->prefix("formulize_entry_owner_groups"), $existingTables))
 		// check about altered fields
 		$testsql = "SELECT * FROM " .  icms::$xoopsDB->prefix("formulize") . " LIMIT 0,1";
 		$result1 = icms::$xoopsDB->query($testsql);
-                if($xoopsDB->getRowsNum($result1) == 0) {
+                if(icms::$xoopsDB->getRowsNum($result1) == 0) {
                         exit("Error patching DB for Formulize 3.1.<br>No forms exist in the database.<br>".icms::$xoopsDB->error()."<br>Please contact <a href=mailto:formulize@freeformsolutions.ca>Freeform Solutions</a> for assistance.");
                 }
 		$array1 = icms::$xoopsDB->fetchArray($result1); // for 2.1 we were checking explicitly whether we needed to add these fields.  But for 2.2 we just ran the SQL and caught the error appropriately in the condition below (ie: looked for failure for 'commonvalue' and ignored it) -- although ele_disabled was added this way...clearly we're not consistent about the patch approach!
@@ -2018,7 +2015,7 @@ function patch22convertdata() {
   $newStructureFound = false;
   $entryOwnerGroupFound = false;
 	while($table = icms::$xoopsDB->fetchRow($resultPatchCheck)) {
-    $secondPart = substr($table[0], strlen($xoopsDB->prefix("formulize_")));
+    $secondPart = substr($table[0], strlen(icms::$xoopsDB->prefix("formulize_")));
     if(is_numeric($secondPart) AND strstr($table[0], "formulize_")) {
       $newStructureFound = true;
     }
@@ -2097,7 +2094,7 @@ function patch30DataStructure($auto = false) {
         $formulizeFormFound = false;
         $newStructureFound = false;
         while($table = icms::$xoopsDB->fetchRow($resultPatchCheck)) {
-          $secondPart = substr($table[0], strlen($xoopsDB->prefix("formulize_")));
+          $secondPart = substr($table[0], strlen(icms::$xoopsDB->prefix("formulize_")));
           if(is_numeric($secondPart) AND strstr($table[0], icms::$xoopsDB->prefix("formulize_"))) { // there will be a part after "formulize_" that is numeric in the new data structure
             $newStructureFound = true;
           }

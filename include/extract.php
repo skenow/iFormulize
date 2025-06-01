@@ -498,7 +498,7 @@ function dataExtraction($frame="", $form, $filter, $andor, $scope, $limitStart, 
 	       // create the per-group filters, if any, that apply to this user...only available when all XOOPS is invoked, not available when extract.php is being direct included
 					$perGroupFilter = "";
 					$perGroupFiltersPerForms = array(); // used with exists clauses and other per-form situations
-					if($xoopsDB) {
+					if(icms::$xoopsDB) {
 							 $form_handler = icms_getModuleHandler('forms', 'formulize');
 							 $perGroupFilter = $form_handler->getPerGroupFilterWhereClause($fid, "main");
 							 $perGroupFiltersPerForms[$fid] = $perGroupFilter;
@@ -826,7 +826,7 @@ function dataExtraction($frame="", $form, $filter, $andor, $scope, $limitStart, 
 
     if($resultOnly) {
       if($masterQueryRes) {
-        if($xoopsDB->getRowsNum($masterQueryRes)>0) {
+        if(icms::$xoopsDB->getRowsNum($masterQueryRes)>0) {
           return $masterQueryRes;
         } else {
           return false;
@@ -850,7 +850,7 @@ function dataExtraction($frame="", $form, $filter, $andor, $scope, $limitStart, 
      
      $derivedFieldMetadata = array();
      if($res = icms::$xoopsDB->query($sql)) {
-          if($xoopsDB->getRowsNum($res)>0) {
+          if(icms::$xoopsDB->getRowsNum($res)>0) {
                $multipleIndexer = array();
                while($row = icms::$xoopsDB->fetchRow($res)) {
                     $ele_value = unserialize($row[0]); // derived fields have ele_value as an array with only one element (that was done to future proof the data model, so we could add other things to ele_value if necessary)
@@ -1288,7 +1288,7 @@ function formulize_parseFilter($filtertemp, $andor, $linkfids, $fid, $frid) {
 			      $sourceFormObject = $form_handler->get($sourceMeta[0]);
 			      if($ifParts[1] == "PERGROUPFILTER") {
 				 // invoke the per group filter that applies to the form that we are pointing to...if XOOPS is in effect (ie: we're not included directly in other code as per Formulize 1)
-				 if($xoopsDB) {
+				 if(icms::$xoopsDB) {
 				   $form_handler = icms_getModuleHandler('forms', 'formulize');
 				   $otherpgfCount = count($otherPerGroupFilterJoins) + 1;
 				   $otherPerGroupFilterWhereClause[] = $form_handler->getPerGroupFilterWhereClause($sourceMeta[0], "otherpgf".$otherpgfCount);
@@ -1310,7 +1310,7 @@ function formulize_parseFilter($filtertemp, $andor, $linkfids, $fid, $frid) {
                               $preSearch = "SELECT uid FROM " . DBPRE . "users WHERE uid ".$operator.$quotes.$likebits.$ifParts[1].$likebits.$quotes;
                          }
                          $preSearchResult = icms::$xoopsDB->query($preSearch);
-                         if($xoopsDB->getRowsNum($preSearchResult)>0) {
+                         if(icms::$xoopsDB->getRowsNum($preSearchResult)>0) {
 															$nameSearchStart = true;
                               while($preSearchArray = icms::$xoopsDB->fetchArray($preSearchResult)) {
 																	 if(!$nameSearchStart) {
@@ -1560,7 +1560,7 @@ function formulize_calcDerivedColumns($entry, $metadata, $frid, $fid) {
 			      }
 			      $entry[$formHandle][$primary_entry_id][$thisMetaData['handle']][0] = $derivedValue;
 			      // write value to database if XOOPS is active
-			      if($xoopsDB) {
+			      if(icms::$xoopsDB) {
 				   include_once XOOPS_ROOT_PATH . "/modules/formulize/class/data.php";
 				   $data_handler = new formulizeDataHandler(formulize_getFormIdFromName($formHandle));
 				   $elementID = formulize_getIdFromElementHandle($thisMetaData['handle']);
@@ -2263,9 +2263,6 @@ function formulize_benchmark($text, $dumpLog = false) {
 
 if(!$myts) {
  	// setup text sanitizer too
-	include_once XOOPS_ROOT_PATH."/class/module.textsanitizer.php";
 	$myts = new icms_core_Textsanitizer();
 	$GLOBALS['myts'] = $myts;
 }
-
-?>

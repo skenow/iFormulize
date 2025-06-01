@@ -382,7 +382,7 @@ function MyMenuAdd($xposition, $itemname, $indent, $margintop, $marginbottom, $i
         $myts =& icms_core_Textsanitizer::getInstance();
     		$itemname  = $myts->makeTboxData4Save(trim($itemname));
     		$itemurl   = $myts->makeTboxData4Save(trim($itemurl));
-        $newid = icms::$xoopsDB->genId($xoopsDB->prefix("formulize_menu")."_menuid_seq");
+        $newid = icms::$xoopsDB->genId(icms::$xoopsDB->prefix("formulize_menu")."_menuid_seq");
         
     	 icms::$xoopsDB->query("INSERT INTO " . icms::$xoopsDB->prefix("formulize_menu")." (menuid, position, itemname, indent, margintop, marginbottom, itemurl, bold, membersonly, mainmenu, status) VALUES ('$newid', '$xposition', '$itemname', '$indent', '$margintop', '$marginbottom', '$itemurl', '$bold', '0', '$mainmenu', '$status')");
 

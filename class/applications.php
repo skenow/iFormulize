@@ -261,7 +261,7 @@ class formulizeApplicationsHandler {
 		$sql[] = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_applications") . " WHERE appid=$appid";
 		$sql[] = "DELETE FROM " . icms::$xoopsDB->prefix("formulize_application_form_link") . " WHERE appid=$appid";
 		foreach ($sql as $thisSql) {
-			if (!$xoopsDB->query($thisSql)) {
+			if (!icms::$xoopsDB->query($thisSql)) {
 				print "Error: could not complete the deletion of application " . $appid;
 				$isError = true;
 			}
