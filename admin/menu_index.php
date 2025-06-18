@@ -30,7 +30,6 @@ include_once("admin_header.php");
 include_once "../include/functions.php";
 
 function MyMenuAdmin($cat_id="") { // modified to accept passing of category names APRIL 25/05
-        global $xoopsConfig;
         icms_cp_header();
         OpenTable();
 
@@ -257,7 +256,6 @@ function drawRow($thiscat, $thisformid) {
 }
 
 function MyMenuEdit($menuid) {
-        global $xoopsConfig;
         icms_cp_header();
         $result = icms::$xoopsDB->query("SELECT position, itemname, indent, margintop, marginbottom, itemurl, bold, membersonly, mainmenu, status FROM " . icms::$xoopsDB->prefix("formulize_menu")." WHERE menuid=$menuid");
         list($xposition, $itemname, $indent, $margintop, $marginbottom, $itemurl, $bold, $membersonly, $mainmenu, $status) = icms::$xoopsDB->fetchRow($result);
@@ -403,7 +401,6 @@ function menuCatUpdate($cat_id, $cat_name, $new_cat="") {
 // jwe 09/03/05
 // this function commented since deleting a menu item here causes serious problems due to the lack of proper linkage between the form ids and menu ids (deleting a menu entry throws those ids out of sync).
 /*function MyMenuDel($menuid, $ok=0) {
-        global$xoopsConfig;
         if ( $ok == 1 ) {
                 icms::$xoopsDB->query("DELETE FROM " icms::$xoopsDB->prefix(formulize_menu)." WHERE menuid=$menuid");
                 redirect_header("menu_index.php?op=MyMenuAdmin",1,_AM_DBUPDATED);

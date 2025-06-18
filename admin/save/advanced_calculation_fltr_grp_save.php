@@ -191,7 +191,7 @@ $advCalcObject->setVar('fltr_grps',$fltr_grps);
 $advCalcObject->setVar('fltr_grptitles',$fltr_grptitles);
 
 if(!$advanced_calculation_handler->insert($advCalcObject)) {
-  print "Error: could not save the advanced calculation properly: ".icms::$xoopsDB->error();
+  print "Error: could not save the advanced calculation properly: " . icms::$xoopsDB->error();
 }
 
 // reload the filter and grouping if the state has changed

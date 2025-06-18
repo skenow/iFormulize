@@ -11,8 +11,8 @@
 define("_formulize_FORM_TITLE", "Formulários");
 define("_AM_CATGENERAL", "Formulários Gerais");
 define("_AM_NOFORMS_AVAIL", "Não há formulários atualmente disponíveis.");
-//define("_formulize_MSG_SUBJECT", $xoopsConfig['sitename'].' - Formulário de Contato');
-define("_formulize_MSG_SUBJECT", '['.$xoopsConfig['sitename'].'] -');
+//define("_formulize_MSG_SUBJECT", $icmsConfig['sitename'].' - Formulário de Contato');
+define("_formulize_MSG_SUBJECT", '['.$icmsConfig['sitename'].'] -');
 define("_formulize_MSG_FORM", ' Formulário: ');
 //next two added by jwe 7/23/04
 define("_formulize_INFO_RECEIVED", "Sua informação foi recebida.");

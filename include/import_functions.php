@@ -721,7 +721,7 @@ function importCsvValidate(&$importSet, $id_reqs, $regfid, $validateOverride=fal
 
 function importCsvProcess(& $importSet, $id_reqs, $regfid, $validateOverride)
 {
-	global $xoopsConfig, $myts;
+	global $myts;
     if(!$myts) { $myts =& icms_core_Textsanitizer::getInstance(); }
 
     echo "<b>** Importing</b><br><br>";
@@ -808,7 +808,7 @@ function importCsvProcess(& $importSet, $id_reqs, $regfid, $validateOverride)
 			$up_password = $row[$importSet[7]['password']];
 			$up_email = $row[$importSet[7]['email']];
 
-			$tz = $xoopsConfig['default_TZ'];
+			$tz = $icmsConfig['default_TZ'];
 
 			list($newid, $actkey) = createMember(array('regcode'=>'', 'approval'=>false, 'user_viewemail'=>0, 'uname'=>$up_username, 'name'=>$up_fullname, 'email'=>$up_email, 'pass'=>$up_password, 'timezone_offset'=>$tz));
 			processCode($up_regcode, $newid);

@@ -47,15 +47,14 @@ require_once "../../../mainfile.php";
 
 require_once "import_functions.php";
 
-global $xoopsConfig;
 // load the formulize language constants if they haven't been loaded already -- also other language constants for user registration
-	if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/main.php") ) {
-		include_once XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/main.php";
+	if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$icmsConfig['language']."/main.php") ) {
+		include_once XOOPS_ROOT_PATH."/modules/formulize/language/".$icmsConfig['language']."/main.php";
 	} else {
 		include_once XOOPS_ROOT_PATH."/modules/formulize/language/english/main.php";
 	}
-	if ( file_exists(XOOPS_ROOT_PATH."/language/".$xoopsConfig['language']."/user.php") ) {
-		include_once XOOPS_ROOT_PATH."/language/".$xoopsConfig['language']."/user.php";
+	if ( file_exists(XOOPS_ROOT_PATH."/language/".$icmsConfig['language']."/user.php") ) {
+		include_once XOOPS_ROOT_PATH."/language/".$icmsConfig['language']."/user.php";
 	} else {
 		include_once XOOPS_ROOT_PATH."/language/english/user.php";
 	}

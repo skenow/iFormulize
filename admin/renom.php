@@ -35,8 +35,8 @@
 
 include("admin_header.php");
 include_once '../../../include/cp_header.php';
-if ( file_exists("../language/".$xoopsConfig['language']."/main.php") ) {
-	include "../language/".$xoopsConfig['language']."/main.php";
+if ( file_exists("../language/".$icmsConfig['language']."/main.php") ) {
+	include "../language/".$icmsConfig['language']."/main.php";
 } else {
 	include "../language/english/main.php";
 }

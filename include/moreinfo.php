@@ -36,8 +36,8 @@ include_once XOOPS_ROOT_PATH . "/modules/formulize/include/extract.php";
 
 // load the formulize language constants if they haven't been loaded already
 include_once XOOPS_ROOT_PATH."/modules/formulize/language/english/main.php";
-if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/main.php") ) {
-  include_once XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/main.php";
+if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$icmsConfig['language']."/main.php") ) {
+  include_once XOOPS_ROOT_PATH."/modules/formulize/language/".$icmsConfig['language']."/main.php";
 } 
 
 $elementMetaData = formulize_getElementMetaData($_GET['col'], true);

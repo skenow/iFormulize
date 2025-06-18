@@ -32,7 +32,7 @@
 
 // Added Oct. 16 2006
 // setup flag for whether the Freeform Solutions user archiving patch has been applied to the core
-global $xoopsConfig, $icmsConfig;
+global $icmsConfig;
 $sql = "SELECT * FROM " . icms::$xoopsDB->prefix("users") . " LIMIT 0,1";
 if($res = icms::$xoopsDB->query($sql)) {
   $resarray = icms::$xoopsDB->fetchArray($res);
@@ -51,8 +51,8 @@ while($table = icms::$xoopsDB->fetchRow($resultst)) {
 	}
 }
 
-if ( file_exists(XOOPS_ROOT_PATH . "/modules/formulize/language/".$xoopsConfig['language']."/main.php") ) {
-	include_once XOOPS_ROOT_PATH . "/modules/formulize/language/".$xoopsConfig['language']."/main.php";
+if ( file_exists(XOOPS_ROOT_PATH . "/modules/formulize/language/".$icmsConfig['language']."/main.php") ) {
+	include_once XOOPS_ROOT_PATH . "/modules/formulize/language/".$icmsConfig['language']."/main.php";
 } else {
 	include_once XOOPS_ROOT_PATH . "/modules/formulize/language/english/main.php";
 }
@@ -2517,7 +2517,7 @@ function sendNotifications($fid, $event, $entries, $mid="", $groups=array()) {
 	// 17. determine the users subscribed and subscribe the necessary others with a oncethendelete mode
 	// 18. trigger the notification
 
-	global $xoopsConfig, $icmsConfig;
+	global $icmsConfig;
 
 	$uid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
 
@@ -2692,7 +2692,7 @@ function sendNotifications($fid, $event, $entries, $mid="", $groups=array()) {
 		foreach($saved_conditions as $thiscon) {
       if($thiscon['not_cons_template']) {
 				$templateFileName = substr($thiscon['not_cons_template'], -4) == ".tpl" ? $thiscon['not_cons_template'] : $thiscon['not_cons_template'] . ".tpl";
-        if(!file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/mail_template/".$templateFileName)) {
+        if(!file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$icmsConfig['language']."/mail_template/".$templateFileName)) {
           continue;
         } else {
           $templateFileContents = file_get_contents(XOOPS_ROOT_PATH."/modules/formulize/language/".$icmsConfig['language']."/mail_template/".$templateFileName);
@@ -2797,10 +2797,9 @@ function sendNotificationToEmail($email, $event, $tags, $subject, $template) {
   $tags['X_NOTIFY_CATEGORY'] = $category;
   $tags['X_NOTIFY_EVENT'] = $event;
   
-  global $xoopsConfig;
-  if( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/mail_template/form_newentry.tpl")) {
-    include_once XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/modinfo.php";
-    $templateDir = XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/mail_template/";
+  if( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$icmsConfig['language']."/mail_template/form_newentry.tpl")) {
+    include_once XOOPS_ROOT_PATH."/modules/formulize/language/".$icmsConfig['language']."/modinfo.php";
+    $templateDir = XOOPS_ROOT_PATH."/modules/formulize/language/".$icmsConfig['language']."/mail_template/";
   } else {
     $templateDir = XOOPS_ROOT_PATH."/modules/formulize/language/english/mail_template/";
     include_once XOOPS_ROOT_PATH."/modules/formulize/language/english/modinfo.php";

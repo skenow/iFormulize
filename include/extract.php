@@ -2214,8 +2214,7 @@ if(!icms::$xoopsDB) {
 } else {
 	define("DBPRE", icms::$xoopsDB->prefix('') . "_");
 	if(!defined("_formulize_OPT_OTHER")) {
-		global $xoopsConfig;
-		switch($xoopsConfig['language']) {
+		switch($icmsConfig['language']) {
 			case "french":
 				define("_formulize_OPT_OTHER", "Autre : ");
 				define("_formulize_TEMP_QYES", "Oui");

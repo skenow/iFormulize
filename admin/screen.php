@@ -57,7 +57,7 @@ $sid = $_GET['sid'];
 
 
 $links = array();
-$sql = 'SELECT DISTINCT frameworks.frame_id, frameworks.frame_name FROM ' icms::$xoopsDB->prefix("formulize_framework_links").' as links, ' icms::$xoopsDB->prefix("formulize_frameworks").' as frameworks WHERE fl_form1_id='.intval($fid).' OR fl_form2_id='.intval($fid).' AND links.fl_frame_id=frameworks.frame_id';
+$sql = 'SELECT DISTINCT frameworks.frame_id, frameworks.frame_name FROM ' . icms::$xoopsDB->prefix("formulize_framework_links").' as links, ' . icms::$xoopsDB->prefix("formulize_frameworks").' as frameworks WHERE fl_form1_id='.intval($fid).' OR fl_form2_id='.intval($fid).' AND links.fl_frame_id=frameworks.frame_id';
 $res = icms::$xoopsDB->query($sql);
 if ($res) {
   while ($row = icms::$xoopsDB->fetchRow($res)) {

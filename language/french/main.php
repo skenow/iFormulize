@@ -461,7 +461,7 @@ define("_formulize_MODPERM_TITLE", "Modify the permissions:");
 define("_formulize_MSG_BIG","LE fichier joint est trop volumineux pour être téléchargé.");
 define("_formulize_MSG_FORM", ' formulaire : ');
 define("_formulize_MSG_SENT","Votre message a été envoyé.");
-define("_formulize_MSG_SUBJECT", '['.$xoopsConfig['sitename'].'] -');
+define("_formulize_MSG_SUBJECT", '['.$icmsConfig['sitename'].'] -');
 define("_formulize_MSG_SUP","<br /> Attention les enregistrements de ce formulaire ont été supprimés");
 define("_formulize_MSG_THANK","<br />Merci pour vos commentaires.");
 define("_formulize_MSG_UNSENT","Veuillez joindre un fichier dont la taille est inférieure à ");

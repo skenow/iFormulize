@@ -32,10 +32,9 @@
 
 // this file generates the export popup
 require_once "../../../mainfile.php";
-global $xoopsConfig;
 // load the formulize language constants if they haven't been loaded already
-	if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/main.php") ) {
-		include_once XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/main.php";
+	if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$icmsConfig['language']."/main.php") ) {
+		include_once XOOPS_ROOT_PATH."/modules/formulize/language/".$icmsConfig['language']."/main.php";
 	} else {
 		include_once XOOPS_ROOT_PATH."/modules/formulize/language/english/main.php";
 	}
@@ -56,7 +55,7 @@ if(!isset($_POST['exportsubmit'])) {
 	print "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"$themecss\" />\n";
 	
 	print "</head>";
-	print "<body style=\"background: white; margin-top:20px;\"><center>"; 
+	print "<body style=\"background: white; margin-top:20px;\"><center>";
 	print "<table width=100%><tr><td width=5%></td><td width=90%>";
 	print "<form name=\"metachoiceform\" action=\"".getCurrentURL() . "\" method=\"post\">\n";
 	print "<center><h1>"._formulize_DE_EXPORT_TITLE."</h1><br></center>\n";
@@ -160,10 +159,10 @@ if(!isset($_POST['exportsubmit'])) {
 				readfile($pathToFile);
 				$fileContents = ob_get_clean();
 				header('Content-Length: '. filesize($pathToFile)*2);
-				print iconv("UTF-8","UTF-16LE//TRANSLIT",$fileContents); // open office really wants it in UTF-16LE before it will actually trigger an automatic unicode opening?! -- this seems to cause problems on very large exports?  
+				print iconv("UTF-8","UTF-16LE//TRANSLIT",$fileContents); // open office really wants it in UTF-16LE before it will actually trigger an automatic unicode opening?! -- this seems to cause problems on very large exports?
 			} else {
 				header('Content-Length: '. filesize($pathToFile));
-				readfile($pathToFile);	
+				readfile($pathToFile);
 			}
 			
 			exit();

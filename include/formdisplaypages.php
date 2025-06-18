@@ -33,10 +33,9 @@
 
 //THIS FILE HANDLES THE DISPLAY OF FORMS AS MULTIPLE PAGES.
 
-global $xoopsConfig;
 // load the formulize language constants if they haven't been loaded already
-	if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/main.php") ) {
-		include_once XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/main.php";
+	if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$icmsConfig['language']."/main.php") ) {
+		include_once XOOPS_ROOT_PATH."/modules/formulize/language/".$icmsConfig['language']."/main.php";
 	} else {
 		include_once XOOPS_ROOT_PATH."/modules/formulize/language/english/main.php";
 	}
@@ -458,8 +457,8 @@ function displayFormPages($formframe, $entry="", $mainform="", $pages, $conditio
 		    }
 		    print "</form></div>";
 		    print "<div id=savingmessage style=\"display: none; position: absolute; width: 100%; right: 0px; text-align: center; padding-top: 50px;\">\n";
-		    if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/images/saving-".$xoopsConfig['language'].".gif") ) {
-			    print "<img src=\"" . XOOPS_URL . "/modules/formulize/images/saving-" . $xoopsConfig['language'] . ".gif\">\n";
+		    if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/images/saving-".$icmsConfig['language'].".gif") ) {
+			    print "<img src=\"" . XOOPS_URL . "/modules/formulize/images/saving-" . $icmsConfig['language'] . ".gif\">\n";
 		    } else {
 			    print "<img src=\"" . XOOPS_URL . "/modules/formulize/images/saving-english.gif\">\n";
 		    }

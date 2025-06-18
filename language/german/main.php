@@ -3,8 +3,8 @@
 define("_formulize_FORM_TITLE", "Nehmen Sie Kontakt zu uns auf, in dem Sie dieses Formular ausfüllen.");
 define("_AM_CATGENERAL", "Generelle Formulare");
 define("_AM_NOFORMS_AVAIL", "There are no forms currently available.");
-//define("_formulize_MSG_SUBJECT", $xoopsConfig['sitename'].' - Contact Us Form');
-define("_formulize_MSG_SUBJECT", '['.$xoopsConfig['Seitenname'].'] -');
+//define("_formulize_MSG_SUBJECT", $icmsConfig['sitename'].' - Contact Us Form');
+define("_formulize_MSG_SUBJECT", '['.$icmsConfig['Seitenname'].'] -');
 define("_formulize_MSG_FORM", ' Formular: ');
 //next two added by jwe 7/23/04
 define("_formulize_INFO_RECEIVED", "Your information has been received.");

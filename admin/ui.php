@@ -37,7 +37,7 @@ include_once XOOPS_ROOT_PATH . "/modules/formulize/include/functions.php";
 global $icmsAdminTpl;
 
 if (!isset($icmsAdminTpl)) {
-	global $xoopsOption, $xoopsConfig;
+	global $xoopsOption;
 
 	$xoopsOption['theme_use_smarty'] = 1;
 
@@ -47,8 +47,8 @@ if (!isset($icmsAdminTpl)) {
 		}
 	}
 	$xoopsThemeFactory = new icms_view_theme_Factory();
-	$xoopsThemeFactory->allowedThemes = $xoopsConfig['theme_set_allowed'];
-	$xoopsThemeFactory->defaultTheme = $xoopsConfig['theme_set'];
+	$xoopsThemeFactory->allowedThemes = $icmsConfig['theme_set_allowed'];
+	$xoopsThemeFactory->defaultTheme = $icmsConfig['theme_set'];
 
 	$xoTheme = &$xoopsThemeFactory->createInstance(array(
 		'contentTemplate' => @$xoopsOption['template_main']));

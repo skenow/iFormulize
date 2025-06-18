@@ -45,10 +45,9 @@
 // 9. draw results.
 
 
-global $xoopsConfig;
 // load the formulize language constants if they haven't been loaded already
-	if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/main.php") ) {
-		include_once XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/main.php";
+	if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$icmsConfig['language']."/main.php") ) {
+		include_once XOOPS_ROOT_PATH."/modules/formulize/language/".$icmsConfig['language']."/main.php";
 	} else {
 		include_once XOOPS_ROOT_PATH."/modules/formulize/language/english/main.php";
 	}
@@ -2790,18 +2789,17 @@ function printResults($masterResults, $blankSettings, $groupingSettings, $groupi
 	// addition of calculation download, August 22 2006
 	if($filename) {
 		// get the current CSS values for head, even and odd
-		global $xoopsConfig;
 		$head = "";
 		$odd = "";
 		$even = "";
     formulize_benchmark("before reading stylesheet");
-		if(file_exists(XOOPS_ROOT_PATH . "/themes/" . $xoopsConfig['theme_set'] . "/style.css")) {
+		if(file_exists(XOOPS_ROOT_PATH . "/themes/" . $icmsConfig['theme_set'] . "/style.css")) {
 			if( !class_exists('csstidy') ) {
 				include XOOPS_ROOT_PATH . "/modules/formulize/class/class.csstidy.php";
 			}
 			$css = new csstidy();
 			$css->set_cfg('merge_selectors',0);
-			$css->parse_from_url(XOOPS_ROOT_PATH . "/themes/" . $xoopsConfig['theme_set'] . "/style.css");
+			$css->parse_from_url(XOOPS_ROOT_PATH . "/themes/" . $icmsConfig['theme_set'] . "/style.css");
 			$parsed_css = $css->css;
 			// parsed_css seems to have only one key when looking at the default template...key is the number of styles?
 			foreach($parsed_css as $thiscss) {
@@ -4505,10 +4503,9 @@ function formulize_gatherDataSet($settings=array(), $searches, $sort="", $order=
 
 	if($useWorking) {
 		// working message
-		global $xoopsConfig;
 		print "<div id=workingmessage style=\"display: none; position: absolute; width: 100%; right: 0px; text-align: center; padding-top: 50px;\">\n";
-		if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/images/working-".$xoopsConfig['language'].".gif") ) {
-			print "<img src=\"" . XOOPS_URL . "/modules/formulize/images/working-" . $xoopsConfig['language'] . ".gif\">\n";
+		if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/images/working-".$icmsConfig['language'].".gif") ) {
+			print "<img src=\"" . XOOPS_URL . "/modules/formulize/images/working-" . $icmsConfig['language'] . ".gif\">\n";
 		} else {
 			print "<img src=\"" . XOOPS_URL . "/modules/formulize/images/working-english.gif\">\n";
 		}

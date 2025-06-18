@@ -33,10 +33,9 @@
 
 //THIS FILE HANDLES THE DISPLAY OF FORMS.  FUNCTIONS CAN BE CALLED FROM ANYWHERE (INTENDED FOR PAGEWORKS MODULE)
 
-global $xoopsConfig;
 // load the formulize language constants if they haven't been loaded already
-	if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/main.php") ) {
-		include_once XOOPS_ROOT_PATH."/modules/formulize/language/".$xoopsConfig['language']."/main.php";
+	if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$icmsConfig['language']."/main.php") ) {
+		include_once XOOPS_ROOT_PATH."/modules/formulize/language/".$icmsConfig['language']."/main.php";
 	} else {
 		include_once XOOPS_ROOT_PATH."/modules/formulize/language/english/main.php";
 	}
@@ -859,8 +858,8 @@ if(!is_numeric($titleOverride) AND $titleOverride != "" AND $titleOverride != "a
 			
 			// saving message
 			print "<div id=savingmessage style=\"display: none; position: absolute; width: 100%; right: 0px; text-align: center; padding-top: 50px;\">\n";
-			if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/images/saving-".$xoopsConfig['language'].".gif") ) {
-				print "<img alt='Saving...' src=\"" . XOOPS_URL . "/modules/formulize/images/saving-" . $xoopsConfig['language'] . ".gif\">\n";
+			if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/images/saving-".$icmsConfig['language'].".gif") ) {
+				print "<img alt='Saving...' src=\"" . XOOPS_URL . "/modules/formulize/images/saving-" . $icmsConfig['language'] . ".gif\">\n";
 			} else {
 				print "<img alt='Saving...' src=\"" . XOOPS_URL . "/modules/formulize/images/saving-english.gif\">\n";
 			}
@@ -896,7 +895,7 @@ function addProfileFields($form, $profileForm) {
 	// timezone
 	// password
 
-	global $xoopsConfig, $xoopsConfigUser;
+	global $xoopsConfigUser;
 	$config_handler = icms::handler('icms_config');
 	$xoopsConfigUser =& $config_handler->getConfigsByCat(XOOPS_CONF_USER);
 	$user_handler = icms::handler('icms_member_user');
@@ -919,14 +918,14 @@ function addProfileFields($form, $profileForm) {
 	} else { // anon user
 		$thisUser_name = $GLOBALS['name']; //urldecode($_GET['name']);
 		$thisUser_uname = $GLOBALS['uname']; //urldecode($_GET['uname']);
-		$thisUser_timezone_offset = isset($GLOBALS['timezone_offset']) ? $GLOBALS['timezone_offset'] : $xoopsConfig['default_TZ']; // isset($_GET['timezone_offset']) ? urldecode($_GET['timezone_offset']) : $xoopsConfig['default_TZ'];
+		$thisUser_timezone_offset = isset($GLOBALS['timezone_offset']) ? $GLOBALS['timezone_offset'] : $icmsConfig['default_TZ']; // isset($_GET['timezone_offset']) ? urldecode($_GET['timezone_offset']) : $icmsConfig['default_TZ'];
 		$thisUser_email = $GLOBALS['email']; //urldecode($_GET['email']);
 		$thisUser_viewemail = $GLOBALS['user_viewemail']; //urldecode($_GET['viewemail']);
 		$thisUser_uid = 0;
 		$agree_disc = $GLOBALS['agree_disc'];
 	}
 
-		include_once XOOPS_ROOT_PATH . "/language/" . $xoopsConfig['language'] . "/user.php";
+		include_once XOOPS_ROOT_PATH . "/language/" . $icmsConfig['language'] . "/user.php";
 
 	$form->insertBreak(_formulize_ACTDETAILS, "head");
 	// Check reg_codes module option to use email address as username
@@ -994,7 +993,7 @@ function addProfileFields($form, $profileForm) {
       	$uorder_select = new icms_form_elements_Select(_formulize_CSORTORDER, 'userprofile_uorder', $thisUser_uorder);
       	$uorder_select->addOptionArray(array(XOOPS_COMMENT_OLD1ST => _OLDESTFIRST, XOOPS_COMMENT_NEW1ST => _NEWESTFIRST));
       	$form->addElement($uorder_select);
-      	include_once XOOPS_ROOT_PATH . "/language/" . $xoopsConfig['language'] . '/notification.php';
+      	include_once XOOPS_ROOT_PATH . "/language/" . $icmsConfig['language'] . '/notification.php';
       	include_once XOOPS_ROOT_PATH . '/include/notification_constants.php';
       	$notify_method_select = new icms_form_elements_Select(_NOT_NOTIFYMETHOD, 'userprofile_notify_method', $thisUser_notify_method);
       	$notify_method_select->addOptionArray(array(XOOPS_NOTIFICATION_METHOD_DISABLE=>_NOT_METHOD_DISABLE, XOOPS_NOTIFICATION_METHOD_PM=>_NOT_METHOD_PM, XOOPS_NOTIFICATION_METHOD_EMAIL=>_NOT_METHOD_EMAIL));
@@ -2304,8 +2303,7 @@ function compileGrid($ele_value, $title, $element) {
 function formulize_formatDateTime($dt) {
 	// assumption is that the server timezone has been set correctly!
 	// needs to figure out daylight savings time correctly...ie: is the user's timezone one that has daylight savings, and if so, if they are currently in a different dst condition than they were when the entry was created, add or subtract an hour from the seconds offset, so that the time information is displayed correctly.
-	global $xoopsConfig;
-	$serverTimeZone = $xoopsConfig['server_TZ'];
+	$serverTimeZone = $icmsConfig['server_TZ'];
 	$userTimeZone = is_object(icms::$user) ? icms::$user->getVar('timezone_offset') : $serverTimeZone;
 	$tzDiff = $userTimeZone - $serverTimeZone;
 	$tzDiffSeconds = $tzDiff*3600;

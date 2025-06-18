@@ -39,7 +39,7 @@ require_once "../../mainfile.php";
 PRINT "<HTML>
 <meta http-equiv=\"Content-Type\" content=\"text/html; charset="._CHARSET."\" />";
 PRINT "<HEAD>";
-print "<link rel='stylesheet' type='text/css' media='all' href='".getcss($xoopsConfig['theme_set'])."'>\n";
+print "<link rel='stylesheet' type='text/css' media='all' href='".getcss($icmsConfig['theme_set'])."'>\n";
 // figure out if this is XOOPS or ICMS
 if(file_exists(XOOPS_ROOT_PATH."/class/icmsform/index.html")) {
 	print "<link rel=\"stylesheet\" media=\"screen\" href=\"".XOOPS_URL."/icms.css\" type=\"text/css\" />\n";

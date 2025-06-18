@@ -398,11 +398,10 @@ function writeUserProfile($data, $uid) {
 	// notify_method
 	// notify_mode
 
-	global $xoopsConfig;
 	$config_handler = icms::handler('icms_config');
 	$xoopsConfigUser =& $config_handler->getConfigsByCat(XOOPS_CONF_USER);
 
-	include_once XOOPS_ROOT_PATH . "/language/" . $xoopsConfig['language'] . "/user.php";
+	include_once XOOPS_ROOT_PATH . "/language/" . $icmsConfig['language'] . "/user.php";
 
 	$errors = array();
     if (!empty($data['uid'])) {

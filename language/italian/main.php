@@ -7,8 +7,8 @@
 * -------------------------------------------------------------------- 
 */
 define("_formulize_FORM_TITLE", "Contattaci riempiendo questo modulo.");
-//define("_formulize_MSG_SUBJECT", $xoopsConfig['sitename'].' - Contact Us Form');
-define("_formulize_MSG_SUBJECT", '['.$xoopsConfig['sitename'].'] -');
+//define("_formulize_MSG_SUBJECT", $icmsConfig['sitename'].' - Contact Us Form');
+define("_formulize_MSG_SUBJECT", '['.$icmsConfig['sitename'].'] -');
 define("_formulize_MSG_FORM", ' Form : ');
 //next two lines added by jwe 7/23/04
 define("_formulize_INFO_RECEIVED", "Your information has been received.");
