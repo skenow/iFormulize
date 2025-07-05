@@ -64,7 +64,8 @@ if (isset($_GET['op'])) {
 // create the contents that we want to display for the currently selected page
 // the included php files create the values for $adminPage that are used for this page
 $adminPage = array();
-switch ($_GET['page']) {
+$active_page = isset($_GET['page']) ? $_GET['page'] : "home";
+switch($active_page) {
 	case "application":
 		include "application.php";
 		break;
@@ -98,7 +99,7 @@ if (isset($_GET['tab']) and (!isset($_POST['tabs_selected']) or $_POST['tabs_sel
 			break;
 		}
 	}
-} elseif ($_POST['tabs_selected'] !== "") {
+} elseif (isset($_POST['tabs_selected']) and $_POST['tabs_selected'] !== "") {
 	$adminPage['tabselected'] = intval($_POST['tabs_selected']);
 }
 
@@ -106,7 +107,7 @@ if (isset($_GET['tab']) and (!isset($_POST['tabs_selected']) or $_POST['tabs_sel
 $adminPage['formulizeModId'] = getFormulizeModId();
 $icmsAdminTpl->assign('adminPage', $adminPage);
 $icmsAdminTpl->assign('breadcrumbtrail', $breadcrumbtrail);
-$icmsAdminTpl->assign('scrollx', intval($_POST['scrollx']));
+$icmsAdminTpl->assign('scrollx', (isset($_POST['scrollx']) ? intval($_POST['scrollx']) : 0));
 $accordion_active = (isset($_POST['accordion_active']) and $_POST['accordion_active'] !== "" and $_POST['accordion_active'] !== "false") ? intval($_POST['accordion_active']) : "false";
 $icmsAdminTpl->assign('accordion_active', $accordion_active);
 $icmsAdminTpl->display("db:admin/ui.html");
