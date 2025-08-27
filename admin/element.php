@@ -108,7 +108,7 @@ if($_GET['ele_id'] != "new") {
     $display['ele_disabled']['none'] = " selected";
   }
   $ele_filtersettings = $elementObject->getVar('ele_filtersettings');
-  $filterSettingsToSend = count($ele_filtersettings > 0) ? $ele_filtersettings : "";
+  $filterSettingsToSend = (count((array) $ele_filtersettings) > 0) ? $ele_filtersettings : "";
   $display['filtersettings'] = formulize_createFilterUI($filterSettingsToSend, "elementfilter", $fid, "form-3");
   $display['ele_forcehidden'] = $elementObject->getVar('ele_forcehidden') ? " checked" : "";
   $display['ele_private'] = $elementObject->getVar('ele_private') ? " checked" : "";
@@ -549,7 +549,10 @@ function createDataTypeUI($ele_type, $element,$id_form,$ele_encrypt) {
 
 // THIS FUNCTION TAKES THE VALUES USED IN THE DB, PLUS THE UITEXT FOR THOSE VALUES, AND CONSTRUCTS AN ARRAY SUITABLE FOR USE WHEN EDITING ELEMENTS, SO THE UITEXT IS VISIBLE INLINE WITH THE VALUES, SEPARATED BY A PIPE (|)
 function formulize_mergeUIText($values, $uitext) {
-  if(strstr($values, "#*=:*")) { return $values; } // don't alter linked selectbox properties
+	if (is_string($values) and strstr($values, "#*=:*")) {
+		// don't alter linked selectbox properties
+		return $values;
+	}
 	$newvalues = array();
 	foreach($values as $key=>$value) {
 		if(isset($uitext[$key])) {
