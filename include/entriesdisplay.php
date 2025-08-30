@@ -2803,9 +2803,9 @@ function printResults($masterResults, $blankSettings, $groupingSettings, $groupi
 			$parsed_css = $css->css;
 			// parsed_css seems to have only one key when looking at the default template...key is the number of styles?
 			foreach($parsed_css as $thiscss) {
-				$head = isset($thiscss['.head']['background-color']) ? $thiscss['.head']['background-color'] : isset($thiscss['.head']['background']) ? $thiscss['.head']['background'] : "";
-				$even = isset($thiscss['.even']['background-color']) ? $thiscss['.even']['background-color'] : isset($thiscss['.even']['background']) ? $thiscss['.even']['background'] : "";
-				$odd = isset($thiscss['.odd']['background-color']) ? $thiscss['.odd']['background-color'] : isset($thiscss['.odd']['background']) ? $thiscss['.odd']['background'] : "";
+				$head = isset($thiscss['.head']['background-color']) ? $thiscss['.head']['background-color'] : (isset($thiscss['.head']['background']) ? $thiscss['.head']['background'] : "");
+				$even = isset($thiscss['.even']['background-color']) ? $thiscss['.even']['background-color'] : (isset($thiscss['.even']['background']) ? $thiscss['.even']['background'] : "");
+				$odd = isset($thiscss['.odd']['background-color']) ? $thiscss['.odd']['background-color'] : (isset($thiscss['.odd']['background']) ? $thiscss['.odd']['background'] : "");
 			}
 		}
     formulize_benchmark("after reading stylesheet");
