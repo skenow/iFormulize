@@ -472,7 +472,7 @@ class formulizeElementRenderer{
 						$opt_count = 1;
 					}
 					$hiddenOutOfRangeValuesToWrite = array();
-					while( $i = each($ele_value[2]) ){
+					foreach ($ele_value[2] as $i) {
 	
 						// handle requests for full names or usernames -- will only kick in if there is no saved value (otherwise ele_value will have been rewritten by the loadValues function in the form display
 						// note: if the user is about to make a proxy entry, then the list of users displayed will be from their own groups, but not from the groups of the user they are about to make a proxy entry for.  ie: until the proxy user is known, the choice of users for this list can only be based on the current user.  This could lead to confusing or buggy situations, such as users being selected who are outside the groups of the proxy user (who will become the owner) and so there will be an invalid value stored for this element in the db.
@@ -660,7 +660,7 @@ class formulizeElementRenderer{
 				$disabledHiddenValues = "";
 				$disabledOutputText = array();
 				$opt_count = 1;
-				while( $i = each($ele_value) ){
+				foreach ($ele_value as $i) {
 					$options[$opt_count] = icms_core_DataFilter::stripSlashesGPC($i['key']);
 					if( $i['value'] > 0 ){
 						$selected[] = $opt_count;
@@ -682,7 +682,7 @@ class formulizeElementRenderer{
 							$selected
 						);
 						$counter = 0; // counter used for javascript that works with 'Other' box
-						while( $o = each($options) ){
+						foreach ($options as $o) {
 							$o = formulize_swapUIText($o, $this->_ele->getVar('ele_uitext'));
 							$other = $this->optOther($o['value'], $form_ele_id, $entry, $counter, true);
 							if( $other != false ){
@@ -706,7 +706,7 @@ class formulizeElementRenderer{
 					default:
 						$form_ele1 = new icms_form_elements_Tray($ele_caption, $delimSetting);
 						$counter = 0; // counter used for javascript that works with 'Other' box
-						while( $o = each($options) ){
+						foreach ($options as $o) {
 							$o = formulize_swapUIText($o, $this->_ele->getVar('ele_uitext'));
 							$t = new icms_form_elements_Checkbox(
 								'',
@@ -780,7 +780,7 @@ class formulizeElementRenderer{
 				$disabledHiddenValue = "";
 				$options = array();
 				$opt_count = 1;
-				while( $i = each($ele_value) ){
+				foreach ($ele_value as $i) {
 					switch ($e){
 						case 'radio':
 							$options[$opt_count] = icms_core_DataFilter::stripSlashesGPC($i['key']);
@@ -810,7 +810,7 @@ class formulizeElementRenderer{
 							$selected
 						);
 						$counter = 0;
-						while( $o = each($options) ){
+						foreach ($options as $o) {
 							$o = formulize_swapUIText($o, $this->_ele->getVar('ele_uitext'));
 							$other = $this->optOther($o['value'], $form_ele_id, $entry, $counter);
 							if( $other != false ){
@@ -834,7 +834,7 @@ class formulizeElementRenderer{
 					default:
 						$form_ele1 = new icms_form_elements_Tray('', $delimSetting);
 						$counter = 0;
-						while( $o = each($options) ){
+						foreach ($options as $o) {
 							$o = formulize_swapUIText($o, $this->_ele->getVar('ele_uitext'));
 							$t = new icms_form_elements_Radio(
 								'',

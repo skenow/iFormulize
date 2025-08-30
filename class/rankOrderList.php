@@ -100,7 +100,7 @@ class formulizeRankOrderListHandler {
   function adminSave($ele_value) {
     $value = array();
     list($ele_value, $uitext) = formulize_extractUIText($ele_value);
-    while( $v = each($ele_value) ){
+    foreach ($ele_value as $v) {
       if( $v['value'] !== "" ){
         $value[$v['value']] = 0;
       }

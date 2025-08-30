@@ -226,7 +226,7 @@ if( !empty($ele_id) AND $clone == 0){
 				$checked = $_POST['checked']; // note that $_POST is blindly parsed into a new set of variables at the top of this file, so this line is strictly speaking unnecessary but it aids readability
 				$value = array();
 				list($ele_value, $uitext) = formulize_extractUIText($ele_value);
-				while( $v = each($ele_value) ){
+				foreach ($ele_value as $v){
 					//if( !empty($v['value']) ){
 					if( $v['value'] !== "" ){
 						if( $checked[$v['key']] == 1 ){
@@ -243,7 +243,7 @@ if( !empty($ele_id) AND $clone == 0){
 				$checked = $_POST['checked'];
 				$value = array();
 				list($ele_value, $uitext) = formulize_extractUIText($ele_value);
-				while( $v = each($ele_value) ){
+				foreach ($ele_value as $v) {
 					/*print "<br>debug:<br>v = ";
 					print_r ($v);
 					print "<br>v[value] =";
@@ -354,7 +354,7 @@ if( !empty($ele_id) AND $clone == 0){
 				$v2 = array();
 				$multi_flag = 1;
 				list($ele_value[2], $uitext) = formulize_extractUIText($ele_value[2]);
-				while( $v = each($ele_value[2]) ){
+				foreach ($ele_value[2] as $v) {
 					if( $v['value'] !== "" ){
 						if( $value[1] == 1 || $multi_flag ){
 							if( $checked[$v['key']] == 1 ){
@@ -399,7 +399,7 @@ if( !empty($ele_id) AND $clone == 0){
 				$v2 = array();
 				$value[] = $ele_value[0];
 				$value[] = $ele_value[1];
-				while( $v = each($ele_value[2]) ){
+				foreach ($ele_value[2] as $v) {
 					if( !empty($v) ) $v2[] = $v;
 				}
 				$value[] = $v2;

@@ -1648,7 +1648,7 @@ function prepDataForWrite($element, $ele) {
 				case 'radio':
 					$value = '';
 					$opt_count = 1;
-					while( $v = each($ele_value) ){
+					foreach ($ele_value as $v) {
 						if( $opt_count == $ele ){
 							$GLOBALS['formulize_other'][$ele_id] = checkOther($v['key'], $ele_id);
 							$msg.= icms_core_DataFilter::stripSlashesGPC($v['key']).'<br>';
@@ -1668,7 +1668,7 @@ function prepDataForWrite($element, $ele) {
 					$value = '';
 					$opt_count = 1;
           $numberOfSelectionsFound = 0;
-					while( $v = each($ele_value) ){
+						foreach ($ele_value as $v) {
 						if( is_array($ele) ){ // it's always an array...right?!
 							if( in_array($opt_count, $ele) ){
                 $numberOfSelectionsFound++;
