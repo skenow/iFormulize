@@ -40,7 +40,7 @@ $modversion = array(
 	'official' => 0,
 	'image' => "images/formulize.gif",
 	'dirname' => "formulize",
-	'status' => "ICMS Compatibility - 2025.07.05"
+	'status' => "ICMS Compatibility - 2025.08.27"
 );
 
 $modversion['sqlfile']['mysql'] = "sql/mysql.sql";

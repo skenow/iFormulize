@@ -1016,10 +1016,10 @@ function drawformperms($form_list, $formulize_perms, $perm_desc, $group_id="all"
 					$numGroups = icms::$xoopsDB->getRowsNum($groupDataQueryResult);
 					$glistsize = $numGroups < 10 ? $numGroups : 10;
 					include_once XOOPS_ROOT_PATH . "/modules/formulize/class/usersGroupsPerms.php";
-					if(!isset($$formulize_permHandler{$form_id})) {
-						$formulize_permHandler{$form_id} = new formulizePermHandler($form_id);
+					if(!isset($$formulize_permHandler[$form_id])) {
+						$formulize_permHandler[$form_id] = new formulizePermHandler($form_id);
 					}
-					$groupScopeGroupIds = $formulize_permHandler{$form_id}->getGroupScopeGroupIds($group_id);
+					$groupScopeGroupIds = $formulize_permHandler[$form_id]->getGroupScopeGroupIds($group_id);
 					print "<p><b>"._AM_FORCE_GROUPSCOPE_INTRO."</b><br><select size=$glistsize multiple='multiple' name='".$group_id."-".$form_id."-groupscope[]'>\n";
 					while($groupDataArray = icms::$xoopsDB->fetchArray($groupDataQueryResult)) {
 						$selectedGroup = in_array($groupDataArray['groupid'], $groupScopeGroupIds) ? " selected='selected'" : "";
@@ -1106,10 +1106,10 @@ function updateperms() {
 			
 			// handle groupscope groups
 			include_once XOOPS_ROOT_PATH . "/modules/formulize/class/usersGroupsPerms.php";
-   		if(!isset($formulize_permHandler{$fid})) {
-		  	$formulize_permHandler{$fid} = new formulizePermHandler($fid);
+   		if(!isset($formulize_permHandler[$fid])) {
+		  	$formulize_permHandler[$fid] = new formulizePermHandler($fid);
 			}
-			if(!$formulize_permHandler{$fid}->setGroupScopeGroups($gid, $_POST[$perm_key."-groupscope"])) {
+			if(!$formulize_permHandler[$fid]->setGroupScopeGroups($gid, $_POST[$perm_key."-groupscope"])) {
 				print "Error: could not set the groupscope groups for form $fid.<br>";
 			}
 			

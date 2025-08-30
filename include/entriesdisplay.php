@@ -1640,7 +1640,7 @@ function drawEntries($fid, $cols, $searches="", $frid="", $scope, $standalone=""
 					${'view'.$viewNumber} = true;
 				} else {
 					${$thisViewName} = false;
-					$view{'view'.$viewNumber} = false;
+					$view['view' . $viewNumber] = false;
 				}
 				$viewNumber++;
 			}
@@ -3838,7 +3838,7 @@ function formulize_screenLOETemplate($screen, $type, $buttonCodeArray, $settings
 			${'view'.$viewNumber} = true;
 		} else {
 			${$thisViewName} = false;
-			$view{'view'.$viewNumber} = false;
+			$view['view' . $viewNumber] = false;
 		}
 		$viewNumber++;
 	}

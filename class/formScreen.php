@@ -68,7 +68,7 @@ class formulizeFormScreenHandler extends formulizeScreenHandler {
 	}
 
 	function insert($screen) {
-		$update = ($screen->getVar('sid') == 0) ? false : true;
+		$update = !$screen->getVar('sid') ? false : true;
 		if (!$sid = parent::insert($screen)) { // write the basic info to the db, handle cleaning vars and all that jazz. Object passed by reference, so updates will have affected it in the other method.
 			return false;
 		}
@@ -81,9 +81,23 @@ class formulizeFormScreenHandler extends formulizeScreenHandler {
 		$screen->setVar('dobr', 0);
 		// note: conditions is not written to the DB yet, since we're not gathering that info from the UI
 		if (!$update) {
-			$sql = sprintf("INSERT INTO %s (sid, donedest, savebuttontext, alldonebuttontext, displayheading, reloadblank) VALUES (%u, %s, %s, %s, %u, %u)", $this->db->prefix('formulize_screen_form'), $screen->getVar('sid'), $this->db->quoteString($screen->getVar('donedest')), $this->db->quoteString($screen->getVar('savebuttontext')), $this->db->quoteString($screen->getVar('alldonebuttontext')), $screen->getVar('displayheading'), $screen->getVar('reloadblank'));
+			$sql = sprintf("INSERT INTO %s (sid, donedest, savebuttontext, alldonebuttontext, displayheading, reloadblank) VALUES (%u, %s, %s, %s, %u, %u)",
+					$this->db->prefix('formulize_screen_form'),
+					$screen->getVar('sid'),
+					$this->db->quoteString($screen->getVar('donedest')),
+					$this->db->quoteString($screen->getVar('savebuttontext')),
+					$this->db->quoteString($screen->getVar('alldonebuttontext')),
+					$screen->getVar('displayheading'),
+					$screen->getVar('reloadblank'));
 		} else {
-			$sql = sprintf("UPDATE %s SET donedest = %s, savebuttontext = %s, alldonebuttontext = %s, displayheading = %u, reloadblank = %u WHERE sid = %u", $this->db->prefix('formulize_screen_form'), $this->db->quoteString($screen->getVar('donedest')), $this->db->quoteString($screen->getVar('savebuttontext')), $this->db->quoteString($screen->getVar('alldonebuttontext')), $screen->getVar('displayheading'), $screen->getVar('reloadblank'), $screen->getVar('sid'));
+			$sql = sprintf("UPDATE %s SET donedest = %s, savebuttontext = %s, alldonebuttontext = %s, displayheading = %u, reloadblank = %u WHERE sid = %u",
+					$this->db->prefix('formulize_screen_form'),
+					$this->db->quoteString($screen->getVar('donedest')),
+					$this->db->quoteString($screen->getVar('savebuttontext')),
+					$this->db->quoteString($screen->getVar('alldonebuttontext')),
+					$screen->getVar('displayheading'),
+					$screen->getVar('reloadblank'),
+					$screen->getVar('sid'));
 		}
 		$result = $this->db->query($sql);
 		if (!$result) {

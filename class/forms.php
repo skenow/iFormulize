@@ -771,7 +771,7 @@ class formulizeFormsHandler {
 			// find the filter indexes for 'match all' and 'match one or more'
 			$filterAll = array();
 			$filterOOM = array();
-			for ($i = 0; $i < count($filterSettings[3]); $i++ ) {
+			for ($i = 0; $i < count((array) $filterSettings[3]); $i++ ) {
 				if ($filterSettings[3][$i] == "all") {
 					$filterAll[] = $i;
 				} else {
@@ -810,7 +810,7 @@ class formulizeFormsHandler {
 	function buildPerGroupFilterWhereClause($match, $indexes, $filterSettings, $uid, $formAlias) {
 		$perGroupFilter = "";
 
-		for ($io = 0; $io < count($indexes); $io++ ) {
+		for ($io = 0; $io < count((array) $indexes); $io++ ) {
 			$i = $indexes[$io];
 			if (!($perGroupFilter == "")) {
 				$perGroupFilter .= " $match ";
