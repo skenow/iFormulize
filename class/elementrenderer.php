@@ -1166,8 +1166,8 @@ class formulizeElementRenderer{
 		}
 		$autocompleteIncluded = true;
 
-		$output .= "<div class=\"formulize_autocomplete\" style=\"padding-right: 10px;\"><input type='text' class='formulize_autocomplete' name='${form_ele_id}_user' id = '${form_ele_id}_user' autocomplete='on' value='$default_value_user' size='$maxLength' /></div>";
-		$output .= "<input type='hidden' name='${form_ele_id}' id = '${form_ele_id}' value='$default_value' />";
+		$output .= "<div class=\"formulize_autocomplete\" style=\"padding-right: 10px;\"><input type='text' class='formulize_autocomplete' name='{$form_ele_id}_user' id = '{$form_ele_id}_user' autocomplete='on' value='$default_value_user' size='$maxLength' /></div>";
+		$output .= "<input type='hidden' name='{$form_ele_id}' id = '{$form_ele_id}' value='$default_value' />";
 		$output .= "<script type='text/javascript'>";
 		// need to declare this as jQuery so that everything "just works" when being called in an environment where $ is owned by something else
 		// need to wrap it in window.load because Chrome does unusual things with the DOM and makes it ready before it's populated with content!!  (so document.ready doesn't do the trick)
