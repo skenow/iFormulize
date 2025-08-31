@@ -65,7 +65,8 @@ class csstidy_print
      * @access private
      * @version 1.0
      */
-    function __construct(&$css) {
+    function csstidy_print(&$css)
+    {
         $this->parser    =& $css;
         $this->css       =& $css->css;
         $this->template  =& $css->template;
@@ -142,7 +143,7 @@ class csstidy_print
         }
         
         if (!empty($this->import)) {
-            for ($i = 0, $size = count($this->import); $i < $size; $i ++) {
+            for ($i = 0, $size = count((array) $this->import); $i < $size; $i ++) {
                 $output .= $template[0].'@import '.$template[5].$this->import[$i].$template[6];
             }
         }
@@ -327,7 +328,7 @@ class csstidy_print
     }
 
     /**
-     * Get the size of either input or output CSS in KB
+     * Get the size of either input or output CSS in KB 
      * @param string $loc default is "output"
      * @access public
      * @return integer
