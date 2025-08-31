@@ -1016,7 +1016,7 @@ function drawformperms($form_list, $formulize_perms, $perm_desc, $group_id="all"
 					$numGroups = icms::$xoopsDB->getRowsNum($groupDataQueryResult);
 					$glistsize = $numGroups < 10 ? $numGroups : 10;
 					include_once XOOPS_ROOT_PATH . "/modules/formulize/class/usersGroupsPerms.php";
-					if(!isset($$formulize_permHandler[$form_id])) {
+					if(!isset($formulize_permHandler[$form_id])) {
 						$formulize_permHandler[$form_id] = new formulizePermHandler($form_id);
 					}
 					$groupScopeGroupIds = $formulize_permHandler[$form_id]->getGroupScopeGroupIds($group_id);
