@@ -108,8 +108,6 @@ define("_AM_ELE_FICH",'Arquivo');
 define("_AM_ELE_TAILLEFICH","Tamanho máximo do arquivo");
 define("_AM_ELE_PDS","Unidade");
 define("_AM_ELE_DELIM_CHOICE",'Delimitador entre cada opção');
-define("_MI_formulize_DELIMETER_SPACE","Espaço em branco");
-define("_MI_formulize_DELIMETER_BR","Quebra de linha");
 define("_MI_formulize_DELIMETER_CUSTOM","HTML Personalizado");
 
 //added to handle the formlink part of the selectbox element -- jwe 7/29/04
