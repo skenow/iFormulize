@@ -316,7 +316,7 @@ if($publish_globalscope) {
 	}
 }
 
-if(count($publishgroups) > 1 ) { $pubflag = 1; }
+if(count((array) $publishgroups) > 1 ) { $pubflag = 1; }
 
 // write in publishing options if any...
 if($pubflag) {
@@ -339,11 +339,11 @@ if($pubflag) {
 	}
 
 	$overlap = array_intersect($lastpubgroups, array_keys($publishgroups));
-	if(count($overlap) == 0) { // ie: no default is actually part of the available groups
+	if(count((array) $overlap) == 0) { // ie: no default is actually part of the available groups
 		$lastpubgroups[0] = "donotpub";
 	}
 
-	$size = count($publishgroups);
+	$size = count((array) $publishgroups);
 	if($size > 7) { $size = 7; }
 	$pubgrouplist = new icms_form_elements_Select(_formulize_DE_SAVE_PUBGROUPS, 'pubgrouplist', $lastpubgroups, $size, true);
 	$pubgrouplist->addOptionArray($publishgroups);

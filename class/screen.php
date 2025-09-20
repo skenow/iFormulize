@@ -66,12 +66,14 @@ class formulizeScreenHandler {
 	}
 
 	// returns an array of screen objects
-	function &getObjects($criteria = null, $fid) {
+	function &getObjects($criteria = null, $fid = 0) {
 		$sql = "SELECT * FROM " . $this->db->prefix("formulize_screen") . " WHERE ";
 		if (is_object($criteria)) {
 			$sql .= $criteria->render() . " AND ";
 		}
-		$sql .= "fid=" . intval($fid);
+		if (intval($fid) > 0) {
+			$sql .= "fid=" . intval($fid);
+		}
 		if (!$result = $this->db->query($sql)) {
 			return false;
 		}
@@ -148,7 +150,7 @@ class formulizeScreenHandler {
 
 	// TO BE CALLED FROM WITHIN THE CHILD CLASS AND THEN RETURNS SCREEN OBJECT, WHICH WILL HAVE THE CORRECT sid IN PLACE NOW
 	function insert($screen) {
-		if (!is_subclass_of($screen, 'formulizeScreen')) {
+		if (!is_a($screen, 'formulizeScreen')) {
 			return false;
 		}
 		if (!$screen->cleanVars()) {
@@ -157,7 +159,7 @@ class formulizeScreenHandler {
 		foreach ($screen->cleanVars as $k => $v) {
 			${$k} = $v;
 		}
-		if ($sid == 0) {
+		if (!$sid) {
 			// $sid = $this->db->genId($this->db->prefix('formulize_screen').'_sid_seq'); // mysql compatiblity layer just returns 0 here
 			$sql = sprintf("INSERT INTO %s (title, fid, frid, type, useToken) VALUES (%s, %u, %u, %s, %u)", $this->db->prefix('formulize_screen'), $this->db->quoteString($title), $fid, $frid, $this->db->quoteString($type), $useToken);
 		} else {
@@ -165,9 +167,10 @@ class formulizeScreenHandler {
 		}
 		$result = $this->db->query($sql);
 		if (!$result) {
+			print 'DB error: '.$this->db->error() . '<br>'.$sql.'<br>';
 			return false;
 		}
-		if ($sid == 0) {
+		if (!$sid) {
 			$sid = $this->db->getInsertId();
 		}
 		return $sid;

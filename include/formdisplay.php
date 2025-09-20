@@ -32,10 +32,11 @@
 ###############################################################################
 
 //THIS FILE HANDLES THE DISPLAY OF FORMS.  FUNCTIONS CAN BE CALLED FROM ANYWHERE (INTENDED FOR PAGEWORKS MODULE)
+global $icmsConfig;
 
 // load the formulize language constants if they haven't been loaded already
-	if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$icmsConfig['language']."/main.php") ) {
-		include_once XOOPS_ROOT_PATH."/modules/formulize/language/".$icmsConfig['language']."/main.php";
+	if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/" . $icmsConfig['language'] . "/main.php") ) {
+		include_once XOOPS_ROOT_PATH."/modules/formulize/language/" . $icmsConfig['language'] . "/main.php";
 	} else {
 		include_once XOOPS_ROOT_PATH."/modules/formulize/language/english/main.php";
 	}
@@ -176,7 +177,7 @@ class formulize_elementsOnlyForm extends formulize_themeForm {
 		return $ret;
 	}
 	//We need to render the validation code differently, without the opening/closing part of the validation function, since the form is embedded inside another..
-	public function renderValidationJS() {
+	public function renderValidationJS($withtags = true) {
 		return $this->_drawValidationJS();
 	}
 }
@@ -687,8 +688,9 @@ if(!is_numeric($titleOverride) AND $titleOverride != "" AND $titleOverride != "a
 				}
 				$form->setExtra("enctype='multipart/form-data'"); // imp�ratif!
 	
-				if(is_array($settings)) { $form = writeHiddenSettings($settings, $form); }
-				$form->addElement (new icms_form_elements_Hidden ('ventry', $settings['ventry'])); // necessary to trigger the proper reloading of the form page, until Done is called and that form does not have this flag.
+				if(is_array($settings)) { $form = writeHiddenSettings($settings, $form);
+					$form->addElement (new icms_form_elements_Hidden ('ventry', $settings['ventry'])); // necessary to trigger the proper reloading of the form page, until Done is called and that form does not have this flag.
+				}
 	
 				// include who the entry belongs to and the date
 				// include acknowledgement that information has been updated if we have just done a submit
@@ -794,7 +796,7 @@ if(!is_numeric($titleOverride) AND $titleOverride != "" AND $titleOverride != "a
 		if(!is_object($form)) { exit("Error: the form cannot be displayed.  Does the current group have permission to access the form?"); }
 	
 				// DRAW IN THE SPECIAL UI FOR A SUBFORM LINK (ONE TO MANY)
-				if(count($sub_fids) > 0) { // if there are subforms, then draw them in...only once we have a bonafide entry in place already
+				if(count((array) $sub_fids) > 0) { // if there are subforms, then draw them in...only once we have a bonafide entry in place already
 					// draw in special params for this form
 			$form->addElement (new icms_form_elements_Hidden ('target_sub', ''));
 			$form->addElement (new icms_form_elements_Hidden ('target_sub_instance', ''));
@@ -1633,6 +1635,7 @@ function addOwnershipList($form, $groups, $member_handler, $gperm_handler, $fid,
 		
 			$unique_users = array_unique($all_add_users);
 
+			$punames = array();
 			foreach($unique_users as $uid) {
 				$uqueryforrealnames = "SELECT name, uname FROM " . icms::$xoopsDB->prefix("users") . " WHERE uid=$uid";
 				$uresqforrealnames = icms::$xoopsDB->query($uqueryforrealnames);
@@ -2030,7 +2033,7 @@ function compileElements($fid, $form, $formulize_mgr, $prevEntry, $entry, $go_ba
 		if(trim($validationJS)!="") {
 			$GLOBALS['formulize_elementsOnlyForm_validationCode'][] = $validationJS."\n\n";
 		}
-	} elseif(count($GLOBALS['formulize_elementsOnlyForm_validationCode']) > 0) {
+	} elseif(isset($GLOBALS['formulize_elementsOnlyForm_validationCode']) AND count((array) $GLOBALS['formulize_elementsOnlyForm_validationCode']) > 0) {
 		$elementsonlyvalidation = new icms_form_elements_Hidden('elementsonlyforms', '');
 		$elementsonlyvalidation->customValidationCode = $GLOBALS['formulize_elementsOnlyForm_validationCode'];
 		$form->addElement($elementsonlyvalidation, 1);

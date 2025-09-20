@@ -256,83 +256,52 @@ function getSavedViewOwner($vid) {
 
 // return an array of the reports the user is allowed to see
 function availReports($uid, $groups, $fid, $frid="0") {
-
-	// get old saved reports
-      //$s_reports = q("SELECT report_id, report_name FROM " . icms::$xoopsDB->prefix("formulize_reports") . " WHERE report_id_form='$fid' AND report_uid='$uid'");
-
-
-	// get old published reports
-	//$published_reports = q("SELECT report_id, report_name, report_groupids, report_uid FROM " . icms::$xoopsDB->prefix("formulize_reports") . " WHERE report_id_form='$fid' AND report_ispublished > 0");
-
-
-	// cull published reports to ones that are published to a group that the user belongs to
-	/*$indexer = 0;
-	for($i=0;$i<count($published_reports);$i++) {
-		$report_groups = explode("&*=%4#", $published_reports[$i]['report_groupids']);
-		if(array_intersect($groups, $report_groups)) {
-			$p_reports[$indexer]['report_id'] = $published_reports[$i]['report_id'];
-			$p_reports[$indexer]['report_name'] = $published_reports[$i]['report_name'];
-			$p_reports[$indexer]['report_uid'] = $published_reports[$i]['report_uid'];
-			$indexer++;
-		}
-	}*/
-
-	//--------------repeat for saved views (new system): ------------------------
-
+	
 	// get new saved reports
-	if($frid) {
-	      $ns_reports = q("SELECT sv_id, sv_name FROM " . icms::$xoopsDB->prefix("formulize_saved_views") . " WHERE sv_formframe='$frid' AND sv_mainform='$fid' AND sv_owner_uid='$uid'");
+	if ($frid) {
+		$saved_reports = q("SELECT sv_id, sv_name FROM " . icms::$xoopsDB->prefix("formulize_saved_views") . " WHERE sv_formframe='$frid' AND sv_mainform='$fid' AND sv_owner_uid='$uid'");
 	} else {
-	      $ns_reports = q("SELECT sv_id, sv_name FROM " . icms::$xoopsDB->prefix("formulize_saved_views") . " WHERE sv_formframe='$fid' AND sv_owner_uid='$uid'");
+		$saved_reports = q("SELECT sv_id, sv_name FROM " . icms::$xoopsDB->prefix("formulize_saved_views") . " WHERE sv_formframe='$fid' AND sv_owner_uid='$uid'");
 	}
-
+	
 	// get new published reports
-	if($frid) {
-		$npublished_reports = q("SELECT sv_id, sv_name, sv_pubgroups, sv_owner_uid FROM " . icms::$xoopsDB->prefix("formulize_saved_views") . " WHERE sv_formframe='$frid' AND sv_mainform='$fid' AND sv_pubgroups != \"\"");
+	if ($frid) {
+		$published_reports = q("SELECT sv_id, sv_name, sv_pubgroups, sv_owner_uid FROM " . icms::$xoopsDB->prefix("formulize_saved_views") . " WHERE sv_formframe='$frid' AND sv_mainform='$fid' AND sv_pubgroups != \"\"");
 	} else {
-		$npublished_reports = q("SELECT sv_id, sv_name, sv_pubgroups, sv_owner_uid FROM " . icms::$xoopsDB->prefix("formulize_saved_views") . " WHERE sv_formframe='$fid' AND sv_pubgroups != \"\"");
+		$published_reports = q("SELECT sv_id, sv_name, sv_pubgroups, sv_owner_uid FROM " . icms::$xoopsDB->prefix("formulize_saved_views") . " WHERE sv_formframe='$fid' AND sv_pubgroups != \"\"");
 	}
-
+	
 	// cull published reports to ones that are published to a group that the user belongs to
 	$indexer = 0;
-	for($i=0;$i<count($npublished_reports);$i++) {
-		$nreport_groups = explode(",", $npublished_reports[$i]['sv_pubgroups']);
-		if(array_intersect($groups, $nreport_groups)) {
-			$np_reports[$indexer]['sv_id'] = $npublished_reports[$i]['sv_id'];
-			$np_reports[$indexer]['sv_name'] = $npublished_reports[$i]['sv_name'];
-			$np_reports[$indexer]['sv_uid'] = $npublished_reports[$i]['sv_owner_uid'];
+	$available_published_reports = array();
+	for ($i = 0; $i < count((array) $published_reports); $i++) {
+		$report_groups = explode(",", $published_reports[$i]['sv_pubgroups']);
+		if (array_intersect($groups, $report_groups)) {
+			$available_published_reports[$indexer]['sv_id']   = $published_reports[$i]['sv_id'];
+			$available_published_reports[$indexer]['sv_name'] = $published_reports[$i]['sv_name'];
+			$available_published_reports[$indexer]['sv_uid']  = $published_reports[$i]['sv_owner_uid'];
 			$indexer++;
 		}
 	}
-
-	// parse out details from arrays for passing back....
-
-	foreach($s_reports as $id=>$details) {
+	
+	// parse out details from arrays for passing back
+	$sortnames = array();
+	foreach ($saved_reports as $id=>$details) {
 		$sortnames[] = $details['report_name'];
 	}
-	array_multisort($sortnames, $s_reports);
-	unset($sortnames);
-	foreach($p_reports as $id=>$details) {
+	array_multisort($sortnames, $saved_reports);
+	
+	$sortnames = array();
+	foreach ($available_published_reports as $id=>$details) {
 		$sortnames[] = $details['report_name'];
 	}
-
-	array_multisort($sortnames, $p_reports);
-	unset($sortnames);
-	foreach($ns_reports as $id=>$details) {
-		$sortnames[] = $details['report_name'];
-	}
-	array_multisort($sortnames, $ns_reports);
-	unset($sortnames);
-	foreach($np_reports as $id=>$details) {
-		$sortnames[] = $details['report_name'];
-	}
-	array_multisort($sortnames, $np_reports);
-
-      $to_return[0] = $s_reports;
-	$to_return[1] = $p_reports;
-	$to_return[2] = $ns_reports;
-	$to_return[3] = $np_reports;
-
+	array_multisort($sortnames, $available_published_reports);
+	
+	$to_return[0] = array();    // in an older version the saved and published reports were returned but then the
+	$to_return[1] = array();    //  methed changed, and new array indexes were added and these were left for compatability
+	$to_return[2] = $saved_reports;
+	$to_return[3] = $available_published_reports;
+	
 	return $to_return;
 }
 
@@ -610,7 +579,7 @@ function getHeaderList ($fid, $needids=false, $convertIdsToElementHandles=false)
 	}
 
 
-	if(count($headerlist)==0) { // if no header fields specified, then....
+	if(count((array) $headerlist)==0) { // if no header fields specified, then....
 		// GATHER REQUIRED FIELDS FOR THIS FORM...
 		$reqfq = "SELECT ele_caption, ele_colhead, ele_id FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE ele_req=1 AND id_form='$fid' AND (ele_type != \"ib\" AND ele_type != \"areamodif\" AND ele_type != \"subform\" AND ele_type != \"grid\") ORDER BY ele_order ASC LIMIT 3";
 		if($result = icms::$xoopsDB->query($reqfq)) {
@@ -628,7 +597,7 @@ function getHeaderList ($fid, $needids=false, $convertIdsToElementHandles=false)
 		}
 	}
 
-	if(count($headerlist) == 0) {
+	if(count((array) $headerlist) == 0) {
 		// IF there are no required fields THEN ... go with first three fields
 		$firstfq = "SELECT ele_caption, ele_colhead, ele_id FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form='$fid' AND (ele_type != \"ib\" AND ele_type != \"areamodif\" AND ele_type != \"subform\" AND ele_type != \"grid\") ORDER BY ele_order ASC LIMIT 3";
 		if($result = icms::$xoopsDB->query($firstfq)) {
@@ -653,7 +622,7 @@ function getHeaderList ($fid, $needids=false, $convertIdsToElementHandles=false)
         unset($headerlist[$thisheaderkey]);
       }
     }
-    if(count($headerlist)>0) {// if there are any numeric headers, then get the handles
+    if(count((array) $headerlist)>0) {// if there are any numeric headers, then get the handles
       $sql = "SELECT ele_handle FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE ele_id IN (".implode(",",$headerlist).") ORDER BY ele_order";
       if($res = icms::$xoopsDB->query($sql)) {
         $headerlist = array();
@@ -863,7 +832,7 @@ function deleteIdReq($id_req, $fid) {
 // HANDLES FRAMEWORKS TOO -- HANDLERS AND MID TO BE PASSED IN WHEN FRAMEWORKS ARE USED
 // owner and owner_groups to be passed in when available (if called from a function where they have already been determined
 // $fid is required
-function deleteEntry($id_req, $frid="", $fid, $gperm_handler="", $member_handler="", $mid="", $owner="", $owner_groups="") {
+function deleteEntry($id_req, $frid, $fid, $gperm_handler="", $member_handler="", $mid="", $owner="", $owner_groups="") {
 
 	$deletedEntries = array();
 
@@ -1140,7 +1109,7 @@ function checkForLinks($frid, $fids, $fid, $entries, $gperm_handler, $owner_grou
 // $template is a flag indicating whether we are making a template for use updating/uploading data -- blank for a blank template, update for a template with data, blankprofile for the userprofile form
 // $fid is the form id
 // $groups is the user's groups
-function prepExport($headers, $cols, $data, $fdchoice, $custdel="", $title, $template=false, $fid, $groups) {
+function prepExport($headers, $cols, $data, $fdchoice, $custdel, $title, $template, $fid, $groups) {
 
 	// export of calculations added August 22 2006
 	// come up with a filename and then return it
@@ -2120,7 +2089,7 @@ function findMatchingIdReq($element, $fid, $value) {
 // THIS FUNCTION OUTPUTS THE TEXT THAT GOES ON THE SCREEN IN THE LIST OF ENTRIES TABLE
 // It intelligently outputs links if the text should be a link (because of textbox associations, or linked selectboxes)
 // $handle is the data handle for the element
-function formatLinks($matchtext, $handle, $textWidth=35, $entryBeingFormatted) {
+function formatLinks($matchtext, $handle, $textWidth, $entryBeingFormatted) {
   formulize_benchmark("start of formatlinks");
 	global $myts;
   static $cachedValues = array();
@@ -2856,7 +2825,7 @@ function formulize_getUsersByGroups($groups, $member_handler="") {
 }
 
 // this function can be called from within a loop, and will merge uids_conditions with all previously recorded values
-function compileNotUsers($uids_conditions, $thiscon, $uid, $member_handler, $reinitialize=false, $entry, $fid) {
+function compileNotUsers($uids_conditions, $thiscon, $uid, $member_handler, $reinitialize, $entry, $fid) {
   
 	static $omit_user = null;
 	if($reinitialize) { $omit_user = null; } // need to do this when handling saved conditions, since each time we call this function it's a new "event" that we're dealing with
@@ -2967,7 +2936,7 @@ function getHeaders($cols, $colsIsElementHandles = false) {
 // DEPRECATED...VERY INEFFICIENT, SINCE IT ONLY UPDATES ONE FIELD AT A TIME.  BETTER TO USE formulize_writeEntry, except in cases where you actually need to only update one field.  In most cases you want to update multiple fields in an entry, so don't use this inside a loop...it will generate more queries than you need
 // prevValue is now completely not required.  lvoverride is only used if you want to pass in a pre-formatted ,1,3,15,17, style string for inserting into a linked selectbox field.
 // linkedTargetHint is used if we are writing to a linked selectbox element, and we have some indication from the UI what the entry is that we're supposed to link to.  This allows for disambiguation of target values that we might be trying to link to, that might occur in more than one entry.
-function writeElementValue($formframe = "", $ele, $entry, $value, $append, $prevValue=null, $lvoverride=false, $linkedTargetHint = "") {
+function writeElementValue($formframe, $ele, $entry, $value, $append="replace", $prevValue=null, $lvoverride=false, $linkedTargetHint = "") {
 
 /*
 print "$formframe<br>";
@@ -4578,7 +4547,7 @@ function formulize_xhr_send(op,params) {
 // deDisplay is a flag to control whether the icon for switching an element to editable mode should be present or not
 // localIds is an array of ids that will match the order of the values in the array...used to get the id for a subform entry that is being displayed in the list
 // $fid is used only in the event of a mod_datetime or creation_datetime or creator_email field being drawn
-function getHTMLForList($value, $handle, $entryId, $deDisplay=0, $textWidth=200, $localIds=array(), $fid, $row, $column) {
+function getHTMLForList($value, $handle, $entryId, $deDisplay=0, $textWidth=200, $localIds=array(), $fid=0, $row=0, $column=0) {
 	$output = "";
 	if(!is_array($value)) {
 		$value = array($value);

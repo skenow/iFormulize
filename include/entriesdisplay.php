@@ -699,7 +699,7 @@ function displayEntries($formframe, $mainform="", $loadview="", $loadOnlyView=0,
   formulize_benchmark("after entries");
 
 	if($screen) {
-		formulize_screenLOETemplate($screen, "bottom", $formulize_buttonCodeArray, $settings);
+		formulize_screenLOETemplate($screen, "bottom", $formulize_buttonCodeArray, $settings, $messageText);
 	} else {
 		print $formulize_LOEPageNav; // redraw page numbers if there is no screen in effect
 	}
@@ -1434,14 +1434,15 @@ function drawEntries($fid, $cols, $searches="", $frid="", $scope, $standalone=""
 		if($useSearch) {
 			drawSearches($searches, $cols, $useCheckboxes, $useViewEntryLinks, count($inlineButtons), false, $hiddenQuickSearches);
 		}
-		// get form handles in use
-		$mainFormHandle = key($data[key($data)]);
 	
-		if(count($data) == 0) { // kill an empty dataset so there's no rows drawn
+		if (count((array) $data) == 0) {
+			// kill an empty dataset so there's no rows drawn
 			unset($data);
+		} else {
+			// get form handles in use
+			$mainFormHandle = key($data[key($data)]);
 		}
-	
-  
+		
     
   
 		$headcounter = 0;
@@ -1922,7 +1923,7 @@ function drawHeaders($headers, $cols, $useBoxes=null, $useLinks=null, $numberOfB
 	if($useBoxes != 2 OR $useLinks) {
 		print "<td class=head>&nbsp;</td>\n";
 	}
-	for($i=0;$i<count($headers);$i++) {
+	for($i=0;$i<count((array) $headers);$i++) {
 	
 		$classToUse = "head column column".$i;
 		if($i==0) {
@@ -4066,7 +4067,7 @@ function formulize_screenLOEButton($button, $buttonText, $settings, $fid, $frid,
 			case "calcButton":
 				return "<input type=button class=\"formulize_button\" id=\"formulize_$button\" name=calculations value='" . $buttonText . "' onclick=\"javascript:showPop('" . XOOPS_URL . "/modules/formulize/include/pickcalcs.php?fid=$fid&frid=$frid&calc_cols=".urlencode($calc_cols)."&calc_calcs=".urlencode($calc_calcs)."&calc_blanks=".urlencode($calc_blanks)."&calc_grouping=".urlencode($calc_grouping)."');\"></input>";
 				break;
-      case "advCalcButton":
+		    case "advCalcButton":
 				// only if any procedures (advanced calculations) are defined for this form
 				$procedureHandler = icms_getModuleHandler('advancedCalculation','formulize');
 				$procList = $procedureHandler->getList($fid);
@@ -4075,7 +4076,7 @@ function formulize_screenLOEButton($button, $buttonText, $settings, $fid, $frid,
 				} else {
 					return false;
 				}
-	      break;
+		      break;
 			case "advSearchButton":
 				$buttonCode = "<input type=button class=\"formulize_button\" id=\"formulize_$button\" name=advsearch value='" . $buttonText . "' onclick=\"javascript:showPop('" . XOOPS_URL . "/modules/formulize/include/advsearch.php?fid=$fid&frid=$frid";
 				foreach($settings as $k=>$v) {
@@ -4088,28 +4089,28 @@ function formulize_screenLOEButton($button, $buttonText, $settings, $fid, $frid,
 				$buttonCode .= "');\"></input>";
 				return $buttonCode;
 				break;
-			case "exportCalcsButton":
-				return "<input type=button class=\"formulize_button\" id=\"formulize_$button\" name=export value='" . $buttonText . "' onclick=\"javascript:showExport();\"></input>";
-				break;
-			case "exportButton":
-			case "importButton":
-				// need to write the query to the cache folder so it can be picked up when needed
-				$exportTime = time();
-				
-				$queryForExportFile = fopen(XOOPS_ROOT_PATH . "/cache/exportQuery_".$exportTime.".formulize_cached_query_for_export", "w");
-				fwrite($queryForExportFile, $fid."\n");
-				
-				$exportUid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
-				fwrite($queryForExportFile, $exportUid."\n");
-				fwrite($queryForExportFile, $GLOBALS['formulize_queryForExport']);
-				fclose($queryForExportFile);
-				// cleanup old export files
-        if(!$importExportCleanupDone) {
-          formulize_benchmark("before scandir during export/import button creation");
-          formulize_scandirAndClean(XOOPS_ROOT_PATH."/cache/", "exportQuery");
-          formulize_benchmark("after scandir during export/import button creation. ".count($formulize_export_cache_files)." files found");
-          $importExportCleanupDone = true;
-        }
+				case "exportCalcsButton":
+					return "<input type=button class=\"formulize_button\" id=\"formulize_$button\" name=export value='" . $buttonText . "' onclick=\"javascript:showExport();\"></input>";
+					break;
+				case "exportButton":
+				case "importButton":
+					// need to write the query to the cache folder so it can be picked up when needed
+					$exportTime = time();
+					
+					$queryForExportFile = fopen(XOOPS_ROOT_PATH . "/cache/exportQuery_".$exportTime.".formulize_cached_query_for_export", "w");
+					fwrite($queryForExportFile, $fid."\n");
+					
+					$exportUid = is_object(icms::$user) ? icms::$user->getVar('uid') : 0;
+					fwrite($queryForExportFile, $exportUid."\n");
+					fwrite($queryForExportFile, $GLOBALS['formulize_queryForExport']);
+					fclose($queryForExportFile);
+					// cleanup old export files
+		        if(!$importExportCleanupDone) {
+		          formulize_benchmark("before scandir during export/import button creation");
+		          formulize_scandirAndClean(XOOPS_ROOT_PATH."/cache/", "exportQuery");
+		        //  formulize_benchmark("after scandir during export/import button creation. ".count($formulize_export_cache_files)." files found");
+		          $importExportCleanupDone = true;
+		        }
 				if($button == "exportButton") {
 					return "<input type=button class=\"formulize_button\" id=\"formulize_$button\" name=export value='" . $buttonText . "' onclick=\"javascript:showPop('" . XOOPS_URL . "/modules/formulize/include/export.php?fid=$fid&frid=$frid&cols=$colhandles&eq=$exportTime');\"></input>";
 				} else {

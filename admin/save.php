@@ -30,13 +30,17 @@
 // This file receives ajax form submissions from the new admin UI
 
 include_once "../../../mainfile.php";
-ob_end_clean();
-ob_end_clean(); // in some cases ther appear to be two buffers active?!  So we must try to end twice.
+
+icms::$logger->disableLogger();
+while(ob_get_level()) {
+	ob_end_clean();
+}
 
 if(!is_object(icms::$user)) {
   print "Error: you are not logged in";
   return;
 }
+
 $gperm_handler = icms::handler('icms_member_groupperm');
 include_once XOOPS_ROOT_PATH . "/modules/formulize/include/functions.php";
 $groups = icms::$user->getGroups();
@@ -67,4 +71,3 @@ $popupSave = isset($_GET['popupsave']) ? "_popup" : "";
 if(file_exists(XOOPS_ROOT_PATH."/modules/formulize/admin/save/".str_replace(array("\\","/"),"", $_POST['formulize_admin_handler'])."_save".$popupSave.".php")) {
   include XOOPS_ROOT_PATH."/modules/formulize/admin/save/".str_replace(array("\\","/"),"", $_POST['formulize_admin_handler'])."_save".$popupSave.".php";
 }
-

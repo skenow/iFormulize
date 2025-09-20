@@ -32,8 +32,9 @@
 include_once XOOPS_ROOT_PATH."/modules/formulize/include/functions.php";
 
 // need to listen for $_GET['aid'] later so we can limit this to just the application that is requested
-$aid = intval($_GET['aid']);
-if($aid == 0) {
+$aid = isset($_GET['aid']) ? intval($_GET['aid']) : 0;
+
+if(!$aid) {
 	$appName = "Forms with no app";
 } else {
   $application_handler = icms_getModuleHandler('applications','formulize');
@@ -52,9 +53,7 @@ if($_GET['fid'] != "new") {
   $fid = $_GET['fid'];
 }
 
-
 $sid = $_GET['sid'];
-
 
 $links = array();
 $sql = 'SELECT DISTINCT frameworks.frame_id, frameworks.frame_name FROM ' . icms::$xoopsDB->prefix("formulize_framework_links").' as links, ' . icms::$xoopsDB->prefix("formulize_frameworks").' as frameworks WHERE fl_form1_id='.intval($fid).' OR fl_form2_id='.intval($fid).' AND links.fl_frame_id=frameworks.frame_id';
@@ -66,13 +65,11 @@ if ($res) {
 }
 
 
-
-
 // screen settings data
 $settings = array();
 $settings['links'] = $links;
 
-if($_GET['sid'] == "new") {
+if($sid == "new") {
   $settings['type'] = 'listOfEntries';
   $settings['frid'] = 0;
   $settings['useToken'] = 1;
@@ -99,7 +96,7 @@ if($_GET['sid'] == "new") {
 
 
 // prepare data for sub-page
-if($_GET['sid'] != "new" && $settings['type'] == 'listOfEntries') {
+if($sid != "new" && $settings['type'] == 'listOfEntries') {
   // display data
   $templates = array();
   $templates['toptemplate'] = $screen->getVar('toptemplate');
@@ -124,7 +121,7 @@ if($_GET['sid'] != "new" && $settings['type'] == 'listOfEntries') {
   $defaultViewOptions['mine'] = _AM_FORMULIZE_SCREEN_LOE_DVMINE;
   $defaultViewOptions['group'] = _AM_FORMULIZE_SCREEN_LOE_DVGROUP;
   $defaultViewOptions['all'] = _AM_FORMULIZE_SCREEN_LOE_DVALL;
-  for($i=0;$i<count($views);$i++) {
+  for($i=0;$i<count((array) $views);$i++) {
       if(!$viewPublished[$i]) { continue; }
       $defaultViewOptions[$views[$i]] = $viewNames[$i];
       if($viewFrids[$i]) {
@@ -243,7 +240,7 @@ if($_GET['sid'] != "new" && $settings['type'] == 'listOfEntries') {
   // custom button data
   $custom = array();
   $applyToOptions = array('inline'=>_AM_FORMULIZE_SCREEN_LOE_CUSTOMBUTTON_APPLYTO_INLINE, 'selected'=>_AM_FORMULIZE_SCREEN_LOE_CUSTOMBUTTON_APPLYTO_SELECTED, 'all'=>_AM_FORMULIZE_SCREEN_LOE_CUSTOMBUTTON_APPLYTO_ALL, 'new'=>_AM_FORMULIZE_SCREEN_LOE_CUSTOMBUTTON_APPLYTO_NEW, 'new_per_selected'=>_AM_FORMULIZE_SCREEN_LOE_CUSTOMBUTTON_APPLYTO_NEWPERSELECTED);
-  if(count($allFids) > 1) {
+  if(count((array) $allFids) > 1) {
     foreach ($allFids as $i=>$thisFid) {
       if($thisFid == $fid) { continue; } // don't treat the current form as if it's an 'other' form
       $applyToOptions['new_'.$thisFid] = _AM_FORMULIZE_SCREEN_LOE_CUSTOMBUTTON_APPLYTO_NEW_OTHER . printSmart($allFidObjs[$thisFid]->getVar('title'), 20) . "'";
@@ -282,7 +279,7 @@ if($_GET['sid'] != "new" && $settings['type'] == 'listOfEntries') {
  
 }
 
-if($_GET['sid'] != "new" && $settings['type'] == 'multiPage') {
+if($sid != "new" && $settings['type'] == 'multiPage') {
   // parallel entry options for showing previous entries in another form (or entries of some other defined type, but previous entries are what this was made for)
   // Previous entries are meant to be in another form.  To begin with, that form must have the same captions as this form does, but later on there will be some broader capabilities to specify the parallel elements.
   $fe_paraentryform = new icms_form_elements_Select(_AM_FORMULIZE_SCREEN_PARAENTRYFORM, 'paraentryform', $screen->getVar('paraentryform'), 1, false);
@@ -318,7 +315,7 @@ if($_GET['sid'] != "new" && $settings['type'] == 'multiPage') {
 
   // group entries
   $pages = array();
-	for($i=0;$i<(count($pageTitles)+$pageCounterOffset);$i++) {
+	for($i=0;$i<(count((array) $pageTitles)+$pageCounterOffset);$i++) {
     $pages[$i]['name'] = $pageTitles[$i];
     $pages[$i]['content']['index'] = $i;
     $pages[$i]['content']['number'] = $i+1;
@@ -354,7 +351,7 @@ if($_GET['sid'] != "new" && $settings['type'] == 'multiPage') {
   $multipagePages['pages'] = $pages;
 }
 
-if($_GET['sid'] != "new" && $settings['type'] == 'form') {
+if($sid != "new" && $settings['type'] == 'form') {
   $options = array();
   $options['donedest'] = $screen->getVar('donedest');
   $options['savebuttontext'] = $screen->getVar('savebuttontext');
@@ -384,13 +381,13 @@ $adminPage['tabs'][1]['name'] = _AM_APP_SETTINGS;
 $adminPage['tabs'][1]['template'] = "db:admin/screen_settings.html";
 $adminPage['tabs'][1]['content'] = $settings + $common;
 
-if($_GET['sid'] != "new" && $settings['type'] == 'form') {
+if($sid != "new" && $settings['type'] == 'form') {
   $adminPage['tabs'][2]['name'] = _AM_ELE_OPT;
   $adminPage['tabs'][2]['template'] = "db:admin/screen_form_options.html";
   $adminPage['tabs'][2]['content'] = $options + $common;
 }
 
-if($_GET['sid'] != "new" && $settings['type'] == 'multiPage') {
+if($sid != "new" && $settings['type'] == 'multiPage') {
   $adminPage['tabs'][2]['name'] = _AM_ELE_OPT;
   $adminPage['tabs'][2]['template'] = "db:admin/screen_multipage_options.html";
   $adminPage['tabs'][2]['content'] = $multipageOptions + $common;
@@ -408,7 +405,7 @@ if($_GET['sid'] != "new" && $settings['type'] == 'multiPage') {
   $adminPage['tabs'][5]['content'] = $multipageTemplates + $common;
 }
 
-if($_GET['sid'] != "new" && $settings['type'] == 'listOfEntries') {
+if($sid != "new" && $settings['type'] == 'listOfEntries') {
   
   $adminPage['tabs'][2]['name'] = _AM_FORM_SCREEN_ENTRIES_DISPLAY;
   $adminPage['tabs'][2]['template'] = "db:admin/screen_list_entries.html";

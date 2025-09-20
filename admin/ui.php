@@ -106,7 +106,8 @@ if (isset($_GET['tab']) and (!isset($_POST['tabs_selected']) or $_POST['tabs_sel
 // assign the contents to the template and display
 $adminPage['formulizeModId'] = getFormulizeModId();
 $icmsAdminTpl->assign('adminPage', $adminPage);
-$icmsAdminTpl->assign('breadcrumbtrail', $breadcrumbtrail);
+if (isset($breadcrumbtrail)) {
+	$icmsAdminTpl->assign('breadcrumbtrail', $breadcrumbtrail);}
 $icmsAdminTpl->assign('scrollx', (isset($_POST['scrollx']) ? intval($_POST['scrollx']) : 0));
 $accordion_active = (isset($_POST['accordion_active']) and $_POST['accordion_active'] !== "" and $_POST['accordion_active'] !== "false") ? intval($_POST['accordion_active']) : "false";
 $icmsAdminTpl->assign('accordion_active', $accordion_active);

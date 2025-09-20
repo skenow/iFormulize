@@ -1077,7 +1077,7 @@ class formulizeElementRenderer{
 
 	// THIS FUNCTION COPIED FROM LIASE 1.26, onchange control added
 	// JWE -- JUNE 1 2006
-	function optOther($s='', $id, $entry, $counter, $checkbox=false){
+	function optOther($s, $id, $entry, $counter, $checkbox = false) {
 		global $xoopsModuleConfig;
 		if( !preg_match('/\{OTHER\|+[0-9]+\}/', $s) ){
 			return false;
@@ -1224,7 +1224,7 @@ class formulizeElementRenderer{
 	// screen is the screen object with the data we need (form id with previous entries and rule for lining them up with current form)
 	// element_id is the ID of the element we're drawing (add ele_ to the front to make the javascript ID we need to know in order to set the value of the element to the one the user selects)
 	// type is the type of element, which affects how the javascript is written (textboxes aren't set the same as radio buttons, etc)
-	function formulize_setupPreviousEntryUI($screen, $element_id, $type, $owner, $de=false, $entryId="", $ele_handle, $fid) {
+	function formulize_setupPreviousEntryUI($screen, $element_id, $type, $owner, $de, $entryId, $ele_handle, $fid) {
 		
 		// 1. need to get and cache the values of the entry for this screen
 		// 2. need to put the values into a dropdown list with an onchange event that populates the actual form element

@@ -294,7 +294,7 @@ function getDataCached($framework, $form, $filter="", $andor="AND", $scope="", $
 }
 
 
-function dataExtraction($frame="", $form, $filter, $andor, $scope, $limitStart, $limitSize, $sortField, $sortOrder, $forceQuery, $mainFormOnly, $includeArchived=false, $id_reqsOnly=false, $resultOnly=false, $filterElements=null) {
+function dataExtraction($frame, $form, $filter, $andor, $scope, $limitStart, $limitSize, $sortField, $sortOrder, $forceQuery, $mainFormOnly, $includeArchived=false, $id_reqsOnly=false, $resultOnly=false, $filterElements=null) {
      
      $limitStart = intval($limitStart);
      $limitSize = intval($limitSize);
@@ -701,7 +701,7 @@ function dataExtraction($frame="", $form, $filter, $andor, $scope, $limitStart, 
     // NOTE: Oct 17 2011 - the $oneSideSQL is also used when there are multiple linked subforms, since the exists structure is efficient compared to multiple joins
     $oneSideSQL = " FROM " . DBPRE . "formulize_" . $formObject->getVar('form_handle') . " AS main $userJoinText WHERE main.entry_id>0 $scopeFilter "; // does the mainFormWhereClause need to be used here too?  Needs to be tested. -- further note: Oct 17 2011 -- appears oneSideFilters[fid] is the same as the mainformwhereclause
     $oneSideSQL .= $existsJoinText ? " AND ($existsJoinText) " : "";
-    if(count($oneSideFilters[$fid])>0) {
+    if(is_array($oneSideFilters[$fid]) AND count($oneSideFilters[$fid]) > 0) {
        foreach($oneSideFilters[$fid] as $thisOneSideFilter) {
           $oneSideSQL .= " $andor ( $thisOneSideFilter ) ";  // properly introduce these filters...need to move $andor to a higher level and put this inside ( ) ?? or maybe this just all gets redone if/when the OR bug is fixed (see big note up where oneSideFilters are first received from parseFilter function)
        }
@@ -710,7 +710,7 @@ function dataExtraction($frame="", $form, $filter, $andor, $scope, $limitStart, 
 
      $restOfTheSQL = " FROM " . DBPRE . "formulize_" . $formObject->getVar('form_handle') . " AS main $userJoinText $joinText $otherPerGroupFilterJoins WHERE main.entry_id>0 $whereClause $scopeFilter $perGroupFilter $otherPerGroupFilterWhereClause $limitByEntryId $orderByClause ";
      $restOfTheSQLForExport = " FROM " . DBPRE . "formulize_" . $formObject->getVar('form_handle') . " AS main $userJoinText $joinText $otherPerGroupFilterJoins WHERE main.entry_id>0 $whereClause $scopeFilter $perGroupFilter $otherPerGroupFilterWhereClause $orderByClause ";  // don't use limitByEntryId since exports include all entries
-     if(count($linkformids)>1) { // AND $dummy == "never") { // when there is more than 1 joined form, we can get an exponential explosion of records returned, because SQL will give you all combinations of the joins
+     if(count((array) $linkformids)>1) { // AND $dummy == "never") { // when there is more than 1 joined form, we can get an exponential explosion of records returned, because SQL will give you all combinations of the joins
        if(!$sortIsOnMain) {
 	    $orderByToUse = " ORDER BY usethissort $sortOrder ";
 	    $useAsSortSubQuery = " @rownum:=@rownum+1, $useAsSortSubQuery,"; // need to add a counter as the first field, used as the master sorting key
@@ -772,7 +772,7 @@ function dataExtraction($frame="", $form, $filter, $andor, $scope, $limitStart, 
      
 		 formulize_benchmark("Before query");
 
-     if(count($linkformids)>1) { // AND $dummy=="never") { // when there is more than 1 joined form, we can get an exponential explosion of records returned, because SQL will give you all combinations of the joins, so we create a series of queries that will each handle the main form plus one of the linked forms, then we put all the data together into a single result set below
+		 if(count((array) $linkformids) > 1) { // AND $dummy=="never") { // when there is more than 1 joined form, we can get an exponential explosion of records returned, because SQL will give you all combinations of the joins, so we create a series of queries that will each handle the main form plus one of the linked forms, then we put all the data together into a single result set below
 	  
          if($resultOnly) {
 	       $masterQueryRes = icms::$xoopsDB->query($masterQuerySQL);
@@ -865,7 +865,7 @@ function dataExtraction($frame="", $form, $filter, $andor, $scope, $limitStart, 
           print "Error: could not check to see if there were derived value elements in one or more forms.  SQL:<br>$sql";
      }
 
-     if(count($linkformids)>1) { // AND $dummy == "never") {
+     if(count((array) $linkformids) > 1) { // AND $dummy == "never") {
 	  
 	  // this is a refactoring of the original code that is in the else part of this structure.
 	  // it's virtually the same, except for the part that sets the $masterIndexer, since we will need to reuse masterindex positions when parsing subsequent queries, so we don't just increment the $masterIndexer

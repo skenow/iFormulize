@@ -235,12 +235,12 @@ class formulizeElementsHandler {
 		return true;
 	}
 
-	function &getObjects2($criteria = null, $id_form, $id_as_key = false) {
+	function &getObjects2($criteria = null, $id_form = 0, $id_as_key = false) {
 		$ret = array();
 		$limit = $start = 0;
 		// awareness of $criteria added, Sept 1 2005, jwe
 		// removal of ele_display=1 from next line and addition of the renderWhere line in the conditional below
-		$sql = 'SELECT * FROM ' . formulize_TABLE . ' WHERE id_form=' . $id_form;
+		$sql = 'SELECT * FROM ' . formulize_TABLE . ' WHERE id_form=' . intval($id_form);
 
 		if (isset($criteria)) {
 			$sql .= $criteria->render() ? ' AND (' . $criteria->render() . ')' : '';
