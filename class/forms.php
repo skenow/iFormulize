@@ -81,6 +81,11 @@ class formulizeForm extends icms_core_Object {
 				$displayFilter = $includeAllElements ? "" : "AND ele_display != \"0\"";
 				$elementsq = q("SELECT ele_id, ele_caption, ele_colhead, ele_handle, ele_type, ele_encrypt FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE id_form=$id_form $displayFilter ORDER BY ele_order ASC");
 				$encryptedElements = array();
+				$elements = array();
+				$elementCaptions = array();
+				$elementColheads = array();
+				$elementHandles = array();
+				$elementTypes = array();
 				foreach ($elementsq as $row => $value) {
 					$elements[$value['ele_id']] = $value['ele_id'];
 					$elementCaptions[$value['ele_id']] = $value['ele_caption'];
