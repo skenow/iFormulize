@@ -62,7 +62,7 @@ require_once "import_functions.php";
 
 
 $config_handler = icms::handler('icms_config');
-$xoopsConfigUser =& $config_handler->getConfigsByCat(XOOPS_CONF_USER);
+$icmsConfigUser =& $config_handler->getConfigsByCat(XOOPS_CONF_USER);
 
 
 include_once XOOPS_ROOT_PATH.'/modules/formulize/include/functions.php';

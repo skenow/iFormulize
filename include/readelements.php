@@ -399,7 +399,7 @@ function writeUserProfile($data, $uid) {
 	// notify_mode
 
 	$config_handler = icms::handler('icms_config');
-	$xoopsConfigUser =& $config_handler->getConfigsByCat(XOOPS_CONF_USER);
+	$icmsConfigUser =& $config_handler->getConfigsByCat(XOOPS_CONF_USER);
 
 	include_once XOOPS_ROOT_PATH . "/language/" . $icmsConfig['language'] . "/user.php";
 
@@ -419,7 +419,7 @@ function writeUserProfile($data, $uid) {
     }
 
     $myts =& icms_core_Textsanitizer::getInstance();
-    if ($xoopsConfigUser['allow_chgmail'] == 1) {
+    if ($icmsConfigUser['allow_chgmail'] == 1) {
         $email = '';
         if (!empty($data['email'])) {
         	$email = icms_core_DataFilter::stripSlashesGPC(trim($data['email']));
@@ -434,8 +434,8 @@ function writeUserProfile($data, $uid) {
     	$password = icms_core_DataFilter::stripSlashesGPC(trim($data['password']));
     }
     if ($password != '') {
-     	  if (strlen($password) < $xoopsConfigUser['minpass']) {
-           	$errors[] = sprintf(_US_PWDTOOSHORT,$xoopsConfigUser['minpass']);
+    	if (strlen($password) < $icmsConfigUser['minpass']) {
+    		$errors[] = sprintf(_US_PWDTOOSHORT,$icmsConfigUser['minpass']);
         }
         if (!empty($data['vpass'])) {
         	$vpass = icms_core_DataFilter::stripSlashesGPC(trim($data['vpass']));
@@ -454,7 +454,7 @@ function writeUserProfile($data, $uid) {
         $member_handler =& icms::handler('icms_member');
         $edituser =& $member_handler->getUser($uid);
         $edituser->setVar('name', $data['name']);
-        if ($xoopsConfigUser['allow_chgmail'] == 1) {
+        if ($icmsConfigUser['allow_chgmail'] == 1) {
             $edituser->setVar('email', $email, true);
         }
         $user_viewemail = (!empty($data['user_viewemail'])) ? 1 : 0;

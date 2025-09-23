@@ -679,8 +679,7 @@ function allowedForms() {
 	// EXCLUDE THE USERPROFILE FORM UNLESS THE USER HAS VIEW_GROUPSCOPE OR VIEW_GLOBALSCOPE ON IT
 	// added Mar 15 2006, jwe
 	$config_handler = icms::handler('icms_config');
-	$xoopsModuleConfig =& $config_handler->getConfigsByCat(0, $module_id); // get the *Formulize* module config settings
- 	$pform = $xoopsModuleConfig['profileForm'];
+ 	$pform = icms::$module->config['profileForm'];
 	if(!$pform) { return $allowedForms; }
 	$pformKey = array_search($pform, $allowedForms);
 	if(isset($pformKey)) { // if the profileForm is allowed...

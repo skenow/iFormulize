@@ -897,9 +897,9 @@ function addProfileFields($form, $profileForm) {
 	// timezone
 	// password
 
-	global $xoopsConfigUser;
+	global $icmsConfigUser;
 	$config_handler = icms::handler('icms_config');
-	$xoopsConfigUser =& $config_handler->getConfigsByCat(XOOPS_CONF_USER);
+	$icmsConfigUser =& $config_handler->getConfigsByCat(XOOPS_CONF_USER);
 	$user_handler = icms::handler('icms_member_user');
 	$thisUser = $user_handler->get($profileForm);
 
@@ -940,9 +940,9 @@ function addProfileFields($form, $profileForm) {
 		// 'new' should ONLY be coming from the modified register.php file that the registration codes module uses
 		// ie: we are assuming registration codes is installed
 		$form->addElement(new icms_form_elements_Hidden('userprofile_regcode', $GLOBALS['regcode']));
-		$uname_size = $xoopsConfigUser['maxuname'] < 255 ? $xoopsConfigUser['maxuname'] : 255;
+		$uname_size = $icmsConfigUser['maxuname'] < 255 ? $icmsConfigUser['maxuname'] : 255;
 		$labelhelptext = _formulize_USERNAME_HELP1; // set it to a variable so we can test for its existence; don't want to print this stuff if there's no translation
-		$labeltext = $labelhelptext == "" ? _US_NICKNAME : _US_NICKNAME . _formulize_USERNAME_HELP1 . $xoopsConfigUser['minuname'] . _formulize_USERNAME_HELP2 . $uname_size . _formulize_USERNAME_HELP3;
+		$labeltext = $labelhelptext == "" ? _US_NICKNAME : _US_NICKNAME . _formulize_USERNAME_HELP1 . $icmsConfigUser['minuname'] . _formulize_USERNAME_HELP2 . $uname_size . _formulize_USERNAME_HELP3;
 		if ($regcodesConfig['email_as_username'] == 0)	{
 			// Allow User names to be created
 			$uname_label = new icms_form_elements_Text($labeltext, 'userprofile_uname', $uname_size, $uname_size, $thisUser_uname);
@@ -959,7 +959,7 @@ function addProfileFields($form, $profileForm) {
 		$form->addElement($uname_label);
 	}
 	$email_tray = new icms_form_elements_Tray(_US_EMAIL, '<br />');
-	if ($profileForm == "new" OR (($xoopsConfigUser['allow_chgmail'] == 1) && ($regcodesConfig['email_as_username'] == 0))) {
+	if ($profileForm == "new" OR (($icmsConfigUser['allow_chgmail'] == 1) && ($regcodesConfig['email_as_username'] == 0))) {
       	$email_text = new icms_form_elements_Text('', 'userprofile_email', 30, 255, $thisUser_email);
 		$email_tray->addElement($email_text, 1);
 	}
@@ -975,7 +975,7 @@ function addProfileFields($form, $profileForm) {
 	
 		
 	$passlabel = $profileForm == "new" ? _formulize_TYPEPASSTWICE_NEW : _formulize_TYPEPASSTWICE_CHANGE;
-	$passlabel .= $xoopsConfigUser['minpass'] . _formulize_PASSWORD_HELP1;
+	$passlabel .= $icmsConfigUser['minpass'] . _formulize_PASSWORD_HELP1;
 	$pwd_tray = new icms_form_elements_Tray(_US_PASSWORD.'<br />'.$passlabel);
 	$pwd_text = new icms_form_elements_Password('', 'userprofile_password', 10, 32);
 	$pwd_text2 = new icms_form_elements_Password('', 'userprofile_vpass', 10, 32);
@@ -1013,9 +1013,9 @@ function addProfileFields($form, $profileForm) {
       	$sig_tray->addElement($sig_cbox);
       	$form->addElement($sig_tray);
 	} else { // display only on new account creation...
-		if ($xoopsConfigUser['reg_dispdsclmr'] != 0 && $xoopsConfigUser['reg_disclaimer'] != '') {
+		if ($icmsConfigUser['reg_dispdsclmr'] != 0 && $icmsConfigUser['reg_disclaimer'] != '') {
 			$disc_tray = new icms_form_elements_Tray(_US_DISCLAIMER, '<br />');
-			$disc_text = new icms_form_elements_Textarea('', 'disclaimer', trans($xoopsConfigUser['reg_disclaimer']), 8);
+			$disc_text = new icms_form_elements_Textarea('', 'disclaimer', trans($icmsConfigUser['reg_disclaimer']), 8);
 			$disc_text->setExtra('readonly="readonly"');
 			$disc_tray->addElement($disc_text);
 			$agree_chk = new icms_form_elements_Checkbox('', 'userprofile_agree_disc', $agree_disc);
