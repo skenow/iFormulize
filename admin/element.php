@@ -161,11 +161,11 @@ if($_GET['ele_id'] != "new") {
   $ele_value = array();
   $ele_delim = "br";
   $ele_uitext = "";
-  global $xoopsModuleConfig;
+ 
   switch($ele_type) {
     case("text"):
-      $ele_value[0] = $xoopsModuleConfig['t_width'];
-      $ele_value[1] = $xoopsModuleConfig['t_max'];
+      $ele_value[0] = icms::$module->config['t_width'];
+      $ele_value[1] = icms::$module->config['t_max'];
       $ele_value[3] = 0;
       $ele_value[5] = isset($formulizeConfig['number_decimals']) ? $formulizeConfig['number_decimals'] : 0;
       $ele_value[6] = isset($formulizeConfig['number_prefix']) ? $formulizeConfig['number_prefix'] : '';
@@ -173,8 +173,8 @@ if($_GET['ele_id'] != "new") {
       $ele_value[8] = isset($formulizeConfig['number_sep']) ? $formulizeConfig['number_sep'] : ',';
       break;
     case("textarea"):
-      $ele_value[1] = $xoopsModuleConfig['ta_rows'];
-      $ele_value[2] = $xoopsModuleConfig['ta_cols'];
+      $ele_value[1] = icms::$module->config['ta_rows'];
+      $ele_value[2] = icms::$module->config['ta_cols'];
       break;
     case "derived":
       $ele_value[1] = isset($formulizeConfig['number_decimals']) ? $formulizeConfig['number_decimals'] : 0;

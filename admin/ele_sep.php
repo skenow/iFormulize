@@ -36,8 +36,8 @@ if( !preg_match("/elements.php/", $_SERVER['PHP_SELF']) ){
 $options = array();
 $opt_count = 0;
 
-$rows = !empty($value[0]) ? $value[1] : $xoopsModuleConfig['ta_rows'];
-$cols = !empty($value[0]) ? $value[2] : $xoopsModuleConfig['ta_cols'];
+$rows = !empty($value[0]) ? $value[1] : icms::$module->config['ta_rows'];
+$cols = !empty($value[0]) ? $value[2] : icms::$module->config['ta_cols'];
 $rows = new icms_form_elements_Text (_AM_ELE_ROWS, 'ele_value[1]', 3, 3, $rows);
 $cols = new icms_form_elements_Text (_AM_ELE_COLS, 'ele_value[2]', 3, 3, $cols);
 $type = new icms_form_elements_Checkbox (_AM_ELE_TYPE, 'option', null);

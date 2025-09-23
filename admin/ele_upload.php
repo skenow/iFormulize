@@ -33,7 +33,7 @@ if( !preg_match("/elements.php/", $_SERVER['PHP_SELF']) ){
 	exit("Access Denied");
 }
 
-$p = !empty($value[1]) ? $value[1] : $xoopsModuleConfig['weight'];
+$p = !empty($value[1]) ? $value[1] : icms::$module->config['weight'];
 
 $pds = new icms_form_elements_Tray (_AM_ELE_TAILLEFICH, '');
 $pds->addElement (new icms_form_elements_Text ('', 'ele_value[1]', 15, 15, $p));

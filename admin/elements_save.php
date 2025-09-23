@@ -173,8 +173,8 @@ if( !empty($ele_id) AND $clone == 0){
 		switch($ele_type){
 			case 'text':
 				$value = array();
-				$value[] = !empty($ele_value[0]) ? intval($ele_value[0]) : $xoopsModuleConfig['t_width'];
-				$value[] = !empty($ele_value[1]) ? intval($ele_value[1]) : $xoopsModuleConfig['t_max'];
+				$value[] = !empty($ele_value[0]) ? intval($ele_value[0]) : icms::$module->config['t_width'];
+				$value[] = !empty($ele_value[1]) ? intval($ele_value[1]) : icms::$module->config['t_max'];
 				$value[] = $ele_value[2];
 				$value[] = $ele_value[3];
 				
@@ -199,12 +199,12 @@ if( !empty($ele_id) AND $clone == 0){
 				if( intval($ele_value[1]) != 0 ){
 					$value[] = intval($ele_value[1]);
 				}else{
-					$value[] = $xoopsModuleConfig['ta_rows'];
+					$value[] = icms::$module->config['ta_rows'];
 				}
 				if( intval($ele_value[2]) != 0 ){
 					$value[] = intval($ele_value[2]);
 				}else{
-					$value[] = $xoopsModuleConfig['ta_cols'];
+					$value[] = icms::$module->config['ta_cols'];
 				}
 				// formlink option added to textboxes June 20 2006 -- jwe
 				if($_POST['formlink'] != "none") {
@@ -298,12 +298,12 @@ if( !empty($ele_id) AND $clone == 0){
 				if( intval($ele_value[1]) != 0 ){
 					$value[] = intval($ele_value[1]);
 				}else{
-					$value[] = $xoopsModuleConfig['ta_rows'];
+					$value[] = icms::$module->config['ta_rows'];
 				}
 				if( intval($ele_value[2]) != 0 ){
 					$value[] = intval($ele_value[2]);
 				}else{
-					$value[] = $xoopsModuleConfig['ta_cols'];
+					$value[] = icms::$module->config['ta_cols'];
 				}
 				if ($option[0]) {$value[0] = '<center>'.$value[0].'</center>';}
 				if ($option[1]) {$value[0] = '<u>'.$value[0].'</u>';}

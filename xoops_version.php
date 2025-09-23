@@ -284,7 +284,7 @@ $modversion['templates'][] = array(
 
 
 //	Module Configs
-// $xoopsModuleConfig['t_width']
+// icms::$module->config['t_width']
 $modversion['config'][1] = array(
 	'name' => 't_width',
 	'title' => '_MI_formulize_TEXT_WIDTH',
@@ -294,7 +294,7 @@ $modversion['config'][1] = array(
 	'default' => '30',
 );
 
-// $xoopsModuleConfig['t_max']
+// icms::$module->config['t_max']
 $modversion['config'][] = array(
 	'name' => 't_max',
 	'title' => '_MI_formulize_TEXT_MAX',
@@ -304,7 +304,7 @@ $modversion['config'][] = array(
 	'default' => '255',
 );
 
-// $xoopsModuleConfig['ta_rows']
+// icms::$module->config['ta_rows']
 $modversion['config'][] = array(
 	'name' => 'ta_rows',
 	'title' => '_MI_formulize_TAREA_ROWS',
@@ -314,7 +314,7 @@ $modversion['config'][] = array(
 	'default' => '5',
 );
 
-// $xoopsModuleConfig['ta_cols']
+// icms::$module->config['ta_cols']
 $modversion['config'][] = array(
 	'name' => 'ta_cols',
 	'title' => '_MI_formulize_TAREA_COLS',
@@ -324,7 +324,7 @@ $modversion['config'][] = array(
 	'default' => '35',
 );
 
-// $xoopsModuleConfig['delimeter']
+// icms::$module->config['delimeter']
 $modversion['config'][] = array(
 	'name' => 'delimeter',
 	'title' => '_MI_formulize_DELIMETER',
@@ -343,7 +343,7 @@ $pformoptions["-------------"] = 0;
 while($resArray = icms::$xoopsDB->fetchArray($resFormsSQL)) {
 	$pformoptions[$resArray['desc_form']] = $resArray['id_form'];
 }
-// $xoopsModuleConfig['profileForm']
+// icms::$module->config['profileForm']
 $modversion['config'][] = array(
 	'name' => 'profileForm',
 	'title' => '_MI_formulize_PROFILEFORM',
@@ -363,7 +363,7 @@ $modversion['config'][] = array(
 	'default' => 1,
 );
 
-// $xoopsModuleConfig['LOE_limit']
+// icms::$module->config['LOE_limit']
 $modversion['config'][] = array(
 	'name' => 'LOE_limit',
 	'title' => '_MI_formulize_LOE_limit',
@@ -373,7 +373,7 @@ $modversion['config'][] = array(
 	'default' => '5000',
 );
 
-// $xoopsModuleConfig['useToken']
+// icms::$module->config['useToken']
 $modversion['config'][] = array(
 	'name' => 'useToken',
 	'title' => '_MI_formulize_USETOKEN',

@@ -88,7 +88,7 @@ $form->addElement($opt_tray);
 // delimiter option added June 7 2006 -- jwe
 $default_custom_text = ($element->getVar('ele_delim')!="br" AND $element->getVar('ele_delim')!="space" AND $element->getVar('ele_delim')!="") ? $element->getVar('ele_delim') : "";
 if(!$default_custom_text) {
-	$default_to_set = $element->getVar('ele_delim')=="" ? $default_delim = $xoopsModuleConfig['delimeter'] : $element->getVar('ele_delim');
+	$default_to_set = $element->getVar('ele_delim')=="" ? $default_delim = icms::$module->config['delimeter'] : $element->getVar('ele_delim');
 } else {
 	$default_to_set = 'custom';
 }

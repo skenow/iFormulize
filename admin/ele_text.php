@@ -37,8 +37,8 @@ if( !preg_match("/elements.php/", $_SERVER['PHP_SELF']) ){
 	exit("Access Denied");
 }
 
-$size = !empty($value[0]) ? intval($value[0]) : $xoopsModuleConfig['t_width'];
-$max = !empty($value[1]) ? intval($value[1]) : $xoopsModuleConfig['t_max'];
+$size = !empty($value[0]) ? intval($value[0]) : icms::$module->config['t_width'];
+$max = !empty($value[1]) ? intval($value[1]) : icms::$module->config['t_max'];
 $size = new icms_form_elements_Text(_AM_ELE_SIZE, 'ele_value[0]', 3, 3, $size);
 $max = new icms_form_elements_Text(_AM_ELE_MAX_LENGTH, 'ele_value[1]', 3, 3, $max);
 $default = new icms_form_elements_Textarea(_AM_ELE_DEFAULT, 'ele_value[2]', stripslashes($value[2]), 5, 35);

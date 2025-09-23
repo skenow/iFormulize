@@ -104,14 +104,14 @@ foreach($elements as $element) {
 
 // handle any operations
 if($_POST['convertelement']) {
-  global $xoopsModuleConfig;
+ 
   $element =& $element_handler->get($_POST['convertelement']);
 		$ele_type = $element->getVar('ele_type');
 		$new_ele_value = array();
 		if($ele_type == "text") { // converting to textarea
 			$ele_value = $element->getVar('ele_value');
 			$new_ele_value[0] = $ele_value[2]; // default value
-			$new_ele_value[1] = $xoopsModuleConfig['ta_rows'];
+			$new_ele_value[1] = icms::$module->config['ta_rows'];
 			$new_ele_value[2] = $ele_value[0]; // width become cols
 			$new_ele_value[3] = $ele_value[4]; // preserve any association that is going on
 			$element->setVar('ele_value', $new_ele_value);
@@ -122,7 +122,7 @@ if($_POST['convertelement']) {
 		} elseif($ele_type=="textarea") {
 			$ele_value = $element->getVar('ele_value');
 			$new_ele_value[0] = $ele_value[2]; // cols become width
-			$new_ele_value[1] = $xoopsModuleConfig['t_max'];
+			$new_ele_value[1] = icms::$module->config['t_max'];
 			$new_ele_value[2] = $ele_value[0]; // default value
 			$new_ele_value[3] = 0; // allow anything (do not restrict to just numbers)
 			$new_ele_value[4] = $ele_value[3]; // preserve any association that is going on

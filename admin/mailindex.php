@@ -500,7 +500,7 @@ function addform()
 			$element_order = $element_order + 5;
 			$element->setVar('ele_forcehidden', 0);
 			$element->setVar('ele_uitext', "");
-			$element->setVar('ele_value', array(0=>"", 1=>$xoopsModuleConfig['ta_rows'], 2=>$xoopsModuleConfig['ta_cols'], 3=>"")); // 0 is default, 1 is rows, 2 is cols, 3 is association to another element
+			$element->setVar('ele_value', array(0=>"", 1=>icms::$module->config['ta_rows'], 2=>icms::$module->config['ta_cols'], 3=>"")); // 0 is default, 1 is rows, 2 is cols, 3 is association to another element
 			$element->setVar('id_form', $newfid);
 			$element->setVar('ele_private', 0);
 			$element->setVar('ele_display', 1);

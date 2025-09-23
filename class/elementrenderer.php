@@ -48,7 +48,7 @@ class formulizeElementRenderer{
 		if (strstr(getCurrentURL(),"printview.php")) {
 			$isDisabled = true; // disabled all elements if we're on the printable view
 		}
-		global $xoopsModuleConfig, $separ, $myts;
+		global $separ, $myts;
 		$myts = icms_core_Textsanitizer::getInstance();
 		
 		
@@ -64,12 +64,12 @@ class formulizeElementRenderer{
 	
 		
 		// added July 6 2005.
-		if(!$xoopsModuleConfig['delimeter']) {
+		if(!icms::$module->config['delimeter']) {
 			// assume that we're accessing a form from outside the Formulize module, therefore the Formulize delimiter setting is not available, so we have to query for it directly.
 			$delimq = q("SELECT conf_value FROM " . icms::$xoopsDB->prefix("config") . ", " . icms::$xoopsDB->prefix("modules") . " WHERE " . icms::$xoopsDB->prefix("modules") . ".mid=" . icms::$xoopsDB->prefix("config") . ".conf_modid AND " . icms::$xoopsDB->prefix("modules") . ".dirname=\"formulize\" AND " . icms::$xoopsDB->prefix("config") . ".conf_name=\"delimeter\"");
 			$delimSetting = $delimq[0]['conf_value'];
 		} else {
-			$delimSetting = $xoopsModuleConfig['delimeter'];
+			$delimSetting = icms::$module->config['delimeter'];
 		}
 	
 		$customElementHasData = false;
@@ -1078,7 +1078,6 @@ class formulizeElementRenderer{
 	// THIS FUNCTION COPIED FROM LIASE 1.26, onchange control added
 	// JWE -- JUNE 1 2006
 	function optOther($s, $id, $entry, $counter, $checkbox = false) {
-		global $xoopsModuleConfig;
 		if( !preg_match('/\{OTHER\|+[0-9]+\}/', $s) ){
 			return false;
 		}
@@ -1101,7 +1100,7 @@ class formulizeElementRenderer{
 			$other_text = $otherq[0]['other_text'];
 		}
 		$s = explode('|', preg_replace('/[\{\}]/', '', $s));
-		$len = !empty($s[1]) ? $s[1] : $xoopsModuleConfig['t_width'];
+		$len = !empty($s[1]) ? $s[1] : icms::$module->config['t_width'];
 		$box = new icms_form_elements_Text('', 'other[ele_'.$ele_id.']', $len, 255, $other_text);
 		if($checkbox) {
 			$box->setExtra("onchange=\"javascript:formulizechanged=1;\" onfocus=\"javascript:this.form.elements['" . $id . "[]'][$counter].checked = true;\"");
