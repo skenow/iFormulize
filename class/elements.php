@@ -316,6 +316,8 @@ class formulizeElementsHandler {
 		$sql = "SELECT ele_id FROM " . icms::$xoopsDB->prefix("formulize") . " WHERE ele_order < $order AND id_form = $fid ORDER BY ele_order DESC LIMIT 0,1";
 		if ($result = icms::$xoopsDB->query($sql)) {
 			$array = icms::$xoopsDB->fetchArray($result);
+		}
+		if (is_array($array)) {
 			return $array['ele_id'];
 		} else {
 			return false;
