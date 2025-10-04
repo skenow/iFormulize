@@ -2788,7 +2788,7 @@ function sendNotificationToEmail($email, $event, $tags, $subject, $template) {
       break;
   }
  }
-  $xoopsMailer =& getMailer();
+  $xoopsMailer =& new icms_messaging_Handler();
   include_once XOOPS_ROOT_PATH . '/include/notification_constants.php';
   $xoopsMailer->useMail();
   foreach ($tags as $k=>$v) {
@@ -4060,21 +4060,24 @@ function formulize_createFilterUI($filterSettings, $filterName, $formWithSourceE
 
 
  // make hidden elements for all the old conditions we found
- $i=0;
- foreach(${$oldElementsName} as $x=>$thisOldElementsName) {
-   // need to add [$i] to the generation of the hidden values here, so the hidden condition keys equal the flag on the deletion X
-   // $x will be the order based on the filter settings that were passed in, might not start at 0.  $i will always start at 0, so this way we'll catch/correct any malformed arrays as people edit/save them
-   $thisHiddenElement = new icms_form_elements_Hidden($oldElementsName."[$i]", strip_tags(htmlspecialchars(${$oldElementsName}[$x])));
-   $thisHiddenOp = new icms_form_elements_Hidden($oldOpsName."[$i]", strip_tags(htmlspecialchars(${$oldOpsName}[$x])));
-   $thisHiddenTerm = new icms_form_elements_Hidden($oldTermsName."[$i]", strip_tags(htmlspecialchars(${$oldTermsName}[$x])));
-   $thisHiddenType = new icms_form_elements_Hidden($oldTypesName."[$i]", strip_tags(htmlspecialchars(${$oldTypesName}[$x])));
-   if(${$oldTypesName}[$x] == "all") {
-        $conditionlist .= $options[${$oldElementsName}[$x]] . " " . ${$oldOpsName}[$x] . " " . ${$oldTermsName}[$x] . "&nbsp;&nbsp;<a class='conditionsdelete' title='Delete' target='".$filterName."_".$i."' href=''>X</a>\n".$thisHiddenElement->render()."\n".$thisHiddenOp->render()."\n".$thisHiddenTerm->render()."\n".$thisHiddenType->render()."\n<br />\n";
-   } else {
-        $conditionlistOOM .= $options[${$oldElementsName}[$x]] . " " . ${$oldOpsName}[$x] . " " . ${$oldTermsName}[$x] . "&nbsp;&nbsp;<a class='conditionsdelete' title='Delete' target='".$filterName."_".$i."' href=''>X</a>\n".$thisHiddenElement->render()."\n".$thisHiddenOp->render()."\n".$thisHiddenTerm->render()."\n".$thisHiddenType->render()."\n<br />\n";
-   }
-   $i++;
+ if (is_array(${$oldElementsName})) {
+	 $i=0;
+	 foreach(${$oldElementsName} as $x=>$thisOldElementsName) {
+	   // need to add [$i] to the generation of the hidden values here, so the hidden condition keys equal the flag on the deletion X
+	   // $x will be the order based on the filter settings that were passed in, might not start at 0.  $i will always start at 0, so this way we'll catch/correct any malformed arrays as people edit/save them
+	   $thisHiddenElement = new icms_form_elements_Hidden($oldElementsName."[$i]", strip_tags(htmlspecialchars(${$oldElementsName}[$x])));
+	   $thisHiddenOp = new icms_form_elements_Hidden($oldOpsName."[$i]", strip_tags(htmlspecialchars(${$oldOpsName}[$x])));
+	   $thisHiddenTerm = new icms_form_elements_Hidden($oldTermsName."[$i]", strip_tags(htmlspecialchars(${$oldTermsName}[$x])));
+	   $thisHiddenType = new icms_form_elements_Hidden($oldTypesName."[$i]", strip_tags(htmlspecialchars(${$oldTypesName}[$x])));
+	   if(${$oldTypesName}[$x] == "all") {
+	        $conditionlist .= $options[${$oldElementsName}[$x]] . " " . ${$oldOpsName}[$x] . " " . ${$oldTermsName}[$x] . "&nbsp;&nbsp;<a class='conditionsdelete' title='Delete' target='".$filterName."_".$i."' href=''>X</a>\n".$thisHiddenElement->render()."\n".$thisHiddenOp->render()."\n".$thisHiddenTerm->render()."\n".$thisHiddenType->render()."\n<br />\n";
+	   } else {
+	        $conditionlistOOM .= $options[${$oldElementsName}[$x]] . " " . ${$oldOpsName}[$x] . " " . ${$oldTermsName}[$x] . "&nbsp;&nbsp;<a class='conditionsdelete' title='Delete' target='".$filterName."_".$i."' href=''>X</a>\n".$thisHiddenElement->render()."\n".$thisHiddenOp->render()."\n".$thisHiddenTerm->render()."\n".$thisHiddenType->render()."\n<br />\n";
+	   }
+	   $i++;
+	 }
  }
+ 
  // setup the new element, operator, term boxes...
  // > match all of these
  $conditionui = "<i>" . _formulize_GENERIC_FILTER_MATCH_ALL . "</i>";
