@@ -2788,7 +2788,7 @@ function sendNotificationToEmail($email, $event, $tags, $subject, $template) {
       break;
   }
  }
-  $xoopsMailer =& new icms_messaging_Handler();
+  $xoopsMailer = new icms_messaging_Handler();
   include_once XOOPS_ROOT_PATH . '/include/notification_constants.php';
   $xoopsMailer->useMail();
   foreach ($tags as $k=>$v) {
