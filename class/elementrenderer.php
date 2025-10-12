@@ -79,7 +79,7 @@ class formulizeElementRenderer{
 		// $ele_caption = stripslashes($ele_caption);
 		// next line commented out to accomodate passing of ele_value from index.php
 		// $ele_value = $this->_ele->getVar('ele_value');
-		$e = $this->_ele->getVar('ele_type');
+		$ele_type = $this->_ele->getVar('ele_type');
 
 
 		// call the text sanitizer, first try to convert HTML chars, and if there were no conversions, then do a textarea conversion to automatically make links clickable
@@ -105,7 +105,7 @@ class formulizeElementRenderer{
 
 		// setup the previous entry UI if necessary -- this is an option that can be specified for certain screens
 		$previousEntryUI = "";
-		if($screen AND $e != "derived") {
+		if($screen AND $ele_type != "derived") {
 			if($screen->getVar('paraentryform') > 0) {
 				$previousEntryUI = $this->formulize_setupPreviousEntryUI($screen, $true_ele_id, $e, $owner, $displayElementInEffect, $entry, $this->_ele->getVar('ele_handle'), $this->_ele->getVar('id_form'));
 			}
@@ -114,7 +114,7 @@ class formulizeElementRenderer{
 		$form_handler = icms_getModuleHandler('forms', 'formulize');
 		$formObject = $form_handler->get($id_form);
 	
-		switch ($e){
+		switch ($ele_type){
 			case 'derived':
 				if($entry != "new") {
 					$form_ele = new icms_form_elements_Label($this->_ele->getVar('ele_caption'), formulize_numberFormat($ele_value[5], $this->_ele->getVar('ele_handle')));
@@ -472,77 +472,79 @@ class formulizeElementRenderer{
 						$opt_count = 1;
 					}
 					$hiddenOutOfRangeValuesToWrite = array();
-					foreach ($ele_value[2] as $i) {
-	
-						// handle requests for full names or usernames -- will only kick in if there is no saved value (otherwise ele_value will have been rewritten by the loadValues function in the form display
-						// note: if the user is about to make a proxy entry, then the list of users displayed will be from their own groups, but not from the groups of the user they are about to make a proxy entry for.  ie: until the proxy user is known, the choice of users for this list can only be based on the current user.  This could lead to confusing or buggy situations, such as users being selected who are outside the groups of the proxy user (who will become the owner) and so there will be an invalid value stored for this element in the db.
-						if($i['key'] === "{FULLNAMES}" OR $i['key'] === "{USERNAMES}") { // ADDED June 18 2005 to handle pulling in usernames for the user's group(s)
-							if($i['key'] === "{FULLNAMES}") { $nametype = "name"; }
-							if($i['key'] === "{USERNAMES}") { $nametype = "uname"; }
-							if(isset($ele_value[2]['{OWNERGROUPS}'])) {
-								$groups = $ele_value[2]['{OWNERGROUPS}'];
-							} else {
-								global $regcode;
-								if($regcode) { // if we're dealing with a registration code, determine group membership based on the code
-									$reggroupsq = q("SELECT reg_codes_groups FROM " . XOOPS_DB_PREFIX . "_reg_codes WHERE reg_codes_code=\"$regcode\"");
-									$groups = explode("&8(%$", $reggroupsq[0]['reg_codes_groups']);
-									if($groups[0] === "") { unset($groups); } // if a code has no groups associated with it, then kill the null value that will be in position 0 in the groups array.
-									$groups[] = XOOPS_GROUP_USERS;
-									$groups[] = XOOPS_GROUP_ANONYMOUS;
+					if(is_array($ele_value[2])) {
+						foreach ($ele_value[2] as $iKey=>$iValue) {
+							$i = array('key'=>$iKey, 'value'=>$iValue); // kinda ugly compatibility hack to refactor the really ugly use of 'each' for PHP 8
+							// handle requests for full names or usernames -- will only kick in if there is no saved value (otherwise ele_value will have been rewritten by the loadValues function in the form display
+							// note: if the user is about to make a proxy entry, then the list of users displayed will be from their own groups, but not from the groups of the user they are about to make a proxy entry for.  ie: until the proxy user is known, the choice of users for this list can only be based on the current user.  This could lead to confusing or buggy situations, such as users being selected who are outside the groups of the proxy user (who will become the owner) and so there will be an invalid value stored for this element in the db.
+							if($i['key'] === "{FULLNAMES}" OR $i['key'] === "{USERNAMES}") { // ADDED June 18 2005 to handle pulling in usernames for the user's group(s)
+								if($i['key'] === "{FULLNAMES}") { $nametype = "name"; }
+								if($i['key'] === "{USERNAMES}") { $nametype = "uname"; }
+								if(isset($ele_value[2]['{OWNERGROUPS}'])) {
+									$groups = $ele_value[2]['{OWNERGROUPS}'];
 								} else {
-									
-									$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
-								}
-							}
-							$pgroups = array();
-							if($ele_value[3]) {
-								$scopegroups = explode(",",$ele_value[3]);
-										if(!in_array("all", $scopegroups)) {
-									if($ele_value[4]) { // limit by users's groups
-												foreach($groups as $gid) { // want to loop so we can get rid of reg users group simply
-													if($gid == XOOPS_GROUP_USERS) { continue; }
-													if(in_array($gid, $scopegroups)) {
-														$pgroups[] = $gid;
-													}
-												}
-												if(count($pgroups) > 0) {
-													unset($groups);
-													$groups = $pgroups;
-												} else {
-													$groups = array();
-												}
-											} else { // don't limit by user's groups
-										$groups = $scopegroups;
+									global $regcode;
+									if($regcode) { // if we're dealing with a registration code, determine group membership based on the code
+										$reggroupsq = q("SELECT reg_codes_groups FROM " . XOOPS_DB_PREFIX . "_reg_codes WHERE reg_codes_code=\"$regcode\"");
+										$groups = explode("&8(%$", $reggroupsq[0]['reg_codes_groups']);
+										if($groups[0] === "") { unset($groups); } // if a code has no groups associated with it, then kill the null value that will be in position 0 in the groups array.
+										$groups[] = XOOPS_GROUP_USERS;
+										$groups[] = XOOPS_GROUP_ANONYMOUS;
+									} else {
+										
+										$groups = is_object(icms::$user) ? icms::$user->getGroups() : array(0=>XOOPS_GROUP_ANONYMOUS);
 									}
-								} else { // use all
-									if(!$ele_value[4]) { // really use all (otherwise, we're just going with all user's groups, so existing value of $groups will be okay
-										unset($groups);
-										$allgroupsq = q("SELECT groupid FROM " . icms::$xoopsDB->prefix("groups")); //  . " WHERE groupid != " . XOOPS_GROUP_USERS); // removed exclusion of registered users group March 18 2009, since it doesn't make sense in this situation.  All groups should mean everyone, period.
-										foreach($allgroupsq as $thisgid) {
-											$groups[] = $thisgid['groupid'];
+								}
+								$pgroups = array();
+								if($ele_value[3]) {
+									$scopegroups = explode(",",$ele_value[3]);
+											if(!in_array("all", $scopegroups)) {
+										if($ele_value[4]) { // limit by users's groups
+													foreach($groups as $gid) { // want to loop so we can get rid of reg users group simply
+														if($gid == XOOPS_GROUP_USERS) { continue; }
+														if(in_array($gid, $scopegroups)) {
+															$pgroups[] = $gid;
+														}
+													}
+													if(count($pgroups) > 0) {
+														unset($groups);
+														$groups = $pgroups;
+													} else {
+														$groups = array();
+													}
+												} else { // don't limit by user's groups
+											$groups = $scopegroups;
+										}
+									} else { // use all
+										if(!$ele_value[4]) { // really use all (otherwise, we're just going with all user's groups, so existing value of $groups will be okay
+											unset($groups);
+											$allgroupsq = q("SELECT groupid FROM " . icms::$xoopsDB->prefix("groups")); //  . " WHERE groupid != " . XOOPS_GROUP_USERS); // removed exclusion of registered users group March 18 2009, since it doesn't make sense in this situation.  All groups should mean everyone, period.
+											foreach($allgroupsq as $thisgid) {
+												$groups[] = $thisgid['groupid'];
+											}
 										}
 									}
 								}
+								$namelist = gatherNames($groups, $nametype, $ele_value[6], $ele_value[5]);
+								foreach($namelist as $auid=>$aname) {
+									$options[$auid] = $aname;
+								}
+							} elseif($i['key'] === "{SELECTEDNAMES}") { // loadValue in formDisplay will create a second option with this key that contains an array of the selected values
+								$selected = $i['value'];
+							} elseif($i['key'] === "{OWNERGROUPS}") { // do nothing with this piece of metadata that gets set in loadValue, since it's used above
+							} else { // regular selection list....
+								$options[$opt_count] = icms_core_DataFilter::stripSlashesGPC($i['key']);
+								if(strstr($i['key'], _formulize_OUTOFRANGE_DATA)) {
+									$hiddenOutOfRangeValuesToWrite[$opt_count] = str_replace(_formulize_OUTOFRANGE_DATA, "", $i['key']); // if this is an out of range value, grab the actual value so we can stick it in a hidden element later
+								}
+								if( $i['value'] > 0 ){
+									$selected[] = $opt_count;
+								}
+								$opt_count++;
 							}
-							$namelist = gatherNames($groups, $nametype, $ele_value[6], $ele_value[5]);
-							foreach($namelist as $auid=>$aname) {
-								$options[$auid] = $aname;
-							}
-						} elseif($i['key'] === "{SELECTEDNAMES}") { // loadValue in formDisplay will create a second option with this key that contains an array of the selected values
-							$selected = $i['value'];
-						} elseif($i['key'] === "{OWNERGROUPS}") { // do nothing with this piece of metadata that gets set in loadValue, since it's used above
-						} else { // regular selection list....
-							$options[$opt_count] = icms_core_DataFilter::stripSlashesGPC($i['key']);
-							if(strstr($i['key'], _formulize_OUTOFRANGE_DATA)) {
-								$hiddenOutOfRangeValuesToWrite[$opt_count] = str_replace(_formulize_OUTOFRANGE_DATA, "", $i['key']); // if this is an out of range value, grab the actual value so we can stick it in a hidden element later
-							}
-							if( $i['value'] > 0 ){
-								$selected[] = $opt_count;
-							}
-							$opt_count++;
 						}
 					}
-	
+					
 					$count = count($options);
 					$size = $ele_value[0];
 					$final_size = ( $count < $size ) ? $count : $size;
@@ -660,9 +662,9 @@ class formulizeElementRenderer{
 				$disabledHiddenValues = "";
 				$disabledOutputText = array();
 				$opt_count = 1;
-				foreach ($ele_value as $i) {
-					$options[$opt_count] = icms_core_DataFilter::stripSlashesGPC($i['key']);
-					if( $i['value'] > 0 ){
+				foreach ($ele_value as $iKey=>$iValue) {
+					$options[$opt_count] = icms_core_DataFilter::stripSlashesGPC($iKey);
+					if( $iValue > 0 ){
 						$selected[] = $opt_count;
 						$disabledHiddenValue[] = "<input type=hidden name=\"".$form_ele_id."[]\" value=\"$opt_count\">";
 					}
@@ -682,50 +684,51 @@ class formulizeElementRenderer{
 							$selected
 						);
 						$counter = 0; // counter used for javascript that works with 'Other' box
-						foreach ($options as $o) {
-							$o = formulize_swapUIText($o, $this->_ele->getVar('ele_uitext'));
-							$other = $this->optOther($o['value'], $form_ele_id, $entry, $counter, true);
+						foreach($options as $oKey=>$oValue) {
+							$oValue = formulize_swapUIText($oValue, $this->_ele->getVar('ele_uitext'));
+							$other = $this->optOther($oValue, $form_ele_id, $entry_id, $counter, false, $isDisabled);
 							if( $other != false ){
-								$form_ele1->addOption($o['key'], _formulize_OPT_OTHER.$other);
-								if(in_array($o['key'], $selected)) {
-										$disabledOutputText[] = _formulize_OPT_OTHER.$other;
+								$form_ele1->addOption($oKey, _formulize_OPT_OTHER.$other);
+								if($oKey == $selected) {
+									$disabledOutputText = _formulize_OPT_OTHER.$other;
 								}
 							}else{
-								$form_ele1->addOption($o['key'], $o['value']);
-								if(in_array($o['key'], $selected)) {
-									$disabledOutputText[] = $o['value'];
+								$form_ele1->addOption($oKey, $oValue);
+								if($oKey == $selected) {
+									$disabledOutputText = $oValue;
 								}
-								if(strstr($o['value'], _formulize_OUTOFRANGE_DATA)) {
-									$hiddenOutOfRangeValuesToWrite[$o['key']] = str_replace(_formulize_OUTOFRANGE_DATA, "", $o['value']); // if this is an out of range value, grab the actual value so we can stick it in a hidden element later
+								if(strstr($oValue, _formulize_OUTOFRANGE_DATA)) {
+									$hiddenOutOfRangeValuesToWrite[$oKey] = str_replace(_formulize_OUTOFRANGE_DATA, "", $oValue); // if this is an out of range value, grab the actual value so we can stick it in a hidden element later
 								}
 							}
 							$counter++;
 						}
 						$form_ele1->setExtra(" onchange=\"javascript:formulizechanged=1;\" jquerytag=\"$form_ele_id\" ");
 					break;
+					
 					default:
 						$form_ele1 = new icms_form_elements_Tray($ele_caption, $delimSetting);
 						$counter = 0; // counter used for javascript that works with 'Other' box
-						foreach ($options as $o) {
-							$o = formulize_swapUIText($o, $this->_ele->getVar('ele_uitext'));
+						foreach($options as $oKey=>$oValue) {
+							$oValue = formulize_swapUIText($oValue, $this->_ele->getVar('ele_uitext'));
 							$t = new icms_form_elements_Checkbox(
 								'',
 								$form_ele_id.'[]',
 								$selected
 							);
-							$other = $this->optOther($o['value'], $form_ele_id, $entry, $counter, true);
+							$other = $this->optOther($oValue, $form_ele_id, $entry_id, $counter, false, $isDisabled);
 							if( $other != false ){
-								$t->addOption($o['key'], _formulize_OPT_OTHER.$other);
-								if(in_array($o['key'], $selected)) {
+								$t->addOption($oKey, _formulize_OPT_OTHER.$other);
+								if(in_array($oKey, $selected)) {
 										$disabledOutputText[] = _formulize_OPT_OTHER.$other;
 								}
 							}else{
-								$t->addOption($o['key'], $o['value']);
-								if(in_array($o['key'], $selected)) {
-										$disabledOutputText[] = $o['value'];
+								$t->addOption($oKey, $oValue);
+								if(in_array($oKey, $selected)) {
+									$disabledOutputText[] = $oKey;
 								}
-								if(strstr($o['value'], _formulize_OUTOFRANGE_DATA)) {
-									$hiddenOutOfRangeValuesToWrite[$o['key']] = str_replace(_formulize_OUTOFRANGE_DATA, "", $o['value']); // if this is an out of range value, grab the actual value so we can stick it in a hidden element later
+								if(strstr($oKey, _formulize_OUTOFRANGE_DATA)) {
+									$hiddenOutOfRangeValuesToWrite[$oKey] = str_replace(_formulize_OUTOFRANGE_DATA, "", $oKey); // if this is an out of range value, grab the actual value so we can stick it in a hidden element later
 								}
 							}
 							$t->setExtra(" onchange=\"javascript:formulizechanged=1;\" jquerytag=\"$form_ele_id\" ");
@@ -780,18 +783,18 @@ class formulizeElementRenderer{
 				$disabledHiddenValue = "";
 				$options = array();
 				$opt_count = 1;
-				foreach ($ele_value as $i) {
-					switch ($e){
+				foreach ($ele_value as $iKey=>$iValue) {
+					switch ($ele_type){
 						case 'radio':
-							$options[$opt_count] = icms_core_DataFilter::stripSlashesGPC($i['key']);
-              $options[$opt_count] = $myts->displayTarea($options[$opt_count]);
+							$options[$opt_count] = icms_core_DataFilter::stripSlashesGPC($iKey);
+             				$options[$opt_count] = $myts->displayTarea($options[$opt_count]);
 						break;
 						case 'yn':
-							$options[$opt_count] = constant($i['key']);
+							$options[$opt_count] = constant($iKey);
 							$options[$opt_count] = icms_core_DataFilter::stripSlashesGPC($options[$opt_count]);
 						break;
 					}
-					if( $i['value'] > 0 ){
+					if( $iValue > 0 ){
 						$selected = $opt_count;
 					}
 					$opt_count++;
@@ -810,50 +813,51 @@ class formulizeElementRenderer{
 							$selected
 						);
 						$counter = 0;
-						foreach ($options as $o) {
-							$o = formulize_swapUIText($o, $this->_ele->getVar('ele_uitext'));
-							$other = $this->optOther($o['value'], $form_ele_id, $entry, $counter);
+						foreach ($options as $oKey=>$oValue) {
+							$oValue = formulize_swapUIText($oValue, $this->_ele->getVar('ele_uitext'));
+							$other = $this->optOther($oValue, $form_ele_id, $entry, $counter);
 							if( $other != false ){
-								$form_ele1->addOption($o['key'], _formulize_OPT_OTHER.$other);
-								if($o['key'] == $selected) {
+								$form_ele1->addOption($oKey, _formulize_OPT_OTHER.$other);
+								if($oKey == $selected) {
 									$disabledOutputText = _formulize_OPT_OTHER.$other;
 								}
 							}else{
-								$form_ele1->addOption($o['key'], $o['value']);
-								if($o['key'] == $selected) {
-									$disabledOutputText = $o['value'];
+								$form_ele1->addOption($oKey, $oValue);
+								if($oKey == $selected) {
+									$disabledOutputText = $oValue;
 								}
-								if(strstr($o['value'], _formulize_OUTOFRANGE_DATA)) {
-									$hiddenOutOfRangeValuesToWrite[$o['key']] = str_replace(_formulize_OUTOFRANGE_DATA, "", $o['value']); // if this is an out of range value, grab the actual value so we can stick it in a hidden element later
+								if(strstr($oValue, _formulize_OUTOFRANGE_DATA)) {
+									$hiddenOutOfRangeValuesToWrite[$oKey] = str_replace(_formulize_OUTOFRANGE_DATA, "", $oValue); // if this is an out of range value, grab the actual value so we can stick it in a hidden element later
 								}
 							}
 							$counter++;
 						}
 						$form_ele1->setExtra("onchange=\"javascript:formulizechanged=1;\"");
 					break;
+					
 					default:
 						$form_ele1 = new icms_form_elements_Tray('', $delimSetting);
 						$counter = 0;
-						foreach ($options as $o) {
-							$o = formulize_swapUIText($o, $this->_ele->getVar('ele_uitext'));
+						foreach ($options as $oKey=>$oValue) {
+							$oValue = formulize_swapUIText($oValue, $this->_ele->getVar('ele_uitext'));
 							$t = new icms_form_elements_Radio(
 								'',
 								$form_ele_id,
 								$selected
 							);
-							$other = $this->optOther($o['value'], $form_ele_id, $entry, $counter);
+							$other = $this->optOther($oValue, $form_ele_id, $entry, $counter);
 							if( $other != false ){
-								$t->addOption($o['key'], _formulize_OPT_OTHER.$other);
-								if($o['key'] == $selected) {
+								$t->addOption($oKey, _formulize_OPT_OTHER.$other);
+								if($oKey == $selected) {
 									$disabledOutputText = _formulize_OPT_OTHER.$other;
 								}
 							}else{
-								$t->addOption($o['key'], $o['value']);
-								if($o['key'] == $selected) {
-									$disabledOutputText = $o['value'];
+								$t->addOption($oKey, $oValue);
+								if($oKey == $selected) {
+									$disabledOutputText = $oValue;
 								}
-								if(strstr($o['value'], _formulize_OUTOFRANGE_DATA)) {
-									$hiddenOutOfRangeValuesToWrite[$o['key']] = str_replace(_formulize_OUTOFRANGE_DATA, "", $o['value']); // if this is an out of range value, grab the actual value so we can stick it in a hidden element later
+								if(strstr($oValue, _formulize_OUTOFRANGE_DATA)) {
+									$hiddenOutOfRangeValuesToWrite[$oKey] = str_replace(_formulize_OUTOFRANGE_DATA, "", $oValue); // if this is an out of range value, grab the actual value so we can stick it in a hidden element later
 								}
 							}
 							$t->setExtra("onchange=\"javascript:formulizechanged=1;\"");
@@ -1025,8 +1029,8 @@ class formulizeElementRenderer{
 			} else {
 				$previousEntryUIRendered = "";
 			}
-			// $e is the type value...only put in a cue for certain kinds of elements, and definitely not for blank subforms
-			if(substr($form_ele_id, 0, 9) != "desubform" AND ($e == "text" OR $e == "textarea" OR $e == "select" OR $e=="radio" OR $e=="checkbox" OR $e=="date" OR $e=="colorpick" OR $e=="yn" OR $customElementHasData)) {
+			// $ele_type is the type value...only put in a cue for certain kinds of elements, and definitely not for blank subforms
+			if(substr($form_ele_id, 0, 9) != "desubform" AND ($ele_type == "text" OR $ele_type == "textarea" OR $ele_type == "select" OR $ele_type=="radio" OR $ele_type=="checkbox" OR $ele_type=="date" OR $ele_type=="colorpick" OR $ele_type=="yn" OR $customElementHasData)) {
 				$elementCue = "\n<input type=\"hidden\" id=\"decue_".trim($form_ele_id,"de_")."\" name=\"decue_".trim($form_ele_id,"de_")."\" value=1>\n";
 			} else {
 				$elementCue = "";

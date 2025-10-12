@@ -1616,18 +1616,25 @@ function prepDataForWrite($element, $ele) {
 				case 'radio':
 					$value = '';
 					$opt_count = 1;
-					foreach ($ele_value as $v) {
-						if( $opt_count == $ele ){
-							$GLOBALS['formulize_other'][$ele_id] = checkOther($v['key'], $ele_id);
-							$msg.= icms_core_DataFilter::stripSlashesGPC($v['key']).'<br>';
-							$v['key'] = icms_core_DataFilter::htmlSpecialChars($v['key']);
-							$value = $v['key'];
+					foreach($ele_value as $ele_value_key=>$ele_value_value) {
+						if ($opt_count == $ele ) {
+							$otherValue = checkOther($ele_value_key, $ele_id, $entry_id, $subformBlankCounter);
+							if($otherValue !== false) {
+								if($subformBlankCounter !== null) {
+									$GLOBALS['formulize_other'][$ele_id]['blanks'][$subformBlankCounter] = $otherValue;
+								} else {
+									$GLOBALS['formulize_other'][$ele_id][$entry_id] = $otherValue;
+								}
+							}
+							$msg.= $myts->stripSlashesGPC($ele_value_key).'<br>';
+							$ele_value_key = $myts->htmlSpecialChars($ele_value_key);
+							$value = $ele_value_key;
 						}
 						$opt_count++;
 					}
-          if($ele >= $opt_count) { // if a value was received that was out of range...added by jwe March 2 2008
-          	$value = icms_core_DataFilter::htmlSpecialChars($_POST['formulize_hoorv_'.$ele_id.'_'.$ele]); // get the out of range value from the hidden values that were passed back
-          }
+		          if($ele >= $opt_count) { // if a value was received that was out of range...added by jwe March 2 2008
+		          	$value = icms_core_DataFilter::htmlSpecialChars($_POST['formulize_hoorv_'.$ele_id.'_'.$ele]); // get the out of range value from the hidden values that were passed back
+		          }
 				break;
 				case 'yn':
 					$value = $ele;
@@ -1635,27 +1642,28 @@ function prepDataForWrite($element, $ele) {
 				case 'checkbox':
 					$value = '';
 					$opt_count = 1;
-          $numberOfSelectionsFound = 0;
-						foreach ($ele_value as $v) {
+          			$numberOfSelectionsFound = 0;
+						foreach ($ele_value as $vKey=>$vValue) {
 						if( is_array($ele) ){ // it's always an array...right?!
 							if( in_array($opt_count, $ele) ){
-                $numberOfSelectionsFound++;
-								$GLOBALS['formulize_other'][$ele_id] = checkOther($v['key'], $ele_id);
-								$v['key'] = icms_core_DataFilter::htmlSpecialChars($v['key']);
-								$value = $value.'*=+*:'.$v['key'];
+              					$numberOfSelectionsFound++;
+                				$GLOBALS['formulize_other'][$ele_id] = checkOther($vKey, $ele_id);
+                				$vKey = icms_core_DataFilter::htmlSpecialChars($vKey);
+                				$value = $value .'*=+*:'. $vKey;
 							}
 							$opt_count++;
 						}
 					}
 
-          while($numberOfSelectionsFound < count($ele) AND $opt_count < 1000) { // if a value was received that was out of range...added by jwe March 2 2008...in this case we are assuming that if there are more values passed back than selections found in the valid options for the element, then there are out-of-range values we want to preserve
-            if(in_array($opt_count, $ele)) { // keep looking for more values...get them out of the hiddenOutOfRange info
-            	$value = $value.'*=+*:'. icms_core_DataFilter::htmlSpecialChars($_POST['formulize_hoorv_'.$ele_id.'_'.$opt_count]);
-              $numberOfSelectionsFound++;
-            }
-            $opt_count++;
-          }
+		          while($numberOfSelectionsFound < count($ele) AND $opt_count < 1000) { // if a value was received that was out of range...added by jwe March 2 2008...in this case we are assuming that if there are more values passed back than selections found in the valid options for the element, then there are out-of-range values we want to preserve
+		            if(in_array($opt_count, $ele)) { // keep looking for more values...get them out of the hiddenOutOfRange info
+		            	$value = $value.'*=+*:'. icms_core_DataFilter::htmlSpecialChars($_POST['formulize_hoorv_'.$ele_id.'_'.$opt_count]);
+		              $numberOfSelectionsFound++;
+		            }
+		            $opt_count++;
+		          }
 				break;
+				
 				case 'select':
           
           // handle the new possible default value -- sept 7 2007

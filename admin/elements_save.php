@@ -226,15 +226,15 @@ if( !empty($ele_id) AND $clone == 0){
 				$checked = $_POST['checked']; // note that $_POST is blindly parsed into a new set of variables at the top of this file, so this line is strictly speaking unnecessary but it aids readability
 				$value = array();
 				list($ele_value, $uitext) = formulize_extractUIText($ele_value);
-				foreach ($ele_value as $v){
+				foreach ($ele_value as $vKey=>$vValue){
 					//if( !empty($v['value']) ){
-					if( $v['value'] !== "" ){
-						if( $checked[$v['key']] == 1 ){
+					if( $vValue !== "" ){
+						if( $checked[$vKey] == 1 ){
 							$check = 1;
 						}else{
 							$check = 0;
 						}
-						$value[$v['value']] = $check;
+						$value[$vValue] = $check;
 					}
 				}
 			break;
@@ -243,7 +243,7 @@ if( !empty($ele_id) AND $clone == 0){
 				$checked = $_POST['checked'];
 				$value = array();
 				list($ele_value, $uitext) = formulize_extractUIText($ele_value);
-				foreach ($ele_value as $v) {
+				foreach ($ele_value as $vKey=>$vValue) {
 					/*print "<br>debug:<br>v = ";
 					print_r ($v);
 					print "<br>v[value] =";
@@ -253,19 +253,19 @@ if( !empty($ele_id) AND $clone == 0){
 					print "<br>checked = $checked";*/
 
 					//if( !empty($v['value']) OR $v['value'] === 0 OR $v['value'] === "0"){
-			    if( $v['value'] !== "" ){
+					if( $vValue!== "" ){
 						// added if loop below to account for the similarity of checked =0 (first element) or checked is not set (no defaults)
 						if(isset($checked))
 						{
-							if( $checked == $v['key'] ){
-								$value[$v['value']] = 1;
+							if( $checked == $vKey ){
+								$value[$vValue] = 1;
 							}else{
-								$value[$v['value']] = 0;
+								$value[$vValue] = 0;
 							}
 						}
 						else
 						{
-							$value[$v['value']] = 0;
+							$value[$vValue] = 0;
 						}
 					}
 				}
