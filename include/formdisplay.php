@@ -343,7 +343,7 @@ if(!is_numeric($titleOverride) AND $titleOverride != "" AND $titleOverride != "a
 //3. if entry specified, then get data for that entry
 //4. drawform with data if necessary
 
-	global $myts;
+global $icmsConfig, $myts;
 
 	global $sfidsDrawn;
 	if(!is_array($sfidsDrawn)) {
@@ -897,7 +897,7 @@ function addProfileFields($form, $profileForm) {
 	// timezone
 	// password
 
-	global $icmsConfigUser;
+	global $icmsConfig, $icmsConfigUser;
 	$config_handler = icms::handler('icms_config');
 	$icmsConfigUser =& $config_handler->getConfigsByCat(XOOPS_CONF_USER);
 	$user_handler = icms::handler('icms_member_user');
