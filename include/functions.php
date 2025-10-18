@@ -2143,7 +2143,7 @@ function formatLinks($matchtext, $handle, $textWidth, $entryBeingFormatted) {
 			$start = 0;
 		}
 		return $printText;
-	} elseif($ele_type=='select' AND strstr($ele_value[2], "#*=:*") AND $ele_value[7] == 1) { // dealing with a linked selectbox
+	} elseif($ele_type=='select' AND is_string($ele_value[2]) AND strstr($ele_value[2], "#*=:*") AND $ele_value[7] == 1) { // dealing with a linked selectbox
 		$boxproperties = explode("#*=:*", $ele_value[2]);
 		// NOTE:
 		// boxproperties[0] is form_id
