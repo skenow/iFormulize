@@ -44,6 +44,7 @@
 // 8. draw notice about changes being made and ready to be applied if applicable?
 // 9. draw results.
 
+global $icmsConfig;
 
 // load the formulize language constants if they haven't been loaded already
 	if ( file_exists(XOOPS_ROOT_PATH."/modules/formulize/language/".$icmsConfig['language']."/main.php") ) {
