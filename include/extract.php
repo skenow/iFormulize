@@ -1358,8 +1358,8 @@ function formulize_parseFilter($filtertemp, $andor, $linkfids, $fid, $frid) {
           $numSeachExps++;
      }
 
-		 $otherPerGroupFilterJoins = implode(" ", $otherPerGroupFilterJoins);
-		 $otherPerGroupFilterWhereClause = implode(" ", $otherPerGroupFilterWhereClause);
+     $otherPerGroupFilterJoins = is_array($otherPerGroupFilterJoins) ? implode(" ", $otherPerGroupFilterJoins) : "";
+     $otherPerGroupFilterWhereClause = is_array($otherPerGroupFilterWhereClause) ? implode(" ", $otherPerGroupFilterWhereClause) : "";
      return array(0=>$formFieldFilterMap, 1=>$whereClause, 2=>$orderByClause, 3=>$oneSideFilters, 4=>$otherPerGroupFilterJoins, 5=>$otherPerGroupFilterWhereClause);
 }
 
