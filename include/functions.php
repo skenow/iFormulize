@@ -4579,9 +4579,13 @@ function getHTMLForList($value, $handle, $entryId, $deDisplay=0, $textWidth=200,
 	}
 	$fid = $cachedFormIds[$handle];
 	foreach($value as $valueId=>$v) {
-		if(is_numeric($v)) { // Added by Steph, April 11, 2011
-			$elstyle = 'style="text-align: right;"';
+		$elstyle = 'style="width: 100%;text-align: ';
+		if (is_numeric($v)) {
+			$elstyle .= 'right;"'; // and if there is a width that pushes the right edge over then it looks nice, sort of, but more formatting controls on table and whitespace between cells, etc... is necessary
+		} else {
+			$elstyle .= 'left"';
 		}
+		
 		$thisEntryId = isset($localIds[$valueId]) ? $localIds[$valueId] : $entryId;
 		if($counter == 1 AND $deDisplay) {
 			$output .= '<div style="float: left; margin-right: 5px; margin-bottom: 5px;"><a href="" onclick="javascript:renderElement(\''.$handle.'\', '.$thisEntryId.', '.$fid.');return false;"><img src="'.XOOPS_URL.'/modules/formulize/images/kedit.gif" /></a></div>';
