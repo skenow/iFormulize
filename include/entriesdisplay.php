@@ -4199,7 +4199,8 @@ function formulize_runAdvancedSearch($query_string, $data) {
 
 // THIS FUNCTION HANDLES GATHERING A DATASET FOR DISPLAY IN THE LIST
 function formulize_gatherDataSet($settings=array(), $searches, $sort="", $order="", $frid, $fid, $scope, $screen="", $currentURL="", $forcequery = 0) {
-
+	global $icmsConfig;
+	
 	// setup "flatscope" so we can compare arrays of groups that make up the scope, from page load to pageload
 	if(is_array($scope)) {
 		$flatscope = serialize($scope);
