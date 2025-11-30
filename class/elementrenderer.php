@@ -936,6 +936,7 @@ class formulizeElementRenderer{
 						//print "good date";
 					if (preg_replace("/[^A-Z{}]/","", $ele_value[0]) === "{TODAY}") {
 						$number = preg_replace("/[^0-9+-]/","", $ele_value[0]);
+						if ($number === '') { $number = 0; };
 						$timestampToUse = mktime(0, 0, 0, date("m") , date("d")+$number, date("Y"));
 					} else {
 						$timestampToUse = strtotime($ele_value[0]);
