@@ -34,7 +34,7 @@
 ###############################################################################
 
 require_once "../../mainfile.php";
-//include XOOPS_ROOT_PATH.'/header.php';
+include XOOPS_ROOT_PATH . '/header.php';
 
 PRINT "<HTML>
 <meta http-equiv=\"Content-Type\" content=\"text/html; charset="._CHARSET."\" />";

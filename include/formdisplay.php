@@ -2320,7 +2320,7 @@ function formulize_formatDateTime($dt) {
 
 
 // write the settings passed to this page from the view entries page, so the view can be restored when they go back
-function writeHiddenSettings($settings, $form) {
+function writeHiddenSettings($settings, $form = null) {
 	//unpack settings
 	$sort = $settings['sort'];
 	$order = $settings['order'];
