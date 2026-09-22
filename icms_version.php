@@ -461,7 +461,7 @@ $modversion['config'][] = array(
 $modversion['blocks'][1] = array(
 	'file' => "mymenu.php",
 	'name' => _MI_formulizeMENU_BNAME,
-	'description' => "Zeigt individuelles Menu an",
+	'description' => "",
 	'show_func' => "block_formulizeMENU_show");
 
 // Notifications -- added by jwe 10/10/04, removed for 2.0, reinstated for 2.2 with improved options
