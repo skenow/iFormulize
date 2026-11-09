@@ -119,7 +119,7 @@ class formulize_themeForm extends icms_form_Theme {
 				$ret .= "<tr id='formulize-".$ele->getName()."' valign='top' align='" . _GLOBAL_LEFT . "'><td class='head'>";
 				if (($caption = $ele->getCaption()) != '') {
 					$ret .=
-					"<div class='form-element-caption'>"
+						"<div class='form-element-caption'>"
 							. "<span class='caption-text'>{$caption}</span>"
 							. ($ele->isRequired() ? "<span style='color:#f00'>*</span>" : "")
 							. "</div>";
